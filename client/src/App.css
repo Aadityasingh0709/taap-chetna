@@ -1,0 +1,13 @@
+/* App-level specific transitions and pulse animations */
+@keyframes heatPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+  }
+}
+
+.pulse-heat-danger {
+  animation: heatPulse 2s infinite ease-in-out;
+}
