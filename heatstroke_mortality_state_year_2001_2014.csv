@@ -1,0 +1,337 @@
+state,year,heatstroke_deaths
+Andhra Pradesh,2001,46
+Andhra Pradesh,2002,80
+Andhra Pradesh,2003,100
+Andhra Pradesh,2004,52
+Andhra Pradesh,2005,105
+Andhra Pradesh,2006,125
+Andhra Pradesh,2007,128
+Andhra Pradesh,2008,124
+Andhra Pradesh,2009,262
+Andhra Pradesh,2010,197
+Andhra Pradesh,2011,91
+Andhra Pradesh,2012,221
+Andhra Pradesh,2013,418
+Andhra Pradesh,2014,372
+Arunachal Pradesh,2001,0
+Arunachal Pradesh,2002,0
+Arunachal Pradesh,2003,1
+Arunachal Pradesh,2004,0
+Arunachal Pradesh,2005,0
+Arunachal Pradesh,2006,1
+Arunachal Pradesh,2007,4
+Arunachal Pradesh,2008,5
+Arunachal Pradesh,2009,5
+Arunachal Pradesh,2010,1
+Arunachal Pradesh,2011,0
+Arunachal Pradesh,2012,0
+Arunachal Pradesh,2013,0
+Arunachal Pradesh,2014,0
+Assam,2001,7
+Assam,2002,2
+Assam,2003,4
+Assam,2004,16
+Assam,2005,13
+Assam,2006,7
+Assam,2007,7
+Assam,2008,8
+Assam,2009,0
+Assam,2010,1
+Assam,2011,1
+Assam,2012,1
+Assam,2013,5
+Assam,2014,0
+Bihar,2001,47
+Bihar,2002,22
+Bihar,2003,70
+Bihar,2004,32
+Bihar,2005,68
+Bihar,2006,52
+Bihar,2007,58
+Bihar,2008,28
+Bihar,2009,46
+Bihar,2010,95
+Bihar,2011,86
+Bihar,2012,166
+Bihar,2013,85
+Bihar,2014,131
+Chhattisgarh,2001,5
+Chhattisgarh,2002,20
+Chhattisgarh,2003,22
+Chhattisgarh,2004,9
+Chhattisgarh,2005,14
+Chhattisgarh,2006,4
+Chhattisgarh,2007,15
+Chhattisgarh,2008,7
+Chhattisgarh,2009,6
+Chhattisgarh,2010,10
+Chhattisgarh,2011,3
+Chhattisgarh,2012,10
+Chhattisgarh,2013,3
+Chhattisgarh,2014,4
+Delhi,2001,28
+Delhi,2002,45
+Delhi,2003,18
+Delhi,2004,20
+Delhi,2005,19
+Delhi,2006,14
+Delhi,2007,26
+Delhi,2008,7
+Delhi,2009,40
+Delhi,2010,41
+Delhi,2011,6
+Delhi,2012,17
+Delhi,2013,2
+Delhi,2014,9
+Gujarat,2001,24
+Gujarat,2002,47
+Gujarat,2003,30
+Gujarat,2004,12
+Gujarat,2005,13
+Gujarat,2006,7
+Gujarat,2007,16
+Gujarat,2008,6
+Gujarat,2009,9
+Gujarat,2010,58
+Gujarat,2011,15
+Gujarat,2012,17
+Gujarat,2013,26
+Gujarat,2014,45
+Haryana,2001,1
+Haryana,2002,17
+Haryana,2003,2
+Haryana,2004,4
+Haryana,2005,19
+Haryana,2006,13
+Haryana,2007,75
+Haryana,2008,31
+Haryana,2009,34
+Haryana,2010,60
+Haryana,2011,30
+Haryana,2012,95
+Haryana,2013,82
+Haryana,2014,79
+Himachal Pradesh,2001,2
+Himachal Pradesh,2002,0
+Himachal Pradesh,2003,8
+Himachal Pradesh,2004,0
+Himachal Pradesh,2005,3
+Himachal Pradesh,2006,1
+Himachal Pradesh,2007,0
+Himachal Pradesh,2008,0
+Himachal Pradesh,2009,1
+Himachal Pradesh,2010,0
+Himachal Pradesh,2011,1
+Himachal Pradesh,2012,2
+Himachal Pradesh,2013,0
+Himachal Pradesh,2014,1
+Jammu & Kashmir,2001,0
+Jammu & Kashmir,2002,0
+Jammu & Kashmir,2003,3
+Jammu & Kashmir,2004,2
+Jammu & Kashmir,2005,2
+Jammu & Kashmir,2006,2
+Jammu & Kashmir,2007,1
+Jammu & Kashmir,2008,0
+Jammu & Kashmir,2009,0
+Jammu & Kashmir,2010,6
+Jammu & Kashmir,2011,1
+Jammu & Kashmir,2012,0
+Jammu & Kashmir,2013,3
+Jammu & Kashmir,2014,0
+Jharkhand,2001,2
+Jharkhand,2002,6
+Jharkhand,2003,8
+Jharkhand,2004,19
+Jharkhand,2005,60
+Jharkhand,2006,37
+Jharkhand,2007,38
+Jharkhand,2008,48
+Jharkhand,2009,50
+Jharkhand,2010,49
+Jharkhand,2011,29
+Jharkhand,2012,74
+Jharkhand,2013,42
+Jharkhand,2014,50
+Karnataka,2001,2
+Karnataka,2002,4
+Karnataka,2003,6
+Karnataka,2004,7
+Karnataka,2005,15
+Karnataka,2006,5
+Karnataka,2007,1
+Karnataka,2008,2
+Karnataka,2009,9
+Karnataka,2010,15
+Karnataka,2011,21
+Karnataka,2012,2
+Karnataka,2013,6
+Karnataka,2014,2
+Kerala,2001,0
+Kerala,2002,0
+Kerala,2003,4
+Kerala,2004,1
+Kerala,2005,0
+Kerala,2006,0
+Kerala,2007,1
+Kerala,2008,0
+Kerala,2009,1
+Kerala,2010,2
+Kerala,2011,0
+Kerala,2012,0
+Kerala,2013,1
+Kerala,2014,0
+Madhya Pradesh,2001,8
+Madhya Pradesh,2002,32
+Madhya Pradesh,2003,39
+Madhya Pradesh,2004,158
+Madhya Pradesh,2005,24
+Madhya Pradesh,2006,45
+Madhya Pradesh,2007,41
+Madhya Pradesh,2008,11
+Madhya Pradesh,2009,20
+Madhya Pradesh,2010,46
+Madhya Pradesh,2011,24
+Madhya Pradesh,2012,35
+Madhya Pradesh,2013,12
+Madhya Pradesh,2014,33
+Maharashtra,2001,43
+Maharashtra,2002,50
+Maharashtra,2003,77
+Maharashtra,2004,62
+Maharashtra,2005,69
+Maharashtra,2006,33
+Maharashtra,2007,70
+Maharashtra,2008,30
+Maharashtra,2009,79
+Maharashtra,2010,137
+Maharashtra,2011,41
+Maharashtra,2012,59
+Maharashtra,2013,80
+Maharashtra,2014,58
+Meghalaya,2001,0
+Meghalaya,2002,0
+Meghalaya,2003,0
+Meghalaya,2004,1
+Meghalaya,2005,0
+Meghalaya,2006,0
+Meghalaya,2007,0
+Meghalaya,2008,0
+Meghalaya,2009,0
+Meghalaya,2010,0
+Meghalaya,2011,0
+Meghalaya,2012,0
+Meghalaya,2013,0
+Meghalaya,2014,2
+Odisha,2001,60
+Odisha,2002,77
+Odisha,2003,98
+Odisha,2004,76
+Odisha,2005,94
+Odisha,2006,51
+Odisha,2007,55
+Odisha,2008,69
+Odisha,2009,101
+Odisha,2010,130
+Odisha,2011,51
+Odisha,2012,124
+Odisha,2013,101
+Odisha,2014,78
+Punjab,2001,55
+Punjab,2002,39
+Punjab,2003,38
+Punjab,2004,43
+Punjab,2005,87
+Punjab,2006,69
+Punjab,2007,129
+Punjab,2008,64
+Punjab,2009,150
+Punjab,2010,170
+Punjab,2011,176
+Punjab,2012,155
+Punjab,2013,144
+Punjab,2014,123
+Rajasthan,2001,19
+Rajasthan,2002,57
+Rajasthan,2003,44
+Rajasthan,2004,37
+Rajasthan,2005,38
+Rajasthan,2006,35
+Rajasthan,2007,56
+Rajasthan,2008,29
+Rajasthan,2009,55
+Rajasthan,2010,54
+Rajasthan,2011,37
+Rajasthan,2012,32
+Rajasthan,2013,40
+Rajasthan,2014,45
+Tamil Nadu,2001,27
+Tamil Nadu,2002,26
+Tamil Nadu,2003,54
+Tamil Nadu,2004,14
+Tamil Nadu,2005,5
+Tamil Nadu,2006,23
+Tamil Nadu,2007,14
+Tamil Nadu,2008,15
+Tamil Nadu,2009,31
+Tamil Nadu,2010,18
+Tamil Nadu,2011,1
+Tamil Nadu,2012,0
+Tamil Nadu,2013,0
+Tamil Nadu,2014,0
+Tripura,2001,4
+Tripura,2002,0
+Tripura,2003,2
+Tripura,2004,0
+Tripura,2005,15
+Tripura,2006,5
+Tripura,2007,0
+Tripura,2008,9
+Tripura,2009,10
+Tripura,2010,12
+Tripura,2011,6
+Tripura,2012,0
+Tripura,2013,12
+Tripura,2014,2
+Uttar Pradesh,2001,52
+Uttar Pradesh,2002,134
+Uttar Pradesh,2003,126
+Uttar Pradesh,2004,95
+Uttar Pradesh,2005,199
+Uttar Pradesh,2006,87
+Uttar Pradesh,2007,108
+Uttar Pradesh,2008,80
+Uttar Pradesh,2009,117
+Uttar Pradesh,2010,118
+Uttar Pradesh,2011,104
+Uttar Pradesh,2012,156
+Uttar Pradesh,2013,108
+Uttar Pradesh,2014,126
+Uttarakhand,2001,0
+Uttarakhand,2002,0
+Uttarakhand,2003,0
+Uttarakhand,2004,0
+Uttarakhand,2005,2
+Uttarakhand,2006,1
+Uttarakhand,2007,2
+Uttarakhand,2008,0
+Uttarakhand,2009,0
+Uttarakhand,2010,0
+Uttarakhand,2011,0
+Uttarakhand,2012,1
+Uttarakhand,2013,0
+Uttarakhand,2014,0
+West Bengal,2001,66
+West Bengal,2002,62
+West Bengal,2003,52
+West Bengal,2004,96
+West Bengal,2005,211
+West Bengal,2006,137
+West Bengal,2007,86
+West Bengal,2008,43
+West Bengal,2009,45
+West Bengal,2010,54
+West Bengal,2011,69
+West Bengal,2012,76
+West Bengal,2013,45
+West Bengal,2014,88

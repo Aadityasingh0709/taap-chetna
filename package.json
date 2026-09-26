@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"yellow.bold,cyan.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev": "concurrently -n \"BACKEND,FRONTEND,ML\" -c \"yellow.bold,cyan.bold,magenta.bold\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\" \"python -m uvicorn ml.serve:app --host 127.0.0.1 --port 5001 --reload\"",
     "start": "npm run dev",
-    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend"
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "ml:train": "python ml/train_pipeline.py",
+    "ml:serve": "python -m uvicorn ml.serve:app --host 127.0.0.1 --port 5001 --reload"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

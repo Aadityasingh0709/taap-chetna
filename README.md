@@ -20,6 +20,7 @@
 - ⏳ **"What-If" Time-Aware Activity Planner**: Simulates physiological strain across time slots to recommend safer alternatives for outdoor work and transit.
 - 🚦 **Travel & Transition Risk Analyzer**: Compares origin and destination microclimates with advisory warnings for intra-city and inter-city commutes.
 - 🏛️ **Municipal & Ward-Level Administrative Dashboard**: Role-based access control (RBAC) enabling municipal authorities to monitor ward vulnerabilities, trigger emergency cooling alerts, and coordinate response protocols.
+- 🤖 **Macro Heat-Health Burden ML Intelligence**: State-year supervised XGBoost & Decision Tree regression microservice predicting population-scale heat-health burden, feature importances, and municipal operational advisories.
 
 ---
 
@@ -32,6 +33,7 @@ graph TD
         UI_WHATIF["What-If Time Shift Planner"]
         UI_TRAVEL["Travel & Transition Analyzer"]
         UI_ADMIN["Municipal Authority Dashboard"]
+        UI_ML["Heat-Health Burden Panel"]
     end
 
     subgraph Server ["⚙️ Backend REST API (Node.js + Express)"]
@@ -39,6 +41,13 @@ graph TD
         API_WEATHER["Hyperlocal Weather & OSM Proxy"]
         API_RISK["Physiological Assessment Engine"]
         API_WARD["Ward Telemetry & Alert Coordinator"]
+        SVC_ML["Heat Burden Proxy Client"]
+    end
+
+    subgraph MLEngine ["🤖 ML Inference Microservice (FastAPI + Python)"]
+        ML_API["FastAPI REST Endpoints (:5001)"]
+        ML_MODEL["Trained XGBoost Regressor"]
+        ML_SCHEMA["Feature Schema & Baselines"]
     end
 
     subgraph DataTier ["💾 Persistence & External APIs"]
@@ -53,11 +62,16 @@ graph TD
     UI_TRAVEL --> API_WEATHER
     UI_ADMIN --> API_AUTH
     UI_ADMIN --> API_WARD
+    UI_ADMIN --> UI_ML
+    UI_ML --> SVC_ML
 
     API_AUTH --> DB_MONGO
     API_WARD --> DB_MONGO
     API_WEATHER --> EXT_METEO
     API_WEATHER --> EXT_OSM
+    SVC_ML --> ML_API
+    ML_API --> ML_MODEL
+    ML_API --> ML_SCHEMA
 ```
 
 ---
@@ -68,21 +82,28 @@ graph TD
 taap-chetna/
 ├── frontend/             # React 19 + Vite frontend client application
 │   ├── src/
-│   │   ├── components/   # Modular UI components (Risk, What-If, Ward Dashboard)
+│   │   ├── components/   # Modular UI components (Risk, What-If, Ward Dashboard, ML Panel)
 │   │   ├── context/      # Auth & Theme context providers
 │   │   ├── data/         # Indian places & reference data
 │   │   └── services/     # Axios client API service integrations
 │   └── package.json
 ├── backend/              # Express REST API backend server
 │   ├── config/           # Database configuration & seeding scripts
-│   ├── controllers/      # Route controllers (Auth, Weather, Wards, What-If)
+│   ├── controllers/      # Route controllers (Auth, Weather, Wards, What-If, Authority)
 │   ├── middleware/       # JWT Authentication & role verification
 │   ├── models/           # Mongoose schemas (User, Ward, Alert, TravelPlan)
 │   ├── routes/           # Express API route declarations
-│   ├── services/         # Open-Meteo & Nominatim weather aggregation
+│   ├── services/         # Open-Meteo, Nominatim, and ML microservice integration
 │   └── package.json
+├── ml/                   # Python Machine Learning Subsystem
+│   ├── models/           # Pre-trained models (XGBoost, Decision Tree), schemas & metrics
+│   ├── scripts/          # Aggregation, NASA POWER downloader, ETL tools
+│   ├── utils/            # Rothfusz Heat Index, GeoJSON boundary matching, Census populations
+│   ├── train_pipeline.py # End-to-end model training & evaluation pipeline
+│   └── serve.py          # High-performance FastAPI inference microservice (port 5001)
+├── ML_REPORT.md          # Comprehensive ML model benchmark, evaluation & feature analysis
 ├── .gitignore
-├── start-all.bat         # Single-click Windows startup script
+├── start-all.bat         # Single-click Windows startup script (Node + Vite + FastAPI)
 └── package.json          # Root concurrency orchestration script
 ```
 
@@ -92,6 +113,7 @@ taap-chetna/
 
 ### 1. Prerequisites
 - **Node.js**: v18.0.0 or higher
+- **Python**: 3.10+ (with `pip install fastapi uvicorn xgboost scikit-learn pandas numpy joblib requests`)
 - **MongoDB**: Local MongoDB instance or MongoDB Atlas URI
 
 ### 2. Environment Configuration
@@ -101,6 +123,7 @@ PORT=5000
 MONGO_URI=mongodb://localhost:27017/taap-chetna
 JWT_SECRET=your_super_secret_jwt_key
 JWT_EXPIRES_IN=7d
+ML_SERVICE_URL=http://127.0.0.1:5001
 ```
 
 ### 3. Installation & Local Execution
@@ -109,13 +132,14 @@ From the root directory:
 # Install all dependencies across root, backend, and frontend
 npm run install-all
 
-# Start both backend and frontend concurrently
+# Start backend, frontend, and ML inference service concurrently
 npm run dev
 ```
 
 The application will be accessible at:
 - **Frontend**: [http://localhost:5173](http://localhost:5173)
 - **Backend API**: [http://localhost:5000](http://localhost:5000)
+- **ML Engine API**: [http://localhost:5001](http://localhost:5001) (Docs at `/docs`)
 
 ---
 

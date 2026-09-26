@@ -65,6 +65,7 @@ export const getAuthorityAlerts = () => api.get('/authority/alerts');
 export const createAuthorityAlert = (data) => api.post('/authority/alerts', data);
 export const updateAuthorityAlert = (id, data) => api.put(`/authority/alerts/${id}`, data);
 export const getAuthorityRecommendations = () => api.get('/authority/recommendations');
+export const getHeatHealthBurden = (params = {}) => api.get('/authority/heat-health-burden', { params });
 
 // Admin endpoints
 export const getAdminRequests = () => api.get('/admin/requests');

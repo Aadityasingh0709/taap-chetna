@@ -1,0 +1,44 @@
+{
+  "model_name": "TaapChetna-StateYear-HeatstrokeBurden",
+  "version": "1.0.0",
+  "model_type": "XGBoost Regressor (with DecisionTree baseline)",
+  "target_definition": "Annual recorded state-level heatstroke mortality (NCRB Accidental Deaths & Suicides in India)",
+  "training_date": "2026-09-27 04:07:09",
+  "temporal_split": {
+    "train_years": [
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010
+    ],
+    "val_years": [
+      2011,
+      2012
+    ],
+    "test_years": [
+      2013,
+      2014
+    ]
+  },
+  "evaluation": {
+    "xgboost_test_mae": 26.78,
+    "xgboost_test_rmse": 62.79,
+    "xgboost_test_r2": 0.4359,
+    "baseline_decision_tree_test_mae": 26.0,
+    "baseline_decision_tree_test_rmse": 63.19,
+    "baseline_decision_tree_test_r2": 0.4286
+  },
+  "intended_use": "Population-level retrospective and seasonal heat-health burden estimation for municipal/state authorities to prioritize cooling shelters, water kiosks, and emergency hospital prep.",
+  "limitations": [
+    "State-year aggregated macro data (336 samples).",
+    "Does NOT predict individual clinical outcomes or immediate individual mortality risk.",
+    "Under-reporting of heatstroke mortality in administrative records is well-documented in biometeorological literature.",
+    "Should be used strictly as a population risk prioritization signal alongside real-time operational weather telemetry."
+  ]
+}

@@ -21,8 +21,9 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet';
-import { getAuthorityAlerts, createAuthorityAlert, getAuthorityWards } from '../services/api';
+import { getAuthorityAlerts, createAuthorityAlert, getAuthorityWards, getAuthorityDashboard } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import HeatHealthBurdenPanel from './HeatHealthBurdenPanel';
 
 // Default ward geographic metadata (fallback if server is offline or DB empty)
 const DEFAULT_KMC_WARDS = [
@@ -181,6 +182,7 @@ export default function MunicipalDashboard() {
     actions: 'Water tanker dispatch, Cooling center activation',
   });
   const [actionNotification, setActionNotification] = useState(null);
+  const [currentWeather, setCurrentWeather] = useState(null);
 
   const municipalityName = user?.municipality || 'Kolkata Municipal Corporation (KMC)';
   const officerName = user?.name || 'Dr. Anita Banerjee';
@@ -218,6 +220,12 @@ export default function MunicipalDashboard() {
       if (alertsRes.status === 'fulfilled' && Array.isArray(alertsRes.value.data)) {
         setAlerts(alertsRes.value.data);
       }
+
+      // Also fetch full dashboard weather for HeatHealthBurdenPanel
+      try {
+        const dashRes = await getAuthorityDashboard();
+        if (dashRes?.data?.weather) setCurrentWeather(dashRes.data.weather);
+      } catch (_) { /* ignore */ }
     } catch (err) {
       console.warn('Dashboard data fetch error:', err.message);
     } finally {
@@ -614,6 +622,25 @@ export default function MunicipalDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Layer A: Historical Supervised ML Heat-Health Burden Panel */}
+      <HeatHealthBurdenPanel
+        defaultState={(() => {
+          const m = user?.municipality || 'Kolkata Municipal Corporation';
+          const map = {
+            'Kolkata Municipal Corporation': 'West Bengal',
+            'Brihanmumbai Municipal Corporation': 'Maharashtra',
+            'Municipal Corporation of Delhi': 'Delhi',
+            'Greater Chennai Corporation': 'Tamil Nadu',
+            'Bruhat Bengaluru Mahanagara Palike': 'Karnataka',
+            'Greater Hyderabad Municipal Corporation': 'Andhra Pradesh',
+            'Patna Municipal Corporation': 'Bihar',
+            'Lucknow Municipal Corporation': 'Uttar Pradesh',
+          };
+          return map[m] || 'West Bengal';
+        })()}
+        currentWeather={currentWeather}
+      />
 
       {/* Active Broadcast Heat Alerts & Bulletins List */}
       <div className="glass-panel p-6 rounded-2xl space-y-4">

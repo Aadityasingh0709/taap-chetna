@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const Alert = require('../models/Alert');
 const Ward = require('../models/Ward');
 const weatherService = require('../services/weatherService');
+const heatBurdenService = require('../services/heatBurdenService');
 
 // Fallback wards definition with clear fallback flag if database has no records
 const FALLBACK_WARDS = [
@@ -37,14 +38,20 @@ const getDashboard = asyncHandler(async (req, res) => {
   }
   const wardData = (wards && wards.length > 0) ? wards : FALLBACK_WARDS;
 
+  // Resolve state and fetch historical heat-health burden estimate from ML service
+  const state = heatBurdenService.resolveStateFromMunicipality(municipality);
+  const heatHealthBurden = await heatBurdenService.getHeatHealthBurden(state, 2024, currentWeather);
+
   res.json({
     municipality,
     officer,
+    state,
     currentSituation: currentWeather.riskLevel,
     currentMessage: currentWeather.message,
     weather: currentWeather,
     wards: wardData,
     activeAlerts,
+    heatHealthBurden,
   });
 });
 
@@ -128,4 +135,21 @@ const getRecommendations = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getDashboard, getWards, getAlerts, createAlert, updateAlert, getRecommendations };
+const getHeatHealthBurden = asyncHandler(async (req, res) => {
+  const municipality = req.query.municipality || req.user?.municipality || 'Kolkata Municipal Corporation';
+  const state = req.query.state || heatBurdenService.resolveStateFromMunicipality(municipality);
+  const year = parseInt(req.query.year) || 2024;
+  
+  const burden = await heatBurdenService.getHeatHealthBurden(state, year);
+  res.json(burden);
+});
+
+module.exports = {
+  getDashboard,
+  getWards,
+  getAlerts,
+  createAlert,
+  updateAlert,
+  getRecommendations,
+  getHeatHealthBurden,
+};
