@@ -1,23 +1,21 @@
 // client/src/components/Navbar.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { 
-  Flame, 
-  UserCheck, 
-  Compass, 
-  CalendarClock, 
-  ShieldAlert, 
-  Settings, 
-  LogOut, 
-  LogIn, 
-  Menu, 
+import {
+  Flame,
+  UserCheck,
+  Compass,
+  CalendarClock,
+  ShieldAlert,
+  Settings,
+  LogOut,
+  LogIn,
+  Menu,
   X,
   AlertTriangle,
   Sun,
   Moon,
-  User,
-  Shield,
-  Building
+  Radio,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -26,172 +24,231 @@ export default function Navbar({ onOpenAuth }) {
   const { user, role, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+
+  // Elevate navbar on scroll
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
     navigate('/');
   };
 
   const getRoleBadge = (r) => {
     switch (r) {
       case 'SYSTEM_ADMIN':
-        return { label: 'System Admin', bg: 'bg-red-500/15 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800' };
+        return {
+          label: '🛡 Admin',
+          cls: 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-300/50 dark:border-red-800/50',
+        };
       case 'MUNICIPAL_OFFICER':
-        return { label: 'Municipal Officer', bg: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800' };
+        return {
+          label: '🏛 Officer',
+          cls: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-300/50 dark:border-amber-800/50',
+        };
       case 'CITIZEN':
-        return { label: 'Citizen', bg: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' };
+        return {
+          label: '👤 Citizen',
+          cls: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-300/50 dark:border-emerald-800/50',
+        };
       default:
-        return { label: 'Guest', bg: 'bg-stone-500/15 text-stone-700 dark:text-stone-300 border-stone-300 dark:border-stone-800' };
+        return {
+          label: 'Guest',
+          cls: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-300/40 dark:border-slate-700/40',
+        };
     }
   };
 
   const badge = getRoleBadge(role);
 
+  // Active nav link factory
+  const makeNavCls = (color) => ({ isActive }) =>
+    `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
+      isActive
+        ? `bg-${color}-500/10 text-${color}-600 dark:text-${color}-400 border border-${color}-400/35 shadow-[0_2px_0_var(--tw-shadow-color)] translate-y-px`
+        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-0.5'
+    }`;
+
+  const navActiveStyle = (color, borderColor) => ({ isActive }) =>
+    `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
+      isActive
+        ? `text-${color}-600 dark:text-${color}-400 bg-gradient-to-b from-${color}-500/10 to-${color}-600/5 border border-${color}-400/30 border-b-2 border-b-${color}-500 shadow-[0_2.5px_0_${borderColor}] translate-y-px`
+        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-0.5'
+    }`;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-stone-200 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/85 backdrop-blur-xl transition-colors duration-200">
-      {/* National Heat Health Advisory Banner */}
-      <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 px-4 py-1.5 text-center text-xs font-semibold tracking-wide text-white flex items-center justify-center gap-2 shadow-sm">
-        <span className="flex h-2 w-2 rounded-full bg-white animate-ping" />
-        <AlertTriangle className="w-3.5 h-3.5 inline" />
-        <span>TAAP CHETNA • NATIONAL HEAT-HEALTH INTELLIGENCE & ACCLIMATIZATION PLATFORM</span>
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_20px_-4px_rgba(0,0,0,0.4)]'
+          : 'border-b border-slate-200/60 dark:border-slate-800/60 bg-white/90 dark:bg-slate-950/85 backdrop-blur-xl'
+      }`}
+    >
+      {/* ── Live Alert Banner ─────────────────────────── */}
+      <div
+        className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 px-4 py-1.5 text-center text-[11px] font-bold tracking-wide text-white flex items-center justify-center gap-2 shadow-sm"
+        style={{ letterSpacing: '0.04em' }}
+      >
+        <span className="relative flex h-1.5 w-1.5">
+          <span className="badge-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+        </span>
+        <AlertTriangle className="w-3.5 h-3.5" />
+        <span>TAAP CHETNA&nbsp;•&nbsp;NATIONAL HEAT-HEALTH INTELLIGENCE &amp; ACCLIMATIZATION PLATFORM</span>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-600 to-red-600 flex items-center justify-center shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform duration-200">
-              <Flame className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between h-15 py-3">
+
+          {/* ── Brand Logo ──────────────────────────────── */}
+          <Link to="/" className="flex items-center gap-3 group" onClick={() => setMobileMenuOpen(false)}>
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 group-hover:rotate-3 transition-all duration-300"
+              style={{
+                background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%)',
+                boxShadow: '0 4px 12px rgba(249,115,22,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+              }}
+            >
+              <Flame className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xl font-black tracking-tight text-stone-900 dark:text-white font-mono">
-                  TAAP <span className="text-orange-600">CHETNA</span>
+                <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                  TAAP <span className="text-orange-500">CHETNA</span>
                 </span>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-400/30 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  LIVE METEO
+                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 border border-emerald-400/25">
+                  <Radio className="w-2.5 h-2.5 animate-pulse text-emerald-500" />
+                  LIVE
                 </span>
               </div>
-              <p className="text-[10px] text-stone-600 dark:text-stone-300 font-medium">Heat-Health Intelligence Platform</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-tight">
+                Heat-Health Intelligence Platform
+              </p>
             </div>
           </Link>
 
-          {/* Role-Specific Desktop Navigation (STRICT SEPARATION) */}
+          {/* ── Desktop Navigation ──────────────────────── */}
           <nav className="hidden lg:flex items-center gap-1.5">
-            {/* CITIZEN OR GUEST NAVIGATION */}
             {(role === 'CITIZEN' || role === 'GUEST') && (
               <>
                 <NavLink
                   to="/"
                   className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                    `px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
                       isActive
-                        ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30'
-                        : 'text-stone-600 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-slate-800/60'
+                        ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-400/30 border-b-2 border-b-orange-500 shadow-[0_2px_0_#9a3412] translate-y-px'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-px'
                     }`
                   }
                 >
-                  <UserCheck className="w-4 h-4 text-orange-500" />
+                  <UserCheck className="w-3.5 h-3.5 text-orange-500" />
                   Personal Heat Risk
                 </NavLink>
 
                 <NavLink
                   to="/travel"
                   className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                    `px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
                       isActive
-                        ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30'
-                        : 'text-stone-600 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-slate-800/60'
+                        ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-400/30 border-b-2 border-b-cyan-500 shadow-[0_2px_0_#155e75] translate-y-px'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-px'
                     }`
                   }
                 >
-                  <Compass className="w-4 h-4 text-cyan-500" />
+                  <Compass className="w-3.5 h-3.5 text-cyan-500" />
                   Travel Transition
                 </NavLink>
 
                 <NavLink
                   to="/what-if"
                   className={({ isActive }) =>
-                    `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                    `px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
                       isActive
-                        ? 'bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30'
-                        : 'text-stone-600 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-slate-800/60'
+                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-400/30 border-b-2 border-b-amber-500 shadow-[0_2px_0_#78350f] translate-y-px'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-px'
                     }`
                   }
                 >
-                  <CalendarClock className="w-4 h-4 text-amber-500" />
-                  What-If Activity Planner
+                  <CalendarClock className="w-3.5 h-3.5 text-amber-500" />
+                  What-If Planner
                 </NavLink>
               </>
             )}
 
-            {/* MUNICIPAL OFFICER EXCLUSIVE NAVIGATION */}
             {role === 'MUNICIPAL_OFFICER' && (
               <NavLink
                 to="/authority"
                 className={({ isActive }) =>
-                  `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                  `px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
                     isActive
-                      ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30'
-                      : 'text-stone-600 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-slate-800/60'
+                      ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-400/30 border-b-2 border-b-amber-600 shadow-[0_2px_0_#78350f] translate-y-px'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-px'
                   }`
                 }
               >
-                <ShieldAlert className="w-4 h-4 text-amber-500" />
-                KMC Municipal Wards & Heatmap
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
+                KMC Wards &amp; Heatmap
               </NavLink>
             )}
 
-            {/* SYSTEM ADMIN EXCLUSIVE NAVIGATION */}
             {role === 'SYSTEM_ADMIN' && (
               <NavLink
                 to="/admin"
                 className={({ isActive }) =>
-                  `px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                  `px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
                     isActive
-                      ? 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30'
-                      : 'text-stone-600 dark:text-slate-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-slate-800/60'
+                      ? 'bg-red-500/10 text-red-700 dark:text-red-400 border border-red-400/30 border-b-2 border-b-red-600 shadow-[0_2px_0_#7f1d1d] translate-y-px'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-px'
                   }`
                 }
               >
-                <Settings className="w-4 h-4 text-red-500" />
-                Admin Portal & Authority Governance
+                <Settings className="w-3.5 h-3.5 text-red-500" />
+                Admin Portal
               </NavLink>
             )}
           </nav>
 
-          {/* Right Section: Theme Toggle & User Account */}
-          <div className="flex items-center gap-3">
-            {/* Ambient Light / Dark Mode Toggle */}
+          {/* ── Right Side Controls ──────────────────────── */}
+          <div className="flex items-center gap-2.5">
+
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl border border-stone-200 dark:border-slate-800 text-stone-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-              title={isDark ? 'Switch to Light Ambient Mode' : 'Switch to Dark Mode'}
+              className="btn-3d btn-3d-surface p-2.5 rounded-xl cursor-pointer"
+              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
+              {isDark
+                ? <Sun className="w-4 h-4 text-amber-400" />
+                : <Moon className="w-4 h-4 text-slate-600" />
+              }
             </button>
 
-            {/* Role indicator */}
-            <span className={`hidden sm:inline-flex text-xs px-2.5 py-1 rounded-full border font-bold ${badge.bg}`}>
+            {/* Role Badge */}
+            <span className={`hidden sm:inline-flex text-[11px] px-2.5 py-1 rounded-full border font-bold ${badge.cls}`}>
               {badge.label}
             </span>
 
+            {/* User area */}
             {user ? (
-              <div className="flex items-center gap-2 pl-2 border-l border-stone-200 dark:border-slate-800">
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
                 <div className="text-right hidden sm:block">
-                  <p className="text-xs font-bold text-stone-800 dark:text-slate-100 leading-tight truncate max-w-[150px]">
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight truncate max-w-[140px]">
                     {user.name}
                   </p>
-                  <p className="text-[10px] text-stone-500 dark:text-slate-400 truncate max-w-[150px]">
+                  <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
                     {user.email}
                   </p>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-2 rounded-xl text-stone-400 hover:text-rose-600 hover:bg-stone-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                  title="Logout"
+                  className="btn-3d btn-3d-surface p-2.5 rounded-xl text-slate-500 hover:text-rose-600 cursor-pointer"
+                  title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -199,49 +256,65 @@ export default function Navbar({ onOpenAuth }) {
             ) : (
               <button
                 onClick={onOpenAuth}
-                className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold transition-all shadow-md shadow-orange-600/20 flex items-center gap-1.5 cursor-pointer"
+                className="btn-3d btn-3d-orange px-4 py-2.5 text-xs font-black flex items-center gap-1.5 cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
-                Sign In / Register
+                Sign In
               </button>
             )}
 
             {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-stone-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-800"
+              className="lg:hidden btn-3d btn-3d-surface p-2.5 rounded-xl cursor-pointer"
+              aria-label="Toggle mobile menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen
+                ? <X className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+                : <Menu className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+              }
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* ── Mobile Menu ─────────────────────────────────── */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-stone-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 pt-3 pb-5 space-y-2">
+        <div
+          className="lg:hidden border-t border-slate-200 dark:border-slate-800/80 bg-white/98 dark:bg-slate-950/98 backdrop-blur-2xl px-5 pt-4 pb-6 space-y-1.5"
+          style={{ animation: 'fadeIn 0.2s cubic-bezier(0.16,1,0.3,1) forwards' }}
+        >
           {(role === 'CITIZEN' || role === 'GUEST') && (
             <>
               <NavLink
                 to="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm text-stone-700 dark:text-slate-200 hover:bg-stone-100 dark:hover:bg-slate-800"
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-orange-50 dark:hover:bg-orange-950/30 hover:text-orange-600 dark:hover:text-orange-400 transition-all duration-150"
               >
-                🌡️ Personal Heat Risk
+                <span className="w-7 h-7 rounded-lg bg-orange-500/12 flex items-center justify-center">
+                  <UserCheck className="w-3.5 h-3.5 text-orange-500" />
+                </span>
+                Personal Heat Risk
               </NavLink>
               <NavLink
                 to="/travel"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm text-stone-700 dark:text-slate-200 hover:bg-stone-100 dark:hover:bg-slate-800"
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-cyan-50 dark:hover:bg-cyan-950/30 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all duration-150"
               >
-                🧳 Travel Heat-Transition
+                <span className="w-7 h-7 rounded-lg bg-cyan-500/12 flex items-center justify-center">
+                  <Compass className="w-3.5 h-3.5 text-cyan-500" />
+                </span>
+                Travel Transition
               </NavLink>
               <NavLink
                 to="/what-if"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-lg text-sm text-stone-700 dark:text-slate-200 hover:bg-stone-100 dark:hover:bg-slate-800"
+                className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-150"
               >
-                ⏱️ What-If Activity Planner
+                <span className="w-7 h-7 rounded-lg bg-amber-500/12 flex items-center justify-center">
+                  <CalendarClock className="w-3.5 h-3.5 text-amber-500" />
+                </span>
+                What-If Planner
               </NavLink>
             </>
           )}
@@ -250,9 +323,12 @@ export default function Navbar({ onOpenAuth }) {
             <NavLink
               to="/authority"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm text-stone-700 dark:text-slate-200 hover:bg-stone-100 dark:hover:bg-slate-800"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:text-amber-600 dark:hover:text-amber-400 transition-all duration-150"
             >
-              🏛️ KMC Municipal Wards & Heatmap
+              <span className="w-7 h-7 rounded-lg bg-amber-500/12 flex items-center justify-center">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
+              </span>
+              KMC Municipal Wards
             </NavLink>
           )}
 
@@ -260,26 +336,39 @@ export default function Navbar({ onOpenAuth }) {
             <NavLink
               to="/admin"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm text-stone-700 dark:text-slate-200 hover:bg-stone-100 dark:hover:bg-slate-800"
+              className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition-all duration-150"
             >
-              🛡️ Admin Portal & Governance
+              <span className="w-7 h-7 rounded-lg bg-red-500/12 flex items-center justify-center">
+                <Settings className="w-3.5 h-3.5 text-red-500" />
+              </span>
+              Admin Portal
             </NavLink>
           )}
 
-          <div className="pt-3 border-t border-stone-200 dark:border-slate-800 flex items-center justify-between">
-            <span className="text-xs text-stone-500">{user?.name || 'Guest'}</span>
+          {/* Divider + user actions */}
+          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white text-[10px] font-black">
+                {user ? user.name[0].toUpperCase() : 'G'}
+              </div>
+              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                {user?.name || 'Guest'}
+              </span>
+            </div>
             {!user ? (
               <button
                 onClick={() => { setMobileMenuOpen(false); onOpenAuth(); }}
-                className="text-xs text-orange-600 font-bold"
+                className="btn-3d btn-3d-orange px-3.5 py-1.5 text-xs font-black flex items-center gap-1.5 cursor-pointer"
               >
-                Sign In / Register
+                <LogIn className="w-3 h-3" />
+                Sign In
               </button>
             ) : (
               <button
                 onClick={handleLogout}
-                className="text-xs text-rose-600 font-bold"
+                className="btn-3d btn-3d-danger px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
               >
+                <LogOut className="w-3 h-3" />
                 Sign Out
               </button>
             )}

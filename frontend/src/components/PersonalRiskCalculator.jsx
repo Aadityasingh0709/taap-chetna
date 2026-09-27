@@ -273,11 +273,11 @@ export default function PersonalRiskCalculator() {
             </select>
           )}
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setSearchMode(searchMode === 'osm' ? 'list' : 'osm')}
-              className="px-2.5 py-2 text-[11px] rounded-xl bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 text-slate-800 dark:text-slate-200 font-bold whitespace-nowrap cursor-pointer transition-colors"
+              className="btn-3d btn-3d-surface px-3 py-1.5 text-[11px] font-bold whitespace-nowrap cursor-pointer"
               title={searchMode === 'osm' ? 'Switch to Quick List' : 'Search All via OpenStreetMap'}
             >
               {searchMode === 'osm' ? '📋 Quick List' : '🔍 OSM Search'}
@@ -286,7 +286,7 @@ export default function PersonalRiskCalculator() {
             <button
               onClick={() => fetchLiveWeather(selectedCity, selectedCoords)}
               disabled={loadingWeather}
-              className="p-2 rounded-xl text-slate-600 hover:text-orange-600 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="btn-3d btn-3d-surface p-2 text-slate-600 hover:text-orange-600 dark:text-slate-300 cursor-pointer"
               title="Refresh Live Satellite Weather"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loadingWeather ? 'animate-spin text-orange-600' : ''}`} />
@@ -295,9 +295,9 @@ export default function PersonalRiskCalculator() {
         </div>
       </div>
 
-      {/* Live Environmental Matrix Cards */}
+      {/* Live Environmental Matrix Cards with 3D Depth */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="glass-panel p-4 rounded-2xl relative overflow-hidden">
+        <div className="glass-panel card-3d p-4 rounded-2xl relative overflow-hidden stagger-1 animate-fadeIn">
           <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 text-xs font-bold">
             <span>Ambient Air Temp</span>
             <Flame className="w-4 h-4 text-orange-600" />
@@ -306,7 +306,7 @@ export default function PersonalRiskCalculator() {
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-semibold">{weather.condition}</p>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl relative overflow-hidden">
+        <div className="glass-panel card-3d p-4 rounded-2xl relative overflow-hidden stagger-2 animate-fadeIn">
           <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 text-xs font-bold">
             <span>Relative Humidity</span>
             <Droplets className="w-4 h-4 text-cyan-600" />
@@ -315,7 +315,7 @@ export default function PersonalRiskCalculator() {
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-medium">Air Moisture Saturation</p>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl relative overflow-hidden">
+        <div className="glass-panel card-3d p-4 rounded-2xl relative overflow-hidden stagger-3 animate-fadeIn">
           <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 text-xs font-bold">
             <span>Perceived Heat Index</span>
             <Sun className="w-4 h-4 text-amber-600" />
@@ -324,7 +324,7 @@ export default function PersonalRiskCalculator() {
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-medium">"Feels Like" Thermal Load</p>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl relative overflow-hidden">
+        <div className="glass-panel card-3d p-4 rounded-2xl relative overflow-hidden stagger-4 animate-fadeIn">
           <div className="flex items-center justify-between text-slate-700 dark:text-slate-300 text-xs font-bold">
             <span>Wet-Bulb (WBGT)</span>
             <AlertOctagon className="w-4 h-4 text-rose-600" />
@@ -491,7 +491,7 @@ export default function PersonalRiskCalculator() {
           <div className="pt-2 flex items-center justify-between border-t border-stone-300 dark:border-slate-800">
             <button
               onClick={handleSaveProfile}
-              className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              className="btn-3d btn-3d-orange px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer"
             >
               {savedSuccess ? (
                 <>
@@ -513,8 +513,8 @@ export default function PersonalRiskCalculator() {
 
         {/* Right Column: Tailored Health Plan & Risk Score */}
         <div className="lg:col-span-5 space-y-5">
-          {/* Main Risk Score Card */}
-          <div className={`p-6 rounded-2xl border ${risk.bg} backdrop-blur-xl relative shadow-md`}>
+          {/* Main Risk Score Card with 3D Depth */}
+          <div className={`p-6 rounded-2xl border ${risk.bg} backdrop-blur-xl relative card-3d shadow-md`}>
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase font-mono tracking-wider text-slate-800 dark:text-slate-200 font-extrabold">
                 Personal Heat Vulnerability Index

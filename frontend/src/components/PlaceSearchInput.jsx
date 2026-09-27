@@ -235,18 +235,18 @@ export default function PlaceSearchInput({
               onClick={handleDetectGPS}
               disabled={detectingGPS}
               title="Auto-Detect My Current GPS Location"
-              className={`px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+              className={`px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer ${
                 isGpsActive
-                  ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-400'
-                  : 'bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-400 border border-orange-300 dark:border-orange-700 hover:bg-orange-100'
+                  ? 'btn-3d btn-3d-emerald text-white'
+                  : 'btn-3d btn-3d-surface text-orange-600 dark:text-orange-400'
               }`}
             >
               {detectingGPS ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-orange-600" />
               ) : (
-                <Navigation className={`w-3.5 h-3.5 ${isGpsActive ? 'text-emerald-600 fill-emerald-600' : 'text-orange-600'}`} />
+                <Navigation className={`w-3.5 h-3.5 ${isGpsActive ? 'text-white fill-white' : 'text-orange-600'}`} />
               )}
-              <span>{detectingGPS ? 'Detecting...' : isGpsActive ? 'GPS' : 'Auto GPS'}</span>
+              <span>{detectingGPS ? 'Detecting...' : isGpsActive ? 'GPS Active' : 'Auto GPS'}</span>
             </button>
           )}
         </div>

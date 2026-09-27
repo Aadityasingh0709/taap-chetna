@@ -1,13 +1,104 @@
-/* App-level specific transitions and pulse animations */
+/* App-level micro-interactions, entry animations, and glow pulses */
+
+/* ──────────────────────────────────────────
+   Heat Danger Pulse (Critical Cards)
+────────────────────────────────────────── */
 @keyframes heatPulse {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    box-shadow:
+      0 0 12px rgba(239, 68, 68, 0.35),
+      0 0 24px rgba(239, 68, 68, 0.15);
   }
   50% {
-    box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+    box-shadow:
+      0 0 28px rgba(239, 68, 68, 0.65),
+      0 0 56px rgba(239, 68, 68, 0.3);
   }
 }
 
 .pulse-heat-danger {
-  animation: heatPulse 2s infinite ease-in-out;
+  animation: heatPulse 2.2s infinite ease-in-out;
+}
+
+/* ──────────────────────────────────────────
+   Button Click Bounce Physics
+────────────────────────────────────────── */
+@keyframes buttonClickBounce {
+  0% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(4px) scale(0.97); }
+  65% { transform: translateY(-2px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.animate-btn-click {
+  animation: buttonClickBounce 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ──────────────────────────────────────────
+   Telemetry Shine Sweep (Hover)
+────────────────────────────────────────── */
+.telemetry-card-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.telemetry-card-glow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.07),
+    transparent
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+  transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.telemetry-card-glow:hover::after {
+  left: 160%;
+}
+
+/* ──────────────────────────────────────────
+   Page section transition helper
+────────────────────────────────────────── */
+.page-enter {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ──────────────────────────────────────────
+   Risk Score Bar — Animated Fill
+────────────────────────────────────────── */
+@keyframes barFill {
+  from { width: 0%; }
+  to { width: var(--target-width); }
+}
+
+.risk-bar-fill {
+  animation: barFill 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ──────────────────────────────────────────
+   Notification Badge Pulse
+────────────────────────────────────────── */
+@keyframes badgePing {
+  0% { transform: scale(1); opacity: 1; }
+  75% { transform: scale(2); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.badge-ping {
+  animation: badgePing 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
