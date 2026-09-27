@@ -86,6 +86,7 @@ Despite these escalating temperatures, **traditional heat governance suffers fro
 | Name | Role | GitHub Profile |
 | :--- | :--- | :--- |
 | **Aaditya Singh** | Full-Stack Architect & ML Engineering | [@Aadityasingh0709](https://github.com/Aadityasingh0709) |
+| **Keshaw Jha** | UI & Backend Developer | [@keshaw006](https://github.com/keshaw006) |
 
 ---
 
