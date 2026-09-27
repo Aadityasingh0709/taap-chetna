@@ -263,7 +263,7 @@ export default function AuthModal({ isOpen, onClose }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-all shadow-md shadow-orange-600/25 flex items-center justify-center gap-2 mt-4 cursor-pointer"
+              className="btn-3d btn-3d-orange w-full py-3 text-xs font-black tracking-wide flex items-center justify-center gap-2 mt-4 cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               {loading ? 'Creating Your Account in Database...' : 'Register Citizen Account'}
@@ -305,7 +305,7 @@ export default function AuthModal({ isOpen, onClose }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-all shadow-md shadow-orange-600/25 flex items-center justify-center gap-2 mt-3 cursor-pointer"
+              className="btn-3d btn-3d-orange w-full py-3 text-xs font-black tracking-wide flex items-center justify-center gap-2 mt-3 cursor-pointer"
             >
               <LogIn className="w-4 h-4" />
               {loading ? 'Authenticating...' : 'Sign In'}
@@ -318,12 +318,12 @@ export default function AuthModal({ isOpen, onClose }) {
           <p className="text-[11px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider mb-2">
             Authority & Admin Quick Sign-In (Pre-Seeded):
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={handleFastOfficer}
               disabled={loading}
-              className="p-2.5 rounded-xl border border-amber-300 dark:border-amber-800/80 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 text-amber-800 dark:text-amber-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              className="btn-3d btn-3d-amber p-2.5 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Building className="w-3.5 h-3.5" />
               Officer (Dr. Anita - KMC)
@@ -333,7 +333,7 @@ export default function AuthModal({ isOpen, onClose }) {
               type="button"
               onClick={handleFastAdmin}
               disabled={loading}
-              className="p-2.5 rounded-xl border border-red-300 dark:border-red-800/80 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-800 dark:text-red-300 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              className="btn-3d btn-3d-danger p-2.5 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Shield className="w-3.5 h-3.5" />
               System Admin (Root)

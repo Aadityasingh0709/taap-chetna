@@ -186,7 +186,7 @@ export default function WhatIfPlanner() {
         <button
           onClick={fetchCityWeather}
           disabled={loadingWeather}
-          className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-700 text-slate-800 dark:text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:border-orange-500 cursor-pointer self-start sm:self-auto"
+          className="btn-3d btn-3d-surface px-4 py-2 text-slate-800 dark:text-white text-xs font-bold flex items-center gap-2 cursor-pointer self-start sm:self-auto"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loadingWeather ? 'animate-spin text-orange-600' : ''}`} />
           Refresh Weather
@@ -194,7 +194,7 @@ export default function WhatIfPlanner() {
       </div>
 
       {/* Activity & Location Configuration Bar */}
-      <div className="glass-panel p-6 rounded-2xl space-y-4">
+      <div className="glass-panel card-3d p-6 rounded-2xl space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Location with Village/City OpenStreetMap search + quick list */}
           <div>
@@ -206,7 +206,7 @@ export default function WhatIfPlanner() {
               <button
                 type="button"
                 onClick={() => setSearchMode(searchMode === 'osm' ? 'list' : 'osm')}
-                className="text-[11px] text-orange-600 dark:text-orange-400 font-bold hover:underline cursor-pointer"
+                className="btn-3d btn-3d-surface px-2.5 py-1 text-[11px] font-bold cursor-pointer"
               >
                 {searchMode === 'osm' ? '📋 Quick List' : '🔍 OSM Search'}
               </button>
@@ -317,7 +317,7 @@ export default function WhatIfPlanner() {
           {slots.map((slot) => (
             <div
               key={slot.id}
-              className={`rounded-2xl p-5 border ${slot.cardBg} backdrop-blur-xl flex flex-col justify-between relative transition-all hover:scale-[1.01] shadow-sm`}
+              className={`rounded-2xl p-5 border ${slot.cardBg} backdrop-blur-xl flex flex-col justify-between relative card-3d shadow-sm`}
             >
               {slot.isBest && (
                 <div className="absolute -top-3 left-4 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md">
@@ -381,12 +381,12 @@ export default function WhatIfPlanner() {
               <div className="mt-5">
                 <button
                   onClick={() => setSelectedBestSlot(slot.id)}
-                  className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  className={`w-full py-2.5 rounded-xl text-xs font-black cursor-pointer ${
                     selectedBestSlot === slot.id
-                      ? 'bg-emerald-600 text-white shadow-md'
+                      ? 'btn-3d btn-3d-emerald text-white'
                       : slot.id === 'afternoon'
-                      ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-800 hover:bg-red-200'
-                      : 'bg-stone-200 dark:bg-slate-800 hover:bg-stone-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200'
+                      ? 'btn-3d btn-3d-danger'
+                      : 'btn-3d btn-3d-surface'
                   }`}
                 >
                   {selectedBestSlot === slot.id
@@ -403,8 +403,8 @@ export default function WhatIfPlanner() {
         </div>
       </div>
 
-      {/* Decision Summary Box */}
-      <div className="glass-panel p-6 rounded-2xl border-emerald-400/40 dark:border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/20 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+      {/* Decision Summary Box with 3D Depth */}
+      <div className="glass-panel card-3d p-6 rounded-2xl border-emerald-400/40 dark:border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/20 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3.5">
           <div className="p-3 rounded-xl bg-emerald-600 text-white shrink-0 shadow-md">
             <CheckCircle2 className="w-6 h-6" />

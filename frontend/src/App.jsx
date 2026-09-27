@@ -11,6 +11,8 @@ import MunicipalDashboard from './components/MunicipalDashboard';
 import AdminPortal from './components/AdminPortal';
 import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
+import ScrollProgressBar from './components/ScrollProgressBar';
+import ScrollToTopButton from './components/ScrollToTopButton';
 import './App.css';
 
 // Route Guard for Municipal Officers
@@ -48,7 +50,10 @@ function MainApp() {
   const { role } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col selection:bg-orange-500 selection:text-white relative">
+      {/* Scroll Progress Indicator Bar */}
+      <ScrollProgressBar />
+
       {/* Navigation Bar with Theme Switcher & Segregated Navigation */}
       <Navbar onOpenAuth={() => setAuthModalOpen(true)} />
 
@@ -122,6 +127,9 @@ function MainApp() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Floating 3D Scroll to Top Action Button */}
+      <ScrollToTopButton />
     </div>
   );
 }

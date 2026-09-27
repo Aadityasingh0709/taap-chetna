@@ -334,7 +334,7 @@ export default function MunicipalDashboard() {
             onClick={loadDashboardData}
             disabled={loadingData}
             title="Refresh Ward & Alert Telemetry"
-            className="p-2.5 rounded-xl border border-stone-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-stone-700 dark:text-stone-300 hover:text-orange-600 text-xs font-bold cursor-pointer"
+            className="btn-3d btn-3d-surface p-2.5 text-stone-700 dark:text-stone-300 hover:text-orange-600 text-xs font-bold cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${loadingData ? 'animate-spin text-orange-600' : ''}`} />
           </button>
@@ -344,7 +344,7 @@ export default function MunicipalDashboard() {
               setAlertForm((prev) => ({ ...prev, ward: selectedWard.wardNumber }));
               setShowNewAlertModal(true);
             }}
-            className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-red-600/25 transition-all self-start md:self-auto cursor-pointer"
+            className="btn-3d btn-3d-danger px-4 py-2.5 text-xs font-black flex items-center gap-2 self-start md:self-auto cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             Broadcast Ward Alert
@@ -362,7 +362,7 @@ export default function MunicipalDashboard() {
       {/* Main Grid: OpenStreetMap on Left + Ward Selector on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* OpenStreetMap Section */}
-        <div className="lg:col-span-8 glass-panel p-5 rounded-2xl flex flex-col space-y-4">
+        <div className="lg:col-span-8 glass-panel card-3d p-5 rounded-2xl flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="w-5 h-5 text-orange-500" />
@@ -503,7 +503,7 @@ export default function MunicipalDashboard() {
       {/* Selected Ward Deep Dive & Interventions Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Ward Telemetry */}
-        <div className="lg:col-span-6 glass-panel p-6 rounded-2xl space-y-5">
+        <div className="lg:col-span-6 glass-panel card-3d p-6 rounded-2xl space-y-5">
           <div className="flex items-center justify-between border-b border-stone-200 dark:border-slate-800 pb-3">
             <div>
               <span className="text-[11px] font-mono text-orange-600 dark:text-orange-400 font-bold uppercase">
@@ -564,7 +564,7 @@ export default function MunicipalDashboard() {
         </div>
 
         {/* Instant Municipal Interventions */}
-        <div className="lg:col-span-6 glass-panel p-6 rounded-2xl space-y-4">
+        <div className="lg:col-span-6 glass-panel card-3d p-6 rounded-2xl space-y-4">
           <div className="border-b border-stone-200 dark:border-slate-800 pb-3">
             <h3 className="text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2">
               <Radio className="w-4 h-4 text-red-600 animate-pulse" />
@@ -578,7 +578,7 @@ export default function MunicipalDashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button
               onClick={() => handleTriggerAction(`Dispatched 2x 10,000L Emergency Water Tankers to ${selectedWard.wardNumber} (${selectedWard.name})`)}
-              className="p-3.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 text-left transition-all cursor-pointer group"
+              className="p-3.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-300 dark:border-cyan-800 text-left cursor-pointer group card-3d active:translate-y-1"
             >
               <Truck className="w-5 h-5 text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform" />
               <h4 className="text-xs font-bold text-stone-900 dark:text-white mt-2">Dispatch Water Tankers</h4>
@@ -587,7 +587,7 @@ export default function MunicipalDashboard() {
 
             <button
               onClick={() => handleTriggerAction(`Activated Community Cooling Shelter in ${selectedWard.wardNumber}`)}
-              className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-left transition-all cursor-pointer group"
+              className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-800 text-left cursor-pointer group card-3d active:translate-y-1"
             >
               <Home className="w-5 h-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform" />
               <h4 className="text-xs font-bold text-stone-900 dark:text-white mt-2">Open Cooling Shelters</h4>
@@ -596,7 +596,7 @@ export default function MunicipalDashboard() {
 
             <button
               onClick={() => handleTriggerAction(`Deployed misting fans and ORS booths at transit stops in ${selectedWard.wardNumber}`)}
-              className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 text-left transition-all cursor-pointer group"
+              className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-800 text-left cursor-pointer group card-3d active:translate-y-1"
             >
               <Wind className="w-5 h-5 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform" />
               <h4 className="text-xs font-bold text-stone-900 dark:text-white mt-2">Deploy Misting Fans</h4>
@@ -605,7 +605,7 @@ export default function MunicipalDashboard() {
 
             <button
               onClick={() => handleTriggerAction(`Issued Section 144 / Work Stoppage Advisory (12-3 PM) for ${selectedWard.wardNumber}`)}
-              className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-200 dark:border-rose-800 text-left transition-all cursor-pointer group"
+              className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/60 border border-rose-300 dark:border-rose-800 text-left cursor-pointer group card-3d active:translate-y-1"
             >
               <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform" />
               <h4 className="text-xs font-bold text-stone-900 dark:text-white mt-2">Halt Outdoor Labor</h4>
@@ -788,17 +788,17 @@ export default function MunicipalDashboard() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-stone-200 dark:border-slate-800">
+              <div className="flex justify-end gap-2.5 pt-2 border-t border-stone-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowNewAlertModal(false)}
-                  className="px-4 py-2 rounded-xl bg-stone-200 dark:bg-slate-800 hover:bg-stone-300 dark:hover:bg-slate-700 text-stone-700 dark:text-slate-300 font-medium cursor-pointer"
+                  className="btn-3d btn-3d-surface px-4 py-2 text-xs font-bold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold flex items-center gap-1.5 shadow-lg shadow-red-600/30 cursor-pointer"
+                  className="btn-3d btn-3d-danger px-4 py-2 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send className="w-3.5 h-3.5" />
                   Broadcast Live Alert

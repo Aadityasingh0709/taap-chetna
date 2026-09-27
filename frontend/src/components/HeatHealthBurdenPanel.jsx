@@ -75,7 +75,7 @@ export default function HeatHealthBurdenPanel({ defaultState = 'West Bengal', cu
   };
 
   return (
-    <div className="glass-panel p-6 rounded-2xl space-y-6 border border-stone-200 dark:border-slate-800">
+    <div className="glass-panel card-3d p-6 rounded-2xl space-y-6 border border-stone-200 dark:border-slate-800">
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-slate-800">
         <div>
@@ -112,7 +112,7 @@ export default function HeatHealthBurdenPanel({ defaultState = 'West Bengal', cu
           <button
             onClick={() => fetchBurden(selectedState, targetYear)}
             disabled={loading}
-            className="p-2 rounded-xl bg-stone-100 dark:bg-slate-800 hover:text-orange-500 text-stone-600 dark:text-stone-400 transition"
+            className="btn-3d btn-3d-surface p-2 text-stone-600 dark:text-stone-400 hover:text-orange-500 cursor-pointer"
             title="Recalculate Model Inference"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-orange-500' : ''}`} />
@@ -123,7 +123,7 @@ export default function HeatHealthBurdenPanel({ defaultState = 'West Bengal', cu
       {/* Main Metric Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Model Derived Burden Estimate */}
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 flex flex-col justify-between">
+        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 flex flex-col justify-between card-3d">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
               State Health-Burden Estimate
@@ -149,7 +149,7 @@ export default function HeatHealthBurdenPanel({ defaultState = 'West Bengal', cu
         </div>
 
         {/* Real-Time Operational Risk Comparison */}
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 flex flex-col justify-between">
+        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 flex flex-col justify-between card-3d">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
               Layer B: Current Weather Risk
@@ -175,7 +175,7 @@ export default function HeatHealthBurdenPanel({ defaultState = 'West Bengal', cu
         </div>
 
         {/* Model Architecture & Validation Specs */}
-        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 flex flex-col justify-between">
+        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-800 flex flex-col justify-between card-3d">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
               Model Specs & Discipline

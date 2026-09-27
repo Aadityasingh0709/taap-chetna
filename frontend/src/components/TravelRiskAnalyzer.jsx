@@ -183,7 +183,7 @@ export default function TravelRiskAnalyzer() {
         <button
           onClick={loadRouteWeather}
           disabled={loadingWeather}
-          className="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-700 text-slate-800 dark:text-white text-xs font-bold flex items-center gap-1.5 shadow-sm hover:border-orange-500 cursor-pointer self-start sm:self-auto"
+          className="btn-3d btn-3d-surface px-4 py-2 text-slate-800 dark:text-white text-xs font-bold flex items-center gap-2 cursor-pointer self-start sm:self-auto"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loadingWeather ? 'animate-spin text-orange-600' : ''}`} />
           Refresh Live Route Weather
@@ -191,7 +191,7 @@ export default function TravelRiskAnalyzer() {
       </div>
 
       {/* Input Route Selector */}
-      <div className="glass-panel p-6 rounded-2xl space-y-5">
+      <div className="glass-panel card-3d p-6 rounded-2xl space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
           {/* Origin Selection */}
           <div className="md:col-span-5 bg-stone-50 dark:bg-slate-900/90 p-4 rounded-xl border border-stone-300 dark:border-slate-800 space-y-2">
@@ -203,7 +203,7 @@ export default function TravelRiskAnalyzer() {
               <button
                 type="button"
                 onClick={() => setFromSearchMode(fromSearchMode === 'osm' ? 'list' : 'osm')}
-                className="text-[11px] text-orange-600 dark:text-orange-400 font-bold hover:underline cursor-pointer"
+                className="btn-3d btn-3d-surface px-2.5 py-1 text-[11px] font-bold cursor-pointer"
               >
                 {fromSearchMode === 'osm' ? '📋 Quick List' : '🔍 OSM Search'}
               </button>
@@ -262,7 +262,7 @@ export default function TravelRiskAnalyzer() {
               <button
                 type="button"
                 onClick={() => setToSearchMode(toSearchMode === 'osm' ? 'list' : 'osm')}
-                className="text-[11px] text-orange-600 dark:text-orange-400 font-bold hover:underline cursor-pointer"
+                className="btn-3d btn-3d-surface px-2.5 py-1 text-[11px] font-bold cursor-pointer"
               >
                 {toSearchMode === 'osm' ? '📋 Quick List' : '🔍 OSM Search'}
               </button>
@@ -308,14 +308,14 @@ export default function TravelRiskAnalyzer() {
             <label className="text-xs font-bold text-slate-900 dark:text-white">
               Conveyance Type:
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               <button
                 type="button"
                 onClick={() => setTransitGroup('train')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'train'
-                    ? 'bg-orange-600 text-white shadow-md'
-                    : 'bg-stone-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
+                    ? 'btn-3d btn-3d-orange'
+                    : 'pill-3d-inactive'
                 }`}
               >
                 <Train className="w-3.5 h-3.5" />
@@ -325,10 +325,10 @@ export default function TravelRiskAnalyzer() {
               <button
                 type="button"
                 onClick={() => setTransitGroup('flight')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'flight'
-                    ? 'bg-cyan-600 text-white shadow-md'
-                    : 'bg-stone-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200'
+                    ? 'btn-3d btn-3d-cyan'
+                    : 'pill-3d-inactive'
                 }`}
               >
                 <Plane className="w-3.5 h-3.5" />
@@ -389,9 +389,9 @@ export default function TravelRiskAnalyzer() {
         </div>
       </div>
 
-      {/* Environmental Comparison Cards */}
+      {/* Environmental Comparison Cards with 3D Depth */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-panel p-5 rounded-2xl space-y-2">
+        <div className="glass-panel card-3d p-5 rounded-2xl space-y-2 stagger-1 animate-fadeIn">
           <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             Live Temperature Shift
           </span>
@@ -406,7 +406,7 @@ export default function TravelRiskAnalyzer() {
           </p>
         </div>
 
-        <div className="glass-panel p-5 rounded-2xl space-y-2">
+        <div className="glass-panel card-3d p-5 rounded-2xl space-y-2 stagger-2 animate-fadeIn">
           <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             Perceived Heat Index Jump
           </span>
@@ -421,7 +421,7 @@ export default function TravelRiskAnalyzer() {
           </p>
         </div>
 
-        <div className="glass-panel p-5 rounded-2xl space-y-2">
+        <div className="glass-panel card-3d p-5 rounded-2xl space-y-2 stagger-3 animate-fadeIn">
           <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             Thermal Shock Index
           </span>
@@ -436,7 +436,7 @@ export default function TravelRiskAnalyzer() {
       </div>
 
       {/* Advisory & Arrival Safeguards */}
-      <div className={`p-6 rounded-2xl border ${risk.cardBorder} ${risk.cardBg} backdrop-blur-xl space-y-4 shadow-sm`}>
+      <div className={`p-6 rounded-2xl border ${risk.cardBorder} ${risk.cardBg} backdrop-blur-xl space-y-4 card-3d shadow-sm`}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-300/80 dark:border-slate-800/80 pb-3">
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-5 h-5 text-orange-600" />

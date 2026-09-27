@@ -146,7 +146,7 @@ export default function AdminPortal() {
 
       {/* System Telemetry Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="glass-panel p-4 rounded-2xl">
+        <div className="glass-panel card-3d p-4 rounded-2xl stagger-1 animate-fadeIn">
           <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
             <span>Core API Gateway</span>
             <Server className="w-4 h-4 text-emerald-500" />
@@ -155,7 +155,7 @@ export default function AdminPortal() {
           <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">Port 5000 • 28ms Latency</p>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl">
+        <div className="glass-panel card-3d p-4 rounded-2xl stagger-2 animate-fadeIn">
           <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
             <span>MongoDB Database</span>
             <Database className="w-4 h-4 text-cyan-500" />
@@ -164,7 +164,7 @@ export default function AdminPortal() {
           <p className="text-[11px] text-cyan-600 dark:text-cyan-400 mt-0.5">localhost:27017/tapchetna</p>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl">
+        <div className="glass-panel card-3d p-4 rounded-2xl stagger-3 animate-fadeIn">
           <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
             <span>Pending Approvals</span>
             <UserCheck className="w-4 h-4 text-amber-500" />
@@ -173,7 +173,7 @@ export default function AdminPortal() {
           <p className="text-[11px] text-stone-400 dark:text-slate-400 mt-0.5">Verification required</p>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl">
+        <div className="glass-panel card-3d p-4 rounded-2xl stagger-4 animate-fadeIn">
           <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
             <span>Active Officers</span>
             <ShieldCheck className="w-4 h-4 text-purple-500" />
@@ -184,7 +184,7 @@ export default function AdminPortal() {
       </div>
 
       {/* Authority Requests Queue */}
-      <div className="glass-panel p-6 rounded-2xl space-y-4">
+      <div className="glass-panel card-3d p-6 rounded-2xl space-y-4">
         <div className="flex items-center justify-between border-b border-stone-200 dark:border-slate-800 pb-3">
           <h2 className="text-base font-bold text-stone-900 dark:text-white flex items-center gap-2">
             <UserCheck className="w-5 h-5 text-amber-500" />
@@ -200,7 +200,7 @@ export default function AdminPortal() {
             {requests.map((req) => (
               <div
                 key={req._id}
-                className="p-4 rounded-xl bg-stone-50 dark:bg-slate-900/90 border border-stone-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="p-4 rounded-xl bg-stone-50 dark:bg-slate-900/90 border border-stone-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-3d"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -214,10 +214,10 @@ export default function AdminPortal() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2.5 shrink-0">
                   <button
                     onClick={() => handleReject(req._id, req.name)}
-                    className="px-3 py-1.5 rounded-lg bg-red-100 dark:bg-red-950/40 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="btn-3d btn-3d-danger px-3.5 py-1.5 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                   >
                     <XCircle className="w-3.5 h-3.5" />
                     Reject
@@ -225,7 +225,7 @@ export default function AdminPortal() {
 
                   <button
                     onClick={() => handleApprove(req._id, req.name)}
-                    className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition-colors cursor-pointer"
+                    className="btn-3d btn-3d-emerald px-4 py-1.5 text-xs font-black flex items-center gap-1.5 cursor-pointer"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     Approve & Issue Account
@@ -238,7 +238,7 @@ export default function AdminPortal() {
       </div>
 
       {/* Active Authority Directory */}
-      <div className="glass-panel p-6 rounded-2xl space-y-4">
+      <div className="glass-panel card-3d p-6 rounded-2xl space-y-4">
         <div className="flex items-center justify-between border-b border-stone-200 dark:border-slate-800 pb-3">
           <h2 className="text-base font-bold text-stone-900 dark:text-white flex items-center gap-2">
             <Building className="w-5 h-5 text-cyan-500" />
