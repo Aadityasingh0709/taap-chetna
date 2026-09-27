@@ -10,6 +10,6 @@
     "ml:serve": "python -m uvicorn ml.serve:app --host 127.0.0.1 --port 5001 --reload"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^10.0.5"
   }
 }
