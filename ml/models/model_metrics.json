@@ -8,49 +8,119 @@
     "test_years": "2013 - 2014 (48 samples)"
   },
   "decision_tree_baseline": {
-    "val_mae": 19.58,
-    "val_rmse": 33.65,
-    "val_r2": 0.6411,
-    "test_mae": 26.0,
-    "test_rmse": 63.19,
-    "test_r2": 0.4286
+    "val_mae": 21.62,
+    "val_rmse": 38.34,
+    "val_r2": 0.5341,
+    "test_mae": 32.78,
+    "test_rmse": 67.02,
+    "test_r2": 0.3573
   },
-  "xgboost_primary": {
-    "val_mae": 19.69,
-    "val_rmse": 30.82,
-    "val_r2": 0.6989,
-    "test_mae": 26.78,
-    "test_rmse": 62.79,
-    "test_r2": 0.4359
+  "xgboost_model_a_no_target_encoding": {
+    "val_mae": 22.04,
+    "val_rmse": 34.94,
+    "val_r2": 0.6129,
+    "test_mae": 28.88,
+    "test_rmse": 65.38,
+    "test_r2": 0.3885
   },
-  "top_features": [
-    {
-      "feature": "state_baseline_deaths",
-      "importance": 0.24865564703941345
-    },
+  "xgboost_model_b_temporal_baseline": {
+    "val_mae": 20.62,
+    "val_rmse": 30.13,
+    "val_r2": 0.7123,
+    "test_mae": 25.1,
+    "test_rmse": 61.33,
+    "test_r2": 0.4618
+  },
+  "difference_model_b_minus_model_a": {
+    "val_mae_delta": -1.42,
+    "val_rmse_delta": -4.81,
+    "val_r2_delta": 0.0994,
+    "test_mae_delta": -3.78,
+    "test_rmse_delta": -4.05,
+    "test_r2_delta": 0.0733
+  },
+  "top_features_model_a": [
     {
       "feature": "heatwave_days",
-      "importance": 0.1107395738363266
+      "importance": 0.1835818588733673
     },
     {
       "feature": "population_millions",
-      "importance": 0.06180528178811073
-    },
-    {
-      "feature": "max_consecutive_hot_days",
-      "importance": 0.06003016233444214
-    },
-    {
-      "feature": "extreme_temp_days_42",
-      "importance": 0.044414084404706955
+      "importance": 0.1008787527680397
     },
     {
       "feature": "extreme_hi_days_52",
-      "importance": 0.041800275444984436
+      "importance": 0.07156699150800705
+    },
+    {
+      "feature": "summer_low_wind_high_rh_days",
+      "importance": 0.06581641733646393
+    },
+    {
+      "feature": "summer_hi_mean",
+      "importance": 0.06159272789955139
+    },
+    {
+      "feature": "annual_tmax_p90",
+      "importance": 0.059829797595739365
+    },
+    {
+      "feature": "annual_tmax_max",
+      "importance": 0.05219127610325813
+    },
+    {
+      "feature": "extreme_temp_days_40",
+      "importance": 0.0414663702249527
+    },
+    {
+      "feature": "summer_tmax_max",
+      "importance": 0.03788013756275177
     },
     {
       "feature": "summer_tmax_p90",
-      "importance": 0.041571371257305145
+      "importance": 0.03783102706074715
+    }
+  ],
+  "top_features_model_b": [
+    {
+      "feature": "state_baseline_deaths",
+      "importance": 0.2484363168478012
+    },
+    {
+      "feature": "heatwave_days",
+      "importance": 0.09295082837343216
+    },
+    {
+      "feature": "max_consecutive_hot_days",
+      "importance": 0.05886382982134819
+    },
+    {
+      "feature": "population_millions",
+      "importance": 0.05531197786331177
+    },
+    {
+      "feature": "extreme_hi_days_52",
+      "importance": 0.05103911831974983
+    },
+    {
+      "feature": "annual_precip_mm",
+      "importance": 0.04474929720163345
+    },
+    {
+      "feature": "annual_tmax_max",
+      "importance": 0.043279979377985
+    },
+    {
+      "feature": "summer_tmax_mean",
+      "importance": 0.04158142954111099
+    },
+    {
+      "feature": "annual_tmax_mean",
+      "importance": 0.04148520156741142
+    },
+    {
+      "feature": "summer_hi_max",
+      "importance": 0.034048259258270264
     }
   ]
 }

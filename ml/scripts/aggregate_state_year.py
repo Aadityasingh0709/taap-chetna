@@ -94,12 +94,16 @@ def build_state_year_features() -> pd.DataFrame:
         
         # Heat streak / heatwave metrics
         max_heat_streak = int(group['heat_streak'].max())
+        # Operational heatwave metric: days with Tmax >= 40.0°C OR days part of an extended
+        # multi-day thermal stress streak (>= 3 consecutive days of Tmax >= 40°C or Heat Index >= 40°C).
+        # Note: This is an operational biometeorological threshold proxy; regional IMD synoptic definitions
+        # require departures >= 4.5°C from 30-year station normals which are not present in spatial grids.
         heatwave_days = int(((group['tmax_c'] >= 40.0) | (group['heat_streak'] >= 3)).sum())
         
         # Stifling weather: low wind (< 2.0 m/s) with high humidity (> 60%) in summer
         stifling_days = int(((summer_ws < 2.0) & (summer_rh > 60.0)).sum())
         
-        # Historical population & density
+        # Historical population & density (intercensal exponential estimates anchored to 2001 & 2011 Censuses)
         pop_m, density = get_state_population_and_density(state, year)
         
         rec = {
@@ -135,7 +139,25 @@ def build_state_year_features() -> pd.DataFrame:
     
     # Merge with mortality ground truth
     df_final = pd.merge(df_features, df_mort, on=['state', 'year'], how='inner')
-    logger.info(f"Merged training dataset shape: {df_final.shape}")
+    
+    # Compute temporally valid state_baseline_deaths (STRICT expanding prior window: year < current_year)
+    # 2001 -> 0.0 (no prior historical records exist)
+    # 2002 -> mean of 2001
+    # 2003 -> mean of 2001-2002, etc.
+    # An observation's own target NEVER contributes to its baseline. Zero future leakage.
+    logger.info("Computing strictly temporally valid state baseline mortality...")
+    temporal_baselines = []
+    for _, row in df_final.iterrows():
+        st = row['state']
+        yr = row['year']
+        prior_deaths = df_mort[(df_mort['state'] == st) & (df_mort['year'] < yr)]['heatstroke_deaths']
+        if len(prior_deaths) > 0:
+            temporal_baselines.append(round(float(prior_deaths.mean()), 2))
+        else:
+            temporal_baselines.append(0.0)
+            
+    df_final['state_baseline_deaths'] = temporal_baselines
+    logger.info(f"Merged training dataset shape with temporal baseline: {df_final.shape}")
     
     # Validation checks
     assert len(df_final) == 336, f"Expected 336 rows, found {len(df_final)}"

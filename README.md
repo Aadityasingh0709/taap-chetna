@@ -377,11 +377,11 @@ The platform incorporates a **supervised macro-level epidemiological forecasting
                ┌────────────────────┴────────────────────┐
                ▼                                         ▼
    ┌───────────────────────┐                 ┌───────────────────────┐
-   │   XGBoost Regressor   │                 │ Decision Tree Baseline │
-   │  n_estimators = 200   │                 │      max_depth = 6    │
-   │  learning_rate = 0.05 │                 │                       │
-   │      Test R²: 0.941   │                 │      Test R²: 0.760   │
-   │      Test MAE: 14.1   │                 │      Test MAE: 22.8   │
+   │ XGBoost Model B (Pri) │                 │ Decision Tree Baseline │
+   │  n_estimators = 75    │                 │      max_depth = 4    │
+   │  learning_rate = 0.03 │                 │                       │
+   │      Test R²: 0.4618  │                 │      Test R²: 0.3573  │
+   │      Test MAE: 25.10  │                 │      Test MAE: 32.78  │
    └───────────┬───────────┘                 └───────────┬───────────┘
                │                                         │
                └────────────────────┬────────────────────┘
@@ -398,12 +398,12 @@ The platform incorporates a **supervised macro-level epidemiological forecasting
                 └───────────────────────────────────────┘
 ```
 
-### Top Predictive Features (from `feature_importance.csv`):
-1. **`state_historical_baseline` (77.8%)**: Captures long-term structural vulnerability, housing types, and regional geography.
-2. **`heatwave_days` (8.7%)**: Cumulative days where maximum temperature exceeded regional heatwave thresholds.
-3. **`exposed_population` (3.9%)**: Intercensal demographic scaling of populations under thermal stress.
-4. **`summer_hi_max` (3.0%)**: Peak summer Rothfusz Heat Index combining temperature and relative humidity.
-5. **`extreme_temp_days_42` (2.5%)**: Days with ambient surface temperatures exceeding 42°C.
+### Top Predictive Features (from audited `feature_importance.csv`):
+1. **`state_baseline_deaths` (24.8%)**: Strictly temporally valid prior historical state mortality baseline ($year < current\_year$).
+2. **`heatwave_days` (9.3%)**: Annual count of extreme thermal days ($T_{\text{max}} \ge 40^\circ\text{C}$ or prolonged multi-day heat streak $\ge 3$ days).
+3. **`max_consecutive_hot_days` (5.9%)**: Maximum consecutive days of acute thermal stress compounding physiological fatigue.
+4. **`population_millions` (5.5%)**: Intercensal demographic scaling of exposed population under thermal stress.
+5. **`extreme_hi_days_52` (5.1%)**: Frequency of dangerous wet-bulb/heat index days exceeding physiological tolerance ($HI \ge 52^\circ\text{C}$).
 
 ### Resilient Dual-Layer Execution:
 - **Primary Online Mode**: Real-time inference executed by the Python FastAPI microservice at `http://127.0.0.1:5001/predict` within `< 15ms`.

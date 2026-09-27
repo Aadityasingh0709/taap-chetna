@@ -10,19 +10,33 @@ import pandas as pd
 
 def compute_heat_index(tmax_c: float, rh_pct: float) -> float:
     """
-    Computes the National Oceanic and Atmospheric Administration (NOAA) / Rothfusz
+    Computes the National Oceanic and Atmospheric Administration (NOAA) / Rothfusz (1990)
     Heat Index in degrees Celsius.
     
-    Formula:
-      Rothfusz regression equation adapted to Celsius.
-      Valid for temperatures >= 25°C and Relative Humidity 0-100%.
-      For T < 25°C, heat index is equal to dry bulb temperature.
+    Biometeorological Basis:
+      The Heat Index is an empirical approximation to Steadman's (1979) multi-parameter
+      human biometeorological model of apparent temperature. It models human skin resistance
+      and evaporative cooling for a standardized reference individual (5'7", 147 lbs, walking
+      in light breeze at 1.4 m/s in shade).
     
-    Limitations:
-      The regression is an approximation to Steadman's human biometeorological model
-      assuming a 5'7", 147 lb person in light clothing walking in a light breeze in shade.
-      Under extreme combinations (very low humidity or extreme temperatures > 50°C),
-      values are capped to physically plausible limits.
+    Formula:
+      Rothfusz 9-term polynomial adapted to Celsius:
+        HI = -8.78469475556 + 1.61139411*T + 2.33854883889*RH
+             - 0.14611605*T*RH - 0.012308094*T^2 - 0.0164248277778*RH^2
+             + 0.002211732*T^2*RH + 0.00072546*T*RH^2 - 0.000003582*T^2*RH^2
+    
+    Valid Operating Range:
+      - Valid for air temperatures T >= 25.0°C (originally 80°F) and Relative Humidity 0-100%.
+      - For T < 25.0°C, the Heat Index defaults to the dry-bulb ambient temperature (T).
+      - Physiological capping: Apparent temperature is bounded below by T (humidity cannot reduce
+        apparent heat in warm conditions) and capped above at 75.0°C to prevent mathematical
+        polynomial divergence under extreme coordinate boundaries.
+    
+    CRITICAL DISCLAIMER (NON-MEDICAL):
+      The Heat Index is strictly an atmospheric weather exposure index. It is NOT an individual
+      clinical outcome predictor, diagnostic score, or deterministic biological prognosis. Real-world
+      physiological heat strain depends heavily on individual hydration, acclimatization, metabolic
+      work rate, clothing, age, and chronic health comorbidities.
     """
     if pd.isna(tmax_c) or pd.isna(rh_pct):
         return np.nan

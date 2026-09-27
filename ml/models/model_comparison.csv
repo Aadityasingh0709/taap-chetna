@@ -1,0 +1,7 @@
+model,features,split,MAE,RMSE,R2
+Decision Tree Baseline,Environmental + Demographic (22),Validation (2011-2012),21.62,38.34,0.5341
+Decision Tree Baseline,Environmental + Demographic (22),Test (2013-2014),32.78,67.02,0.3573
+XGBoost Model A,Environmental + Demographic only (22),Validation (2011-2012),22.04,34.94,0.6129
+XGBoost Model A,Environmental + Demographic only (22),Test (2013-2014),28.88,65.38,0.3885
+XGBoost Model B,Temporal Baseline + Env + Demo (23),Validation (2011-2012),20.62,30.13,0.7123
+XGBoost Model B,Temporal Baseline + Env + Demo (23),Test (2013-2014),25.1,61.33,0.4618

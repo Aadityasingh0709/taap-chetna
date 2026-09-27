@@ -1,7 +1,14 @@
 """
 ml/utils/population_data.py
 Historical demographic and population exposure figures based on Census of India (2001 & 2011).
-Computes annual interpolated and projected population and density per state (2001-2014).
+Computes annual intercensal interpolated and postcensal projected population and density per state (2001-2014).
+
+CRITICAL METHODOLOGICAL NOTE:
+  The Republic of India conducts Decennial National Population Censuses (specifically 2001 and 2011).
+  The annual figures generated here for non-census years (2002-2010 and 2012-2014) are mathematical
+  intercensal exponential growth approximations P(t) = P(0) * e^(r*t).
+  These figures serve strictly as demographic exposure proxy normalizers for macro epidemiology;
+  they MUST NOT be cited or described as official annual administrative census enumerations.
 """
 
 import math
