@@ -60,13 +60,13 @@ export default function TravelRiskAnalyzer() {
   const [destWeather, setDestWeather] = useState({ temp: 35, humidity: 48, heatIndex: 38, isLive: false, condition: 'Hot & Dry', location: 'Ahmedabad' });
   const [loadingWeather, setLoadingWeather] = useState(false);
 
-  // Load live weather for both endpoints via Open-Meteo using OSM coords
-  const loadRouteWeather = async () => {
+  // Load live weather for both endpoints via Open-Meteo using OSM coords & travel date
+  const loadRouteWeather = async (targetDate = travelDate) => {
     setLoadingWeather(true);
     try {
       const [resFrom, resTo] = await Promise.all([
-        getCurrentWeather(fromCity, fromCoords),
-        getCurrentWeather(toCity, toCoords),
+        getCurrentWeather(fromCity, fromCoords, targetDate),
+        getCurrentWeather(toCity, toCoords, targetDate),
       ]);
       if (resFrom.data) {
         setOriginWeather({
@@ -96,8 +96,8 @@ export default function TravelRiskAnalyzer() {
   };
 
   useEffect(() => {
-    loadRouteWeather();
-  }, [fromCity, toCity, fromCoords, toCoords]);
+    loadRouteWeather(travelDate);
+  }, [fromCity, toCity, fromCoords, toCoords, travelDate]);
 
   const deltaTemp = Math.round((destWeather.temp - originWeather.temp) * 10) / 10;
   const deltaHI = Math.round((destWeather.heatIndex - originWeather.heatIndex) * 10) / 10;
