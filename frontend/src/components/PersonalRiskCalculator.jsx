@@ -276,111 +276,219 @@ export default function PersonalRiskCalculator() {
 
   const getTailoredDirectives = () => {
     const list = [];
+    const currentOcc = EXPANDED_OCCUPATIONS.find((o) => o.id === occupationId);
+    const occLabel = occupationId === 'other_custom' 
+      ? (customOccupation || 'Custom Work') 
+      : (currentOcc?.label.split('/')[0].trim() || 'General Citizen');
+    const occCat = currentOcc?.category || 'General';
 
-    // 1. Hydration Target & Deficit Analysis
-    const reqWater = Math.max(2.5, (exposureHours * 0.35) + (wetBulb > 28 ? 1.0 : 0.4) + (healthCondition === 'diabetes' ? 0.5 : 0)).toFixed(1);
+    // 1. Precision Fluid & Electrolyte Prescription
+    const reqWater = Math.max(
+      2.2, 
+      (2.0 + (exposureHours * 0.35) + ((currentOcc?.factor || 6) * 0.08) + (wetBulb > 28 ? 0.8 : 0.3) + (healthCondition === 'diabetes' ? 0.6 : 0))
+    ).toFixed(1);
     const waterGap = Math.round((reqWater - hydrationLiters) * 10) / 10;
 
-    if (waterGap > 0) {
+    if (waterGap > 0.2) {
       list.push({
-        id: 'hydration',
-        title: `💧 Hydration Gap Alert (Deficit: -${waterGap} L/day)`,
+        id: 'dir_hydration',
+        tag: 'FLUID PRESCRIPTION',
+        title: `💧 Hydration Deficit Alert: -${waterGap} L/day Gap`,
         bg: 'bg-cyan-50 dark:bg-cyan-950/40 border-cyan-300 dark:border-cyan-800',
         textColor: 'text-cyan-900 dark:text-cyan-200',
-        desc: `Your current fluid intake (${hydrationLiters}L) is below your physiological requirement (${reqWater}L/day) for ${exposureHours} hrs outdoor exposure. Drink 250ml every 30 mins with ORS or salted Chaach.`,
+        desc: `At ${exposureHours} hours outdoor exposure as a ${occLabel}, your body loses ~${(reqWater * 0.7).toFixed(1)}L through perspiration. Your current intake (${hydrationLiters}L/day) falls ${waterGap}L short of the ${reqWater}L target. Drink 250mL of water with ORS or salted lemon water (Nimbu Pani) every 25–30 minutes during work hours.`,
       });
     } else {
       list.push({
-        id: 'hydration',
-        title: `💧 Hydration Target Met (${reqWater} L/day)`,
+        id: 'dir_hydration',
+        tag: 'FLUID PRESCRIPTION',
+        title: `💧 Hydration Target Met: ${hydrationLiters} L/day Active Buffer`,
         bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800',
         textColor: 'text-emerald-900 dark:text-emerald-200',
-        desc: `Optimal hydration level maintained (${hydrationLiters}L/day). Continue sipping water with electrolytes throughout peak heat windows.`,
+        desc: `Excellent fluid buffer. Your daily intake of ${hydrationLiters}L meets your physiological need (${reqWater}L/day) for ${exposureHours}h outdoor shifts as a ${occLabel}. Continue sipping electrolyte water steadily rather than chugging large volumes at once.`,
       });
     }
 
-    // 2. Health Condition Directives
+    // 2. Health Condition Directives (All 5 options covered)
     if (healthCondition === 'cardiovascular') {
       list.push({
-        id: 'health',
-        title: '🫀 Cardiac Heat Strain Protocol',
+        id: 'dir_medical',
+        tag: 'CLINICAL CARDIOLOGY',
+        title: `🫀 Cardiac Output Strain Mitigation (Age ${ageBand})`,
         bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800',
         textColor: 'text-rose-900 dark:text-rose-200',
-        desc: 'Cutaneous vasodilation in high ambient heat forces cardiac output to increase by 2-3x. Limit outdoor exposure above 35°C; halt activity immediately if feeling chest pressure or tachycardia.',
+        desc: `Cutaneous vasodilation in ${weather.temp}°C ambient air forces cardiac output to double to pump blood to the skin surface. Given your cardiovascular condition and vulnerability score (${vulnScore}/100), restrict strenuous physical exertion above 35°C. Immediately halt work if you detect irregular palpitations, chest tightness, or dizziness.`,
       });
     } else if (healthCondition === 'hypertension') {
       list.push({
-        id: 'health',
-        title: '🩺 Hypertension & Vasodilation Safeguard',
+        id: 'dir_medical',
+        tag: 'CLINICAL VASCULAR',
+        title: `🩺 Postural Syncope & Vasodilation Safeguard`,
         bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
         textColor: 'text-amber-900 dark:text-amber-200',
-        desc: 'Heat lowers peripheral vascular resistance, creating risk of orthostatic syncope upon standing quickly. Stand slowly after seated rest and carry electrolyte salts.',
+        desc: `High temperatures cause peripheral arterial dilation, causing sudden drops in systemic blood pressure (orthostatic hypotension). As a ${occLabel}, stand up gradually after seated rests and avoid sudden bends. Take anti-hypertensive medications with plenty of water, and keep a rehydration sachet handy.`,
       });
     } else if (healthCondition === 'diabetes') {
       list.push({
-        id: 'health',
-        title: '🩸 Autonomic Neuropathy & Glycemic Care',
+        id: 'dir_medical',
+        tag: 'CLINICAL ENDOCRINE',
+        title: `🩸 Autonomic Neuropathy & Glycemic Dehydration Protocol`,
         bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-800',
         textColor: 'text-purple-900 dark:text-purple-200',
-        desc: 'Diabetes impairs sweating response and accelerates dehydration. Monitor blood glucose closely; avoid sugary sodas or energy drinks during peak sun.',
+        desc: `Diabetes blunts the hypothalamic sweating reflex, delaying natural skin evaporative cooling while speeding up intracellular dehydration. Avoid sugary commercial beverages or sodas during your shift. Inspect your feet daily after ${exposureHours}h outdoor work for hot spots or thermal friction blisters.`,
       });
     } else if (healthCondition === 'respiratory') {
       list.push({
-        id: 'health',
-        title: '🫁 Thermal Air & Ground-Level Ozone Alert',
+        id: 'dir_medical',
+        tag: 'CLINICAL PULMONARY',
+        title: `🫁 Bronchial Airway & Photochemical Smog Alert`,
         bg: 'bg-sky-50 dark:bg-sky-950/40 border-sky-300 dark:border-sky-800',
         textColor: 'text-sky-900 dark:text-sky-200',
-        desc: 'Hot dry air triggers airway bronchospasm and elevates ground-level ozone. Keep rescue inhaler handy; avoid outdoor exertional exercise between 1 PM and 4 PM.',
+        desc: `High summer heat accelerates the formation of ground-level ozone and photochemical smog, triggering airway hyper-reactivity and bronchospasm. While working as a ${occLabel}, carry your rescue inhaler on your person at all times and wear a damp breathable cotton mask on dusty roadways.`,
+      });
+    } else {
+      list.push({
+        id: 'dir_medical',
+        tag: 'PREVENTIVE NEPHROLOGY',
+        title: `🛡️ Primary Renal & Organ Defense (No Chronic Illness)`,
+        bg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-300 dark:border-blue-800',
+        textColor: 'text-blue-900 dark:text-blue-200',
+        desc: `Even with no chronic illness, spending ${exposureHours}h in ${weather.temp}°C ambient temperatures (HI: ${heatIndex}°C) strains renal glomerular filtration. Avoid non-steroidal anti-inflammatory painkillers (NSAIDs like ibuprofen) during heatwaves as they compound acute kidney risk. Monitor urine color—it should stay pale straw yellow.`,
       });
     }
 
-    // 3. Living Condition Safeguards
-    if (livingCondition === 'tin_roof') {
+    // 3. Exact Occupational Work-Rest Protocol
+    if (occCat.includes('Heavy') || occCat.includes('Extreme') || occupationId === 'construction_laborer' || occupationId === 'agricultural_farmer' || occupationId === 'brick_kiln_worker' || occupationId === 'railway_trackman' || occupationId === 'dock_loading_porter') {
       list.push({
-        id: 'living',
-        title: '🏠 Tin/Asbestos Roof Radiant Heat Trap',
+        id: 'dir_occupation',
+        tag: 'OCCUPATIONAL SAFETY',
+        title: `👷 Heavy Exertional Protocol for ${occLabel}`,
+        bg: 'bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-800',
+        textColor: 'text-red-900 dark:text-red-200',
+        desc: `Heavy muscular labor generates 400W–550W of internal metabolic heat. Enforce a strict work-rest schedule: ${risk.restRatio}. Never work isolated in unshaded pits or trenches during peak midday sun. Wear a wet cotton gamcha or hard-hat neck flap.`,
+      });
+    } else if (occCat.includes('Transit') || occupationId === 'delivery_rider' || occupationId === 'postman_courier' || occupationId === 'sales_executive' || occupationId === 'healthcare_worker_field') {
+      list.push({
+        id: 'dir_occupation',
+        tag: 'OCCUPATIONAL SAFETY',
+        title: `🛵 Mobile Transit & Road Surface Shield (${occLabel})`,
         bg: 'bg-orange-50 dark:bg-orange-950/40 border-orange-300 dark:border-orange-800',
         textColor: 'text-orange-900 dark:text-orange-200',
-        desc: 'Uninsulated corrugated tin roofs act as indoor heat sinks (up to 48°C). Place wet jute gunny bags on the roof and spend midday peak hours in community cooling shelters.',
+        desc: `Asphalt roadway surfaces re-radiate up to 55°C radiant heat back at riders. Mount an insulated water bottle cage on your bike. Take mandatory 10-minute pauses in air-conditioned malls or shaded petrol pumps every 45 minutes between dispatches.`,
+      });
+    } else if (occCat.includes('Street') || occupationId === 'street_vendor' || occupationId === 'traffic_police' || occupationId === 'sanitation_worker' || occupationId === 'rickshaw_auto_puller' || occupationId === 'security_guard_outdoor') {
+      list.push({
+        id: 'dir_occupation',
+        tag: 'OCCUPATIONAL SAFETY',
+        title: `🚦 Street Commerce & Solar Glare Strategy (${occLabel})`,
+        bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
+        textColor: 'text-amber-900 dark:text-amber-200',
+        desc: `Standing or walking on paved footpaths for ${exposureHours} hours produces severe conductive sole heat. Stand on cardboard or rubber matting to isolate conductive heat. Wet the cloth canopy above your stall or checkpoint periodically to promote evaporative cooling.`,
+      });
+    } else if (occCat.includes('Kitchen') || occCat.includes('Industrial') || occupationId === 'roadside_cook_halwai' || occupationId === 'commercial_kitchen_chef' || occupationId === 'factory_foundry_worker' || occupationId === 'ironing_dhobi' || occupationId === 'mechanic_welder') {
+      list.push({
+        id: 'dir_occupation',
+        tag: 'OCCUPATIONAL SAFETY',
+        title: `🔥 Industrial & Kitchen Micro-Climate Control (${occLabel})`,
+        bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800',
+        textColor: 'text-rose-900 dark:text-rose-200',
+        desc: `Burner flames and industrial equipment add 5°C–8°C above ambient outdoor air. Ensure cross-exhaust fans are running at full power. Keep a bowl of iced water and apply cold damp towels to your wrists and carotid artery every 30 minutes.`,
+      });
+    } else {
+      list.push({
+        id: 'dir_occupation',
+        tag: 'OCCUPATIONAL SAFETY',
+        title: `🏢 Indoor & Commuter Transition Protocol (${occLabel})`,
+        bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-300 dark:border-indigo-800',
+        textColor: 'text-indigo-900 dark:text-indigo-200',
+        desc: `Stepping directly from an air-conditioned room (22°C) into ${weather.temp}°C outdoor heat causes acute vasomotor shock. Pause in a shaded intermediate foyer for 3 minutes before commuting. Ensure consistent hydration even while sitting in air-conditioned environments.`,
+      });
+    }
+
+    // 4. Housing Thermal Envelope Management (All 4 options covered)
+    if (livingCondition === 'tin_roof') {
+      list.push({
+        id: 'dir_housing',
+        tag: 'DOMESTIC THERMAL DEFENSE',
+        title: `🏠 Tin / Asbestos Roof Radiant Heat Trap Mitigation`,
+        bg: 'bg-orange-50 dark:bg-orange-950/40 border-orange-300 dark:border-orange-800',
+        textColor: 'text-orange-900 dark:text-orange-200',
+        desc: `Corrugated tin acts as a thermal radiator, pushing indoor ceiling temperatures up to 48°C. Apply a reflective white lime wash (Chuna coating) or lay damp jute gunny bags over the roof. During the forbidden midday window (${risk.forbiddenHours}), seek refuge in shaded community cooling facilities.`,
       });
     } else if (livingCondition === 'top_floor_no_ac') {
       list.push({
-        id: 'living',
-        title: '🏢 Top-Floor Concrete Slab Thermal Retention',
+        id: 'dir_housing',
+        tag: 'DOMESTIC THERMAL DEFENSE',
+        title: `🏢 Top-Floor Slab Nighttime Re-Radiation Protocol`,
         bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
         textColor: 'text-amber-900 dark:text-amber-200',
-        desc: 'Concrete roofs re-radiate thermal load after sunset. Use exhaust fans and wet cotton drapes to establish cross-ventilation.',
+        desc: `Reinforced concrete roof slabs absorb solar radiation throughout the day and continuously release it downward at night. Open opposing windows after 8 PM to establish cross-ventilation, hang wet cotton curtains to cool incoming air, and sleep on a ground floor mat.`,
       });
-    }
-
-    // 4. Occupational Work Effort
-    const currentOcc = EXPANDED_OCCUPATIONS.find(o => o.id === occupationId);
-    if (currentOcc && (currentOcc.category.includes('Heavy') || currentOcc.category.includes('Extreme') || currentOcc.category.includes('Kitchen') || currentOcc.category.includes('Street'))) {
+    } else if (livingCondition === 'middle_fan') {
       list.push({
-        id: 'work',
-        title: `👷 High-Effort Occupational Safeguard (${currentOcc.label.split('/')[0]})`,
-        bg: 'bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-800',
-        textColor: 'text-red-900 dark:text-red-200',
-        desc: `High exertional heat stroke risk. Enforce mandatory shaded rest pauses (${risk.restRatio}). Wear a wet neck towel and keep thermal water flask.`,
+        id: 'dir_housing',
+        tag: 'DOMESTIC THERMAL DEFENSE',
+        title: `🌀 Ceiling Fan Convective Heating Caution`,
+        bg: 'bg-stone-50 dark:bg-slate-900/90 border-stone-300 dark:border-slate-800',
+        textColor: 'text-stone-900 dark:text-stone-200',
+        desc: `When ambient indoor air exceeds 35°C, ceiling fans act like convection ovens, driving hot air across skin and accelerating fluid evaporation without reducing core temperature. Place a broad shallow pan of cold water or ice under the fan path to enable evaporative cooling.`,
+      });
+    } else {
+      list.push({
+        id: 'dir_housing',
+        tag: 'DOMESTIC THERMAL DEFENSE',
+        title: `❄️ Air-Conditioned Recovery & Acclimatization Setting`,
+        bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800',
+        textColor: 'text-emerald-900 dark:text-emerald-200',
+        desc: `Set your air conditioner to an energy-efficient 24°C–26°C rather than chilling to 18°C. Extreme contrast impairs your body's natural sweat adaptation when you resume ${exposureHours}h outdoor shifts as a ${occLabel}. Keep indoor humidity balanced.`,
       });
     }
 
-    // 5. Age Demographic Safeguards
+    // 5. Demographic Age-Specific Thermoregulatory Action (All 5 age groups covered)
     if (ageBand === '65+') {
       list.push({
-        id: 'age',
-        title: '👵 Senior Citizen Thermoregulation Directive',
+        id: 'dir_demographic',
+        tag: 'GERIATRIC THERMOREGULATION',
+        title: `👵 Senior Citizen Blunted Thirst & Renal Defense`,
         bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-800',
         textColor: 'text-purple-900 dark:text-purple-200',
-        desc: 'Blunted thirst perception in elderly adults leads to silent dehydration. Mandate drinking 150ml water every 45-60 mins on a clock timer.',
+        desc: `Age-related blunting of hypothalamic osmoreceptors suppresses natural thirst perception until severe dehydration has already occurred. Set an hourly alarm to drink 150mL of water. Have a family member or neighbor check in twice daily during heatwave alerts.`,
       });
     } else if (ageBand === '0-12') {
       list.push({
-        id: 'age',
-        title: '👶 Child Heat Protection Rule',
-        bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
-        textColor: 'text-amber-900 dark:text-amber-200',
-        desc: 'Higher body surface-to-mass ratio makes children overheat rapidly. Restrict unshaded sports or outdoor play after 11:00 AM.',
+        id: 'dir_demographic',
+        tag: 'PEDIATRIC THERMOREGULATION',
+        title: `👶 Child Core Temperature Surge Safeguard`,
+        bg: 'bg-pink-50 dark:bg-pink-950/40 border-pink-300 dark:border-pink-800',
+        textColor: 'text-pink-900 dark:text-pink-200',
+        desc: `Children have a high body surface area-to-mass ratio and underdeveloped sweat glands, absorbing environmental heat much faster than adults. Strictly forbid unshaded outdoor playground activity between 11 AM and 4 PM. Ensure frequent oral rehydration.`,
+      });
+    } else if (ageBand === '40-60') {
+      list.push({
+        id: 'dir_demographic',
+        tag: 'MID-LIFE VASCULAR ADAPTATION',
+        title: `👤 Mid-Life Endothelial Heat Buffer Directive`,
+        bg: 'bg-yellow-50 dark:bg-yellow-950/40 border-yellow-300 dark:border-yellow-800',
+        textColor: 'text-yellow-900 dark:text-yellow-200',
+        desc: `After age 40, cutaneous vasodilatory reserve declines, doubling the cardiovascular recovery time after thermal exertion. Schedule the most physically taxing outdoor tasks of your ${occLabel} routine prior to 10:00 AM, avoiding afternoon sun spikes.`,
+      });
+    } else if (ageBand === '13-25') {
+      list.push({
+        id: 'dir_demographic',
+        tag: 'YOUTH & ATHLETIC ENDURANCE',
+        title: `🏃 Young Adult Exertion & Dehydration Awareness`,
+        bg: 'bg-teal-50 dark:bg-teal-950/40 border-teal-300 dark:border-teal-800',
+        textColor: 'text-teal-900 dark:text-teal-200',
+        desc: `Younger individuals frequently underestimate heat exhaustion symptoms due to athletic conditioning. Replace high-sugar energy drinks and sodas with pure electrolytes or coconut water, and take mandatory shaded rest pauses during outdoor activities.`,
+      });
+    } else {
+      list.push({
+        id: 'dir_demographic',
+        tag: 'PRIME ADULT RESILIENCE',
+        title: `💪 Working Adult Fatigue & Sustained Hydration`,
+        bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800',
+        textColor: 'text-emerald-900 dark:text-emerald-200',
+        desc: `While in peak physiological prime (26–40 yrs), compounding daily occupational shifts with inadequate sleep depletes thermal resilience. Avoid consuming excess chai or coffee during high heat as caffeine acts as a mild diuretic, accelerating dehydration.`,
       });
     }
 
@@ -785,17 +893,37 @@ export default function PersonalRiskCalculator() {
               </span>
             </div>
 
+            {/* Individualized Patient Context Banner */}
+            <div className="p-3.5 rounded-xl bg-orange-500/10 border border-orange-400/30 text-xs">
+              <div className="flex items-center justify-between font-bold text-slate-900 dark:text-white">
+                <span className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400">
+                  <Activity className="w-4 h-4" /> Individual Clinical Risk Profile
+                </span>
+                <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold shadow-sm ${risk.badge}`}>
+                  {risk.level} ({vulnScore}/100)
+                </span>
+              </div>
+              <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 font-medium leading-relaxed">
+                Tailored for: <strong>Age {ageBand}</strong> • <strong>{occupationId === 'other_custom' ? (customOccupation || 'Custom Work') : (EXPANDED_OCCUPATIONS.find(o => o.id === occupationId)?.label.split('/')[0] || 'Citizen')}</strong> • Medical: <strong className="capitalize">{healthCondition}</strong> • Housing: <strong className="capitalize">{livingCondition.replace(/_/g, ' ')}</strong> • <strong>{exposureHours}h daily sun</strong> in <strong>{selectedCity.split(',')[0]}</strong>.
+              </p>
+            </div>
+
             <div className="space-y-3">
               <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-slate-900/90 border border-stone-200 dark:border-slate-800 flex items-start gap-3">
                 <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Cooling Break Frequency</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Prescribed Work-Rest Cycle</h4>
                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 font-medium">{risk.restRatio}</p>
                 </div>
               </div>
 
               {tailoredDirectives.map((d) => (
-                <div key={d.id} className={`p-3.5 rounded-xl border ${d.bg}`}>
+                <div key={d.id} className={`p-3.5 rounded-xl border ${d.bg} transition-all`}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10 text-slate-800 dark:text-slate-200">
+                      {d.tag}
+                    </span>
+                  </div>
                   <h4 className={`text-xs font-bold ${d.textColor}`}>{d.title}</h4>
                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 leading-relaxed font-medium">
                     {d.desc}
