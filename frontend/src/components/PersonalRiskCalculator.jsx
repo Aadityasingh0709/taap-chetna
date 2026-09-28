@@ -19,7 +19,7 @@ import {
   RefreshCw,
   Info
 } from 'lucide-react';
-import { getCurrentWeather } from '../services/api';
+import { getCurrentWeather, getCitizenProfile, updateCitizenProfile } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { POPULAR_INDIAN_PLACES, EXPANDED_OCCUPATIONS } from '../data/indianPlaces';
 import PlaceSearchInput from './PlaceSearchInput';
@@ -52,6 +52,68 @@ export default function PersonalRiskCalculator() {
   const [livingCondition, setLivingCondition] = useState('middle_fan');
   const [hydrationLiters, setHydrationLiters] = useState(2.8);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savedFeedback, setSavedFeedback] = useState('');
+
+  // On mount or user change: Load saved profile parameters from server or local backup
+  useEffect(() => {
+    const loadSavedProfile = async () => {
+      const token = localStorage.getItem('tapchetna_token');
+      if (token) {
+        try {
+          const res = await getCitizenProfile();
+          if (res.data) {
+            const p = res.data;
+            if (p.homeLocation) setSelectedCity(p.homeLocation);
+            if (p.selectedCoords) setSelectedCoords(p.selectedCoords);
+            if (p.ageBand) setAgeBand(p.ageBand);
+            if (p.occupation) {
+              const matched = EXPANDED_OCCUPATIONS.find((o) => o.label === p.occupation || o.id === p.occupation || o.id === p.occupationId);
+              if (matched) {
+                setOccupationId(matched.id);
+              } else {
+                setOccupationId('other_custom');
+                setCustomOccupation(p.occupation);
+              }
+            }
+            if (p.exposureHours !== undefined) setExposureHours(p.exposureHours);
+            if (p.healthCondition) setHealthCondition(p.healthCondition);
+            if (p.livingCondition) setLivingCondition(p.livingCondition);
+            if (p.hydrationLiters !== undefined) setHydrationLiters(p.hydrationLiters);
+            return;
+          }
+        } catch (err) {
+          console.warn('Could not load profile from server, using local fallback:', err.message);
+        }
+      }
+      try {
+        const savedLocal = localStorage.getItem('tapchetna_saved_profile');
+        if (savedLocal) {
+          const p = JSON.parse(savedLocal);
+          if (p.homeLocation) setSelectedCity(p.homeLocation);
+          if (p.selectedCoords) setSelectedCoords(p.selectedCoords);
+          if (p.ageBand) setAgeBand(p.ageBand);
+          if (p.occupation) {
+            const matched = EXPANDED_OCCUPATIONS.find((o) => o.label === p.occupation || o.id === p.occupation || o.id === p.occupationId);
+            if (matched) {
+              setOccupationId(matched.id);
+            } else {
+              setOccupationId('other_custom');
+              setCustomOccupation(p.occupation);
+            }
+          }
+          if (p.exposureHours !== undefined) setExposureHours(p.exposureHours);
+          if (p.healthCondition) setHealthCondition(p.healthCondition);
+          if (p.livingCondition) setLivingCondition(p.livingCondition);
+          if (p.hydrationLiters !== undefined) setHydrationLiters(p.hydrationLiters);
+        }
+      } catch (err) {
+        // Ignore local parse error
+      }
+    };
+
+    loadSavedProfile();
+  }, [user]);
 
   // Fetch real-time weather from Open-Meteo live API (using OSM coordinates if available)
   const fetchLiveWeather = async (cityName, coords = selectedCoords) => {
@@ -212,9 +274,165 @@ export default function PersonalRiskCalculator() {
 
   const risk = getRiskDetails(vulnScore);
 
-  const handleSaveProfile = () => {
+  const getTailoredDirectives = () => {
+    const list = [];
+
+    // 1. Hydration Target & Deficit Analysis
+    const reqWater = Math.max(2.5, (exposureHours * 0.35) + (wetBulb > 28 ? 1.0 : 0.4) + (healthCondition === 'diabetes' ? 0.5 : 0)).toFixed(1);
+    const waterGap = Math.round((reqWater - hydrationLiters) * 10) / 10;
+
+    if (waterGap > 0) {
+      list.push({
+        id: 'hydration',
+        title: `💧 Hydration Gap Alert (Deficit: -${waterGap} L/day)`,
+        bg: 'bg-cyan-50 dark:bg-cyan-950/40 border-cyan-300 dark:border-cyan-800',
+        textColor: 'text-cyan-900 dark:text-cyan-200',
+        desc: `Your current fluid intake (${hydrationLiters}L) is below your physiological requirement (${reqWater}L/day) for ${exposureHours} hrs outdoor exposure. Drink 250ml every 30 mins with ORS or salted Chaach.`,
+      });
+    } else {
+      list.push({
+        id: 'hydration',
+        title: `💧 Hydration Target Met (${reqWater} L/day)`,
+        bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800',
+        textColor: 'text-emerald-900 dark:text-emerald-200',
+        desc: `Optimal hydration level maintained (${hydrationLiters}L/day). Continue sipping water with electrolytes throughout peak heat windows.`,
+      });
+    }
+
+    // 2. Health Condition Directives
+    if (healthCondition === 'cardiovascular') {
+      list.push({
+        id: 'health',
+        title: '🫀 Cardiac Heat Strain Protocol',
+        bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800',
+        textColor: 'text-rose-900 dark:text-rose-200',
+        desc: 'Cutaneous vasodilation in high ambient heat forces cardiac output to increase by 2-3x. Limit outdoor exposure above 35°C; halt activity immediately if feeling chest pressure or tachycardia.',
+      });
+    } else if (healthCondition === 'hypertension') {
+      list.push({
+        id: 'health',
+        title: '🩺 Hypertension & Vasodilation Safeguard',
+        bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
+        textColor: 'text-amber-900 dark:text-amber-200',
+        desc: 'Heat lowers peripheral vascular resistance, creating risk of orthostatic syncope upon standing quickly. Stand slowly after seated rest and carry electrolyte salts.',
+      });
+    } else if (healthCondition === 'diabetes') {
+      list.push({
+        id: 'health',
+        title: '🩸 Autonomic Neuropathy & Glycemic Care',
+        bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-800',
+        textColor: 'text-purple-900 dark:text-purple-200',
+        desc: 'Diabetes impairs sweating response and accelerates dehydration. Monitor blood glucose closely; avoid sugary sodas or energy drinks during peak sun.',
+      });
+    } else if (healthCondition === 'respiratory') {
+      list.push({
+        id: 'health',
+        title: '🫁 Thermal Air & Ground-Level Ozone Alert',
+        bg: 'bg-sky-50 dark:bg-sky-950/40 border-sky-300 dark:border-sky-800',
+        textColor: 'text-sky-900 dark:text-sky-200',
+        desc: 'Hot dry air triggers airway bronchospasm and elevates ground-level ozone. Keep rescue inhaler handy; avoid outdoor exertional exercise between 1 PM and 4 PM.',
+      });
+    }
+
+    // 3. Living Condition Safeguards
+    if (livingCondition === 'tin_roof') {
+      list.push({
+        id: 'living',
+        title: '🏠 Tin/Asbestos Roof Radiant Heat Trap',
+        bg: 'bg-orange-50 dark:bg-orange-950/40 border-orange-300 dark:border-orange-800',
+        textColor: 'text-orange-900 dark:text-orange-200',
+        desc: 'Uninsulated corrugated tin roofs act as indoor heat sinks (up to 48°C). Place wet jute gunny bags on the roof and spend midday peak hours in community cooling shelters.',
+      });
+    } else if (livingCondition === 'top_floor_no_ac') {
+      list.push({
+        id: 'living',
+        title: '🏢 Top-Floor Concrete Slab Thermal Retention',
+        bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
+        textColor: 'text-amber-900 dark:text-amber-200',
+        desc: 'Concrete roofs re-radiate thermal load after sunset. Use exhaust fans and wet cotton drapes to establish cross-ventilation.',
+      });
+    }
+
+    // 4. Occupational Work Effort
+    const currentOcc = EXPANDED_OCCUPATIONS.find(o => o.id === occupationId);
+    if (currentOcc && (currentOcc.category.includes('Heavy') || currentOcc.category.includes('Extreme') || currentOcc.category.includes('Kitchen') || currentOcc.category.includes('Street'))) {
+      list.push({
+        id: 'work',
+        title: `👷 High-Effort Occupational Safeguard (${currentOcc.label.split('/')[0]})`,
+        bg: 'bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-800',
+        textColor: 'text-red-900 dark:text-red-200',
+        desc: `High exertional heat stroke risk. Enforce mandatory shaded rest pauses (${risk.restRatio}). Wear a wet neck towel and keep thermal water flask.`,
+      });
+    }
+
+    // 5. Age Demographic Safeguards
+    if (ageBand === '65+') {
+      list.push({
+        id: 'age',
+        title: '👵 Senior Citizen Thermoregulation Directive',
+        bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-300 dark:border-purple-800',
+        textColor: 'text-purple-900 dark:text-purple-200',
+        desc: 'Blunted thirst perception in elderly adults leads to silent dehydration. Mandate drinking 150ml water every 45-60 mins on a clock timer.',
+      });
+    } else if (ageBand === '0-12') {
+      list.push({
+        id: 'age',
+        title: '👶 Child Heat Protection Rule',
+        bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800',
+        textColor: 'text-amber-900 dark:text-amber-200',
+        desc: 'Higher body surface-to-mass ratio makes children overheat rapidly. Restrict unshaded sports or outdoor play after 11:00 AM.',
+      });
+    }
+
+    return list;
+  };
+
+  const tailoredDirectives = getTailoredDirectives();
+
+  const handleSaveProfile = async () => {
+    setSavingProfile(true);
+    const selectedOcc = EXPANDED_OCCUPATIONS.find(o => o.id === occupationId);
+    const currentOcc = occupationId === 'other_custom' ? (customOccupation || 'Custom Work') : (selectedOcc?.label || 'General Citizen');
+
+    const profilePayload = {
+      homeLocation: selectedCity,
+      selectedCoords,
+      ageBand,
+      occupation: currentOcc,
+      occupationId,
+      customOccupation,
+      exposureHours,
+      healthCondition,
+      livingCondition,
+      hydrationLiters,
+      vulnerabilityScore: vulnScore,
+    };
+
+    try {
+      localStorage.setItem('tapchetna_saved_profile', JSON.stringify(profilePayload));
+    } catch (e) {}
+
+    const token = localStorage.getItem('tapchetna_token');
+    let feedback = '';
+    if (token) {
+      try {
+        await updateCitizenProfile(profilePayload);
+        feedback = 'Profile Saved to Cloud!';
+      } catch (err) {
+        console.warn('API save profile error:', err.message);
+        feedback = 'Saved Locally (Server Offline)';
+      }
+    } else {
+      feedback = 'Saved Locally! Log in to sync across devices.';
+    }
+
+    setSavedFeedback(feedback);
     setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setSavingProfile(false);
+    setTimeout(() => {
+      setSavedSuccess(false);
+      setSavedFeedback('');
+    }, 4500);
   };
 
   return (
@@ -491,12 +709,18 @@ export default function PersonalRiskCalculator() {
           <div className="pt-2 flex items-center justify-between border-t border-stone-300 dark:border-slate-800">
             <button
               onClick={handleSaveProfile}
-              className="btn-3d btn-3d-orange px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer"
+              disabled={savingProfile}
+              className="btn-3d btn-3d-orange px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              {savedSuccess ? (
+              {savingProfile ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                  Saving Profile...
+                </>
+              ) : savedSuccess ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-200" />
-                  Profile Calibrated & Saved!
+                  {savedFeedback || 'Profile Calibrated & Saved!'}
                 </>
               ) : (
                 <>
@@ -551,10 +775,15 @@ export default function PersonalRiskCalculator() {
 
           {/* Tailored Clinical Action Directives */}
           <div className="glass-panel p-5 rounded-2xl space-y-3.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5 border-b border-stone-200 dark:border-slate-800 pb-2.5">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Tailored Clinical Action Directives
-            </h3>
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-slate-800 pb-2.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                Tailored Clinical Action Directives
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300">
+                {tailoredDirectives.length} Calibrated Rules
+              </span>
+            </div>
 
             <div className="space-y-3">
               <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-slate-900/90 border border-stone-200 dark:border-slate-800 flex items-start gap-3">
@@ -565,13 +794,14 @@ export default function PersonalRiskCalculator() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-slate-900/90 border border-stone-200 dark:border-slate-800 flex items-start gap-3">
-                <Droplets className="w-4 h-4 text-cyan-600 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Target Daily Hydration</h4>
-                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 font-medium">{risk.waterNeeded}</p>
+              {tailoredDirectives.map((d) => (
+                <div key={d.id} className={`p-3.5 rounded-xl border ${d.bg}`}>
+                  <h4 className={`text-xs font-bold ${d.textColor}`}>{d.title}</h4>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 leading-relaxed font-medium">
+                    {d.desc}
+                  </p>
                 </div>
-              </div>
+              ))}
 
               <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-slate-900/90 border border-stone-200 dark:border-slate-800 flex items-start gap-3">
                 <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
