@@ -6,8 +6,8 @@ const { getProfile, updateProfile, calculateRisk } = require('../controllers/cit
 
 const router = express.Router();
 
-router.get('/profile', protect, authorize(['CITIZEN']), getProfile);
-router.put('/profile', protect, authorize(['CITIZEN']), updateProfile);
+router.get('/profile', protect, getProfile);
+router.put('/profile', protect, updateProfile);
 router.post('/calculate-risk', calculateRisk);
 
 module.exports = router;

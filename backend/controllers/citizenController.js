@@ -6,15 +6,37 @@ const weatherService = require('../services/weatherService');
 
 // Get citizen profile
 const getProfile = asyncHandler(async (req, res) => {
-  const profile = await CitizenProfile.findOne({ user: req.user._id }).populate('user', '-password');
-  if (!profile) return res.status(404).json({ message: 'Profile not found' });
+  let profile = await CitizenProfile.findOne({ user: req.user._id }).populate('user', '-password');
+  if (!profile) {
+    // Auto-create default profile for authenticated user if not existing
+    const user = await User.findById(req.user._id);
+    profile = await CitizenProfile.create({
+      user: req.user._id,
+      ageBand: user?.ageBand || '26-40',
+      homeLocation: user?.homeLocation || 'Kolkata',
+    });
+    profile = await CitizenProfile.findById(profile._id).populate('user', '-password');
+  }
   res.json(profile);
 });
 
 // Update citizen profile
 const updateProfile = asyncHandler(async (req, res) => {
   const updates = req.body;
-  const profile = await CitizenProfile.findOneAndUpdate({ user: req.user._id }, updates, { new: true });
+  const profile = await CitizenProfile.findOneAndUpdate(
+    { user: req.user._id },
+    { $set: updates },
+    { new: true, upsert: true, runValidators: true }
+  ).populate('user', '-password');
+
+  // Sync basic User fields if provided
+  if (updates.homeLocation || updates.ageBand) {
+    await User.findByIdAndUpdate(req.user._id, {
+      ...(updates.homeLocation && { homeLocation: updates.homeLocation }),
+      ...(updates.ageBand && { ageBand: updates.ageBand }),
+    });
+  }
+
   res.json(profile);
 });
 
