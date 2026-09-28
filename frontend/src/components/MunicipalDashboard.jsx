@@ -575,7 +575,7 @@ export default function MunicipalDashboard() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <button
               onClick={() => handleTriggerAction(`Dispatched 2x 10,000L Emergency Water Tankers to ${selectedWard.wardNumber} (${selectedWard.name})`)}
               className="p-3.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/40 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-300 dark:border-cyan-800 text-left cursor-pointer group card-3d active:translate-y-1"
@@ -610,6 +610,15 @@ export default function MunicipalDashboard() {
               <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform" />
               <h4 className="text-xs font-bold text-stone-900 dark:text-white mt-2">Halt Outdoor Labor</h4>
               <p className="text-[11px] text-rose-800 dark:text-rose-200 mt-0.5">Enforce mandatory midday work suspension</p>
+            </button>
+
+            <button
+              onClick={() => handleTriggerAction(`🐾 Animal & Bird Water Fillup Alert dispatched for ${selectedWard.wardNumber} — Ground teams notified to refill earthen water pots for community dogs, cows, and birds`)}
+              className="p-3.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 hover:bg-orange-100 dark:hover:bg-orange-900/60 border border-orange-300 dark:border-orange-800 text-left cursor-pointer group card-3d active:translate-y-1 sm:col-span-2 lg:col-span-1"
+            >
+              <span className="text-xl group-hover:scale-110 transition-transform inline-block">🐾</span>
+              <h4 className="text-xs font-bold text-stone-900 dark:text-white mt-1.5">Animal & Bird Water Fillup</h4>
+              <p className="text-[11px] text-orange-800 dark:text-orange-200 mt-0.5">Dispatch teams to fill pots for stray animals & birds</p>
             </button>
           </div>
 
