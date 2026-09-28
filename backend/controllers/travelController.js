@@ -3,11 +3,11 @@ const asyncHandler = require('express-async-handler');
 const weatherService = require('../services/weatherService');
 
 const checkTravel = asyncHandler(async (req, res) => {
-  const { fromLocation, toLocation, travelDate, travelMode, durationHours } = req.body;
+  const { fromLocation, toLocation, travelDate, travelMode, durationHours, fromCoords, toCoords } = req.body;
   if (!fromLocation || !toLocation) {
     return res.status(400).json({ message: 'Please provide from and to locations' });
   }
-  const comparison = await weatherService.compareLocations(fromLocation, toLocation);
+  const comparison = await weatherService.compareLocations(fromLocation, toLocation, fromCoords, toCoords, travelDate);
 
   const precautions = [];
   if (comparison.transitionRisk === 'HIGH' || comparison.transitionRisk === 'ELEVATED') {
@@ -26,9 +26,10 @@ const checkTravel = asyncHandler(async (req, res) => {
     ...comparison,
     travelMode: travelMode || 'train_sleeper',
     durationHours: durationHours || 4,
-    travelDate: travelDate || new Date().toISOString(),
+    travelDate: travelDate || new Date().toISOString().split('T')[0],
     precautions,
   });
 });
 
 module.exports = { checkTravel };
+

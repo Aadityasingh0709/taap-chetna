@@ -31,17 +31,23 @@ export const getMe = () => api.get('/auth/me');
 // Weather & OpenStreetMap endpoints
 export const searchPlacesOSM = (query) => api.get(`/weather/search?q=${encodeURIComponent(query)}`);
 export const reverseGeocodeCoords = (lat, lon) => api.get(`/weather/reverse?lat=${lat}&lon=${lon}`);
-export const getCurrentWeather = (location, coords = null) => {
+export const getCurrentWeather = (location, coords = null, date = null) => {
   let url = `/weather/current?location=${encodeURIComponent(location)}`;
   if (coords && coords.lat && coords.lon) {
     url += `&lat=${coords.lat}&lon=${coords.lon}`;
   }
+  if (date) {
+    url += `&date=${encodeURIComponent(date)}`;
+  }
   return api.get(url);
 };
-export const getWeatherForecast = (location, coords = null) => {
+export const getWeatherForecast = (location, coords = null, date = null) => {
   let url = `/weather/forecast?location=${encodeURIComponent(location)}`;
   if (coords && coords.lat && coords.lon) {
     url += `&lat=${coords.lat}&lon=${coords.lon}`;
+  }
+  if (date) {
+    url += `&date=${encodeURIComponent(date)}`;
   }
   return api.get(url);
 };

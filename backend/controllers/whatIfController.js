@@ -5,10 +5,10 @@ const weatherService = require('../services/weatherService');
 const compareSlots = asyncHandler(async (req, res) => {
   const { location, activity, date, durationHours, slots, coords } = req.body;
   const loc = location || 'Delhi';
-  // Default slots: 8 AM, 2 PM, 6 PM
+  // Default slots: 8 AM, 14 PM, 18 PM
   const slotHours = (slots && slots.length > 0) ? slots : [8, 14, 18];
   
-  const result = await weatherService.evaluateTimeSlots(loc, slotHours, coords);
+  const result = await weatherService.evaluateTimeSlots(loc, slotHours, coords, date);
   
   res.json({
     activity: activity || 'Outdoor Activity',
@@ -19,3 +19,4 @@ const compareSlots = asyncHandler(async (req, res) => {
 });
 
 module.exports = { compareSlots };
+
