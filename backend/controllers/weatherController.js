@@ -12,14 +12,15 @@ const searchPlaces = asyncHandler(async (req, res) => {
   res.json(results);
 });
 
-// GET /api/weather/current?location=Kolkata&lat=22.57&lon=88.36
+// GET /api/weather/current?location=Kolkata&lat=22.57&lon=88.36&date=2026-10-02
 const getCurrent = asyncHandler(async (req, res) => {
   const location = req.query.location || 'Kolkata';
   const lat = req.query.lat ? parseFloat(req.query.lat) : null;
   const lon = req.query.lon ? parseFloat(req.query.lon) : null;
+  const date = req.query.date || null;
   const coords = (lat !== null && lon !== null) ? { lat, lon } : null;
 
-  const data = await weatherService.getCurrentWeather(location, coords);
+  const data = await weatherService.getCurrentWeather(location, coords, date);
   res.json(data);
 });
 
