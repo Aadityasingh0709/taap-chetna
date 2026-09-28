@@ -36,7 +36,33 @@ const getDashboard = asyncHandler(async (req, res) => {
   if (!wards || wards.length === 0) {
     wards = await Ward.find({});
   }
-  const wardData = (wards && wards.length > 0) ? wards : FALLBACK_WARDS;
+  const baseWards = (wards && wards.length > 0) ? wards : FALLBACK_WARDS;
+
+  // Enrich wards with live weather microclimate telemetry
+  const enrichedWards = baseWards.map((w, idx) => {
+    const obj = w.toObject ? w.toObject() : { ...w };
+    if (currentWeather) {
+      const baseT = currentWeather.temperature !== undefined ? currentWeather.temperature : 33;
+      const baseH = currentWeather.humidity !== undefined ? currentWeather.humidity : 60;
+      // Urban micro-climate UHI variance based on ward characteristics
+      const canopy = parseFloat(obj.treeCanopy) || (idx % 2 === 0 ? 4 : 14);
+      const uhiOffset = canopy < 4 ? 2.2 : canopy < 8 ? 1.0 : canopy > 15 ? -1.8 : 0;
+      const wardTemp = Math.round((baseT + uhiOffset) * 10) / 10;
+      const wardHumidity = Math.max(20, Math.min(95, Math.round(baseH - (uhiOffset * 1.5))));
+      const wardHI = Math.round(((currentWeather.heatIndex || baseT) + uhiOffset * 1.2) * 10) / 10;
+      const riskLevel = wardHI >= 48 ? 'EXTREME' : wardHI >= 42 ? 'HIGH' : wardHI >= 36 ? 'MODERATE' : 'LOW';
+      return {
+        ...obj,
+        temp: wardTemp,
+        humidity: wardHumidity,
+        heatIndex: wardHI,
+        riskLevel,
+        isLive: true,
+        uhiOffset,
+      };
+    }
+    return obj;
+  });
 
   // Resolve state and fetch historical heat-health burden estimate from ML service
   const state = heatBurdenService.resolveStateFromMunicipality(municipality);
@@ -49,20 +75,52 @@ const getDashboard = asyncHandler(async (req, res) => {
     currentSituation: currentWeather.riskLevel,
     currentMessage: currentWeather.message,
     weather: currentWeather,
-    wards: wardData,
+    wards: enrichedWards,
     activeAlerts,
     heatHealthBurden,
   });
 });
 
 const getWards = asyncHandler(async (req, res) => {
-  const municipality = req.query.municipality || req.user?.municipality;
+  const municipality = req.query.municipality || req.user?.municipality || 'Kolkata Municipal Corporation';
   const query = municipality ? { municipality } : {};
   let wards = await Ward.find(query);
   if (!wards || wards.length === 0) {
     wards = await Ward.find({});
   }
-  res.json((wards && wards.length > 0) ? wards : FALLBACK_WARDS);
+  const baseWards = (wards && wards.length > 0) ? wards : FALLBACK_WARDS;
+
+  const locQuery = municipality.includes('Kolkata') ? 'Kolkata' : municipality;
+  let liveWeather = null;
+  try {
+    liveWeather = await weatherService.getCurrentWeather(locQuery);
+  } catch (_) {}
+
+  const enrichedWards = baseWards.map((w, idx) => {
+    const obj = w.toObject ? w.toObject() : { ...w };
+    if (liveWeather) {
+      const baseT = liveWeather.temperature !== undefined ? liveWeather.temperature : 33;
+      const baseH = liveWeather.humidity !== undefined ? liveWeather.humidity : 60;
+      const canopy = parseFloat(obj.treeCanopy) || (idx % 2 === 0 ? 4 : 14);
+      const uhiOffset = canopy < 4 ? 2.2 : canopy < 8 ? 1.0 : canopy > 15 ? -1.8 : 0;
+      const wardTemp = Math.round((baseT + uhiOffset) * 10) / 10;
+      const wardHumidity = Math.max(20, Math.min(95, Math.round(baseH - (uhiOffset * 1.5))));
+      const wardHI = Math.round(((liveWeather.heatIndex || baseT) + uhiOffset * 1.2) * 10) / 10;
+      const riskLevel = wardHI >= 48 ? 'EXTREME' : wardHI >= 42 ? 'HIGH' : wardHI >= 36 ? 'MODERATE' : 'LOW';
+      return {
+        ...obj,
+        temp: wardTemp,
+        humidity: wardHumidity,
+        heatIndex: wardHI,
+        riskLevel,
+        isLive: true,
+        uhiOffset,
+      };
+    }
+    return obj;
+  });
+
+  res.json(enrichedWards);
 });
 
 const getAlerts = asyncHandler(async (req, res) => {
