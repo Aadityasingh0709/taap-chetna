@@ -9,6 +9,8 @@ import {
   CheckCircle, 
   Train,
   Plane,
+  Car,
+  Bus,
   RefreshCw,
   Radio,
   AlertTriangle
@@ -29,6 +31,48 @@ const TRAIN_CATEGORIES = [
   { id: 'train_chair_car_ac', label: 'AC Chair Car (CC) / Shatabdi Express', category: 'AC Cooled' },
 ];
 
+// Roadways categories (Own Vehicle / Cab vs Bus Transit)
+const ROAD_CATEGORIES = [
+  // 1. Own Vehicle / Cab
+  { 
+    id: 'road_car_ac', 
+    label: 'Own Vehicle / Cab (AC Car / Sedan / SUV) — Climate Controlled Cabin', 
+    group: 'Own Vehicle / Cab', 
+    category: 'AC Cooled',
+    description: 'Regulated cool interior; steep temperature surge upon stepping out at tolls or dhabas.'
+  },
+  { 
+    id: 'road_car_non_ac', 
+    label: 'Own Vehicle / Taxi (Non-AC / Open Windows) — Direct Highway Heat & Draft', 
+    group: 'Own Vehicle / Cab', 
+    category: 'Non-AC',
+    description: 'Direct exposure to continuous hot wind drafts and road asphalt ambient heat.'
+  },
+  { 
+    id: 'road_two_wheeler', 
+    label: 'Two-Wheeler / Bike Highway Ride — Direct Solar UV & Tar Re-Radiation', 
+    group: 'Own Vehicle / Cab', 
+    category: 'Extreme Radiant',
+    description: 'High solar insolation and convective heat load. Maximum dehydration velocity.'
+  },
+
+  // 2. Bus Transit
+  { 
+    id: 'road_bus_ac', 
+    label: 'Intercity Bus (AC Volvo / Sleeper / Multi-Axle) — Regulated Air', 
+    group: 'Bus Transit', 
+    category: 'AC Cooled',
+    description: 'Chilled pressurized cabin air; requires progressive hydration before outdoor disembarkation.'
+  },
+  { 
+    id: 'road_bus_non_ac', 
+    label: 'State Transport / Ordinary Bus (Non-AC) — Wind Draft & Ambient Heat', 
+    group: 'Bus Transit', 
+    category: 'Non-AC',
+    description: 'High ambient temperature coupled with hot wind (Loo) circulation and passenger density.'
+  },
+];
+
 const FLIGHT_CATEGORIES = [
   { id: 'flight_domestic_economy', label: 'Domestic Economy Flight (Rapid & Pressurized / Chilled)', category: 'Aviation' },
   { id: 'flight_business', label: 'Business / Premium Flight', category: 'Aviation' },
@@ -45,9 +89,10 @@ export default function TravelRiskAnalyzer() {
   const [toCoords, setToCoords] = useState(null);
   const [toSearchMode, setToSearchMode] = useState('osm');
 
-  // Travel Mode (Separated Train vs Flight)
+  // Travel Mode (Separated Train vs Roadways vs Flight)
   const [transitGroup, setTransitGroup] = useState('train');
   const [selectedTrainClass, setSelectedTrainClass] = useState(TRAIN_CATEGORIES[1].id);
+  const [selectedRoadClass, setSelectedRoadClass] = useState(ROAD_CATEGORIES[0].id);
   const [selectedFlightClass, setSelectedFlightClass] = useState(FLIGHT_CATEGORIES[0].id);
   const [travelDate, setTravelDate] = useState(() => {
     const d = new Date();
@@ -104,39 +149,84 @@ export default function TravelRiskAnalyzer() {
 
   // Assess acclimatization lag and thermal shock
   const getAcclimatizationRisk = () => {
-    const isAC = transitGroup === 'flight' || selectedTrainClass.includes('ac');
+    const isAC = 
+      transitGroup === 'flight' || 
+      (transitGroup === 'train' && selectedTrainClass.includes('ac')) ||
+      (transitGroup === 'road' && (selectedRoadClass === 'road_car_ac' || selectedRoadClass === 'road_bus_ac'));
 
+    const isBike = transitGroup === 'road' && selectedRoadClass === 'road_two_wheeler';
+    const isRoadNonAc = transitGroup === 'road' && (selectedRoadClass === 'road_car_non_ac' || selectedRoadClass === 'road_bus_non_ac');
+
+    // Tailored transit advice depending on mode
+    const getTransitText = (level) => {
+      if (isBike) {
+        return 'Highway two-wheeler riding exposes rider to 50°C+ asphalt thermal radiation and high-velocity loo. Rest in shade every 45-60 min with electrolytes.';
+      }
+      if (transitGroup === 'road') {
+        if (selectedRoadClass === 'road_bus_non_ac') {
+          return 'Non-AC bus journey subjects travelers to hot wind currents and road glare. Pre-hydrate with ORS/water and cover face/neck with damp cotton cloth.';
+        }
+        if (selectedRoadClass === 'road_car_non_ac') {
+          return 'Non-AC car/cab allows direct radiant road heat into cabin. Keep shaded screens on side windows and hydrate every 60-90 minutes.';
+        }
+        if (selectedRoadClass === 'road_bus_ac') {
+          return 'AC bus provides continuous cooling; hydrate before rest stops to avoid sudden vasodilation upon stepping out into ambient highway air.';
+        }
+        return 'AC vehicle cabin maintains low temperature; avoid setting below 24°C to minimize thermal shock when stopping at highway toll plazas or dhabas.';
+      }
+      if (transitGroup === 'flight') {
+        return isAC 
+          ? 'Stepping out of air-conditioned flight cabin & airport directly into hot outdoor air causes acute peripheral vasodilation.'
+          : 'Rapid aviation transit shifts climate zones within hours.';
+      }
+      // Train
+      return isAC 
+        ? 'Stepping out of air-conditioning directly into hot outdoor platform air causes acute peripheral vasodilation.' 
+        : 'Long non-AC journey induces cumulative dehydration prior to arrival.';
+    };
+
+    let shockScore = 12;
     if (deltaTemp >= 14 || deltaHI >= 16) {
+      shockScore = 88;
+      if (isBike) shockScore = 96;
+      else if (isRoadNonAc) shockScore = 92;
+
       return {
         level: 'CRITICAL ACCLIMATIZATION LAG',
         badge: 'bg-red-600 text-white border-red-500',
         cardBorder: 'border-red-400 dark:border-red-800',
         cardBg: 'bg-red-50 dark:bg-red-950/30',
-        shockScore: 88,
+        shockScore,
         warning: `Sudden thermal jump of +${deltaTemp}°C (+${deltaHI}°C Heat Index). Your cardiovascular system requires 3–5 days to upregulate sweat gland density. Avoid immediate physical labor upon arrival.`,
-        transitEffect: isAC ? 'Stepping out of air-conditioning directly into hot outdoor air causes acute peripheral vasodilation.' : 'Long non-AC journey induces cumulative dehydration prior to arrival.',
+        transitEffect: getTransitText('critical'),
       };
     }
     if (deltaTemp >= 7 || deltaHI >= 8) {
+      shockScore = 60;
+      if (isBike) shockScore = 72;
+      else if (isRoadNonAc) shockScore = 66;
+
       return {
         level: 'ELEVATED TRANSITION RISK',
         badge: 'bg-orange-600 text-white border-orange-500',
         cardBorder: 'border-orange-400 dark:border-orange-800',
         cardBg: 'bg-orange-50 dark:bg-orange-950/30',
-        shockScore: 60,
+        shockScore,
         warning: `Noticeable warming shift of +${deltaTemp}°C. Drink plenty of electrolyte-rich liquids on travel day and plan shaded rest breaks.`,
-        transitEffect: isAC ? 'Maintain hydration in dry AC cabin air before arrival.' : 'Ensure adequate ventilation in non-AC coaches.',
+        transitEffect: getTransitText('elevated'),
       };
     }
     if (deltaTemp > 0) {
+      shockScore = 35;
+      if (isBike) shockScore = 45;
       return {
         level: 'MODERATE TRANSITION GRADIENT',
         badge: 'bg-amber-600 text-white border-amber-500',
         cardBorder: 'border-amber-400 dark:border-amber-800',
         cardBg: 'bg-amber-50 dark:bg-amber-950/30',
-        shockScore: 35,
+        shockScore,
         warning: 'Mild environmental temperature variation. Regular hydration and sun protection will keep you comfortable.',
-        transitEffect: 'Smooth physiological acclimatization window.',
+        transitEffect: getTransitText('moderate'),
       };
     }
     return {
@@ -146,7 +236,7 @@ export default function TravelRiskAnalyzer() {
       cardBg: 'bg-emerald-50 dark:bg-emerald-950/30',
       shockScore: 12,
       warning: `Arrival destination is ${Math.abs(deltaTemp)}°C cooler than your departure point. Low physiological risk.`,
-      transitEffect: 'Comfortable arrival environment.',
+      transitEffect: 'Comfortable arrival environment. Smooth thermal acclimatization expected.',
     };
   };
 
@@ -175,7 +265,7 @@ export default function TravelRiskAnalyzer() {
               </span>
             </div>
             <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
-              Live thermal difference analysis across all Indian cities, towns, and villages for train and flight journeys.
+              Live thermal difference analysis across all Indian cities, towns, and villages for train, roadways (own vehicle/cab/bus), and flight journeys.
             </p>
           </div>
         </div>
@@ -302,17 +392,17 @@ export default function TravelRiskAnalyzer() {
           </div>
         </div>
 
-        {/* Transit Mode Selection (Train vs Flight Separated) */}
+        {/* Transit Mode Selection (Train vs Roadways vs Flight) */}
         <div className="pt-4 border-t border-stone-300 dark:border-slate-800 space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <label className="text-xs font-bold text-slate-900 dark:text-white">
-              Conveyance Type:
+              Mode of Travel:
             </label>
-            <div className="flex gap-2.5">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setTransitGroup('train')}
-                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'train'
                     ? 'btn-3d btn-3d-orange'
                     : 'pill-3d-inactive'
@@ -324,8 +414,21 @@ export default function TravelRiskAnalyzer() {
 
               <button
                 type="button"
+                onClick={() => setTransitGroup('road')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
+                  transitGroup === 'road'
+                    ? 'btn-3d btn-3d-emerald'
+                    : 'pill-3d-inactive'
+                }`}
+              >
+                <Car className="w-3.5 h-3.5" />
+                Roadways (Vehicle / Cab / Bus)
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setTransitGroup('flight')}
-                className={`px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'flight'
                     ? 'btn-3d btn-3d-cyan'
                     : 'pill-3d-inactive'
@@ -337,14 +440,16 @@ export default function TravelRiskAnalyzer() {
             </div>
           </div>
 
-          {/* Train Dropdown or Flight Dropdown */}
+          {/* Dynamic Travel Class / Vehicle Dropdown */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-900 dark:text-slate-200 mb-1.5">
-                {transitGroup === 'train' ? 'Train Travel Class / Coach Type' : 'Flight Travel Class'}
+                {transitGroup === 'train' && 'Train Travel Class / Coach Type'}
+                {transitGroup === 'road' && 'Roadways Transit Mode (Vehicle / Cab / Bus)'}
+                {transitGroup === 'flight' && 'Flight Travel Class'}
               </label>
 
-              {transitGroup === 'train' ? (
+              {transitGroup === 'train' && (
                 <select
                   value={selectedTrainClass}
                   onChange={(e) => setSelectedTrainClass(e.target.value)}
@@ -361,7 +466,28 @@ export default function TravelRiskAnalyzer() {
                     ))}
                   </optgroup>
                 </select>
-              ) : (
+              )}
+
+              {transitGroup === 'road' && (
+                <select
+                  value={selectedRoadClass}
+                  onChange={(e) => setSelectedRoadClass(e.target.value)}
+                  className="w-full bg-stone-50 dark:bg-slate-900 border border-stone-300 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white font-semibold cursor-pointer focus:outline-none focus:border-emerald-500"
+                >
+                  <optgroup label="🚗 Own Vehicle / Private Cab / Taxi">
+                    {ROAD_CATEGORIES.filter(c => c.group === 'Own Vehicle / Cab').map((c) => (
+                      <option key={c.id} value={c.id}>{c.label}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="🚌 Bus Transit (State Transport / Intercity)">
+                    {ROAD_CATEGORIES.filter(c => c.group === 'Bus Transit').map((c) => (
+                      <option key={c.id} value={c.id}>{c.label}</option>
+                    ))}
+                  </optgroup>
+                </select>
+              )}
+
+              {transitGroup === 'flight' && (
                 <select
                   value={selectedFlightClass}
                   onChange={(e) => setSelectedFlightClass(e.target.value)}
@@ -430,7 +556,11 @@ export default function TravelRiskAnalyzer() {
             <span className="text-xs text-slate-700 dark:text-slate-300 font-bold">/ 100 Acclimatization Lag</span>
           </div>
           <p className="text-xs text-slate-700 dark:text-slate-300">
-            {transitGroup === 'flight' ? 'Rapid Aviation Transit' : 'Rail Surface Journey'}
+            {transitGroup === 'flight' 
+              ? 'Rapid Aviation Transit' 
+              : transitGroup === 'road'
+                ? (selectedRoadClass.includes('bus') ? 'Highway Bus Transit' : 'Roadways / Cab Journey')
+                : 'Rail Surface Journey'}
           </p>
         </div>
       </div>
@@ -467,7 +597,11 @@ export default function TravelRiskAnalyzer() {
             <div>
               <h4 className="text-xs font-bold text-slate-900 dark:text-white">First 48-Hour Protocol at Destination</h4>
               <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5">
-                Limit heavy outdoor exertion between 12 PM - 3 PM. Drink 750ml water before stepping out of railway station or airport.
+                {transitGroup === 'road'
+                  ? 'Rest after prolonged highway driving/travel. Rehydrate with 500-750ml water/ORS before unloading luggage and avoid direct peak sun (12 PM - 3 PM).'
+                  : transitGroup === 'flight'
+                    ? 'Acclimatize in airport terminal before outdoor exit. Drink 750ml water to counteract dry pressurized cabin dehydration.'
+                    : 'Limit heavy outdoor exertion between 12 PM - 3 PM. Drink 750ml water before stepping out of railway station platform into ambient sun.'}
               </p>
             </div>
           </div>
