@@ -1,92 +1,142 @@
-# 🇮🇳 Taap Chetna — Hyperlocal Heat-Health Intelligence & Predictive Action Platform
+# 🇮🇳 Taap Chetna (ताप चेतना) — Hyperlocal Heat-Health Intelligence & Predictive Action Platform
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Platform-Taap%20Chetna-orange.svg?style=for-the-badge" alt="Platform Taap Chetna" />
-  <img src="https://img.shields.io/badge/Domain-Climate%20%26%20Heat--Health%20Resilience-red.svg?style=for-the-badge" alt="Domain Climate & Heat-Health" />
-  <img src="https://img.shields.io/badge/Ministry-MoHFW%20%7C%20NDMA%20%7C%20IMD-green.svg?style=for-the-badge" alt="Ministry Health & Disaster Management" />
-  <img src="https://img.shields.io/badge/Node.js-20%20LTS-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 20 LTS" />
-  <img src="https://img.shields.io/badge/React-19-61DAFB.svg?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
-  <img src="https://img.shields.io/badge/Python-3.13%20ML-3776AB.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.13 ML" />
-  <img src="https://img.shields.io/badge/ML%20Engine-XGBoost%20%26%20FastAPI-FF6F00.svg?style=for-the-badge" alt="XGBoost & FastAPI" />
-  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB Atlas" />
-  <img src="https://img.shields.io/badge/TailwindCSS-4.0-38B2AC.svg?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.0" />
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License MIT" />
+  <img src="https://img.shields.io/badge/Platform-Taap%20Chetna-FF6B00?style=for-the-badge&logoColor=white" alt="Platform Taap Chetna" />
+  <img src="https://img.shields.io/badge/Domain-Climate%20%26%20Heat--Health%20Resilience-E53E3E?style=for-the-badge" alt="Domain Climate & Heat-Health" />
+  <img src="https://img.shields.io/badge/Alignment-NDMA%20%7C%20MoHFW%20%7C%20IMD-2E7D32?style=for-the-badge" alt="National Climate Health Framework Alignment" />
+  <img src="https://img.shields.io/badge/Node.js-20%20LTS-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 20 LTS" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/Python-3.10%2B%20ML-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+ ML" />
+  <img src="https://img.shields.io/badge/ML%20Engine-XGBoost%20%26%20FastAPI-FF6F00?style=for-the-badge&logo=fastapi&logoColor=white" alt="XGBoost & FastAPI" />
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB Atlas" />
+  <img src="https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.0" />
+  <img src="https://img.shields.io/badge/License-MIT-1E88E5?style=for-the-badge" alt="License MIT" />
+</p>
+
+<p align="center">
+  <strong>Bridging microclimate meteorology, clinical biostatistics, and municipal disaster command to prevent preventable heatstroke casualties across India.</strong>
+</p>
+
+<p align="center">
+  <a href="#-quickstart--local-setup-guide">⚡ Run in 5 Minutes</a> •
+  <a href="#-demo-accounts--pre-configured-credentials">🔑 Demo Credentials</a> •
+  <a href="#-step-by-step-end-to-end-demo-script">🧪 Evaluator Testing Script</a> •
+  <a href="#️-system-architecture--workflow-diagrams">🏗️ Architecture</a> •
+  <a href="#-audited-machine-learning-subsystem">🤖 Audited ML Model</a> •
+  <a href="#-complete-api-reference">📑 API Reference</a>
 </p>
 
 ---
 
-## 📑 Quick Navigation for Reviewers & Evaluators
-- [🎯 Executive Summary & The Core Problem](#-executive-summary--the-core-problem)
-- [💡 What Taap Chetna Does (The Solution)](#-what-taap-chetna-does-the-solution)
-- [✨ Key Features & Capabilities](#-key-features--capabilities)
+## 📑 Table of Contents
+- [🎯 Executive Summary & The Problem](#-executive-summary--the-problem)
+  - [The 4 Structural Failures in Conventional Heat Governance](#the-4-structural-failures-in-conventional-heat-governance)
+- [💡 The Solution: Taap Chetna](#-the-solution-taap-chetna)
+- [✨ Core Capabilities & Innovations](#-core-capabilities--innovations)
 - [👥 Team & Contributors](#-team--contributors)
 - [🏗️ System Architecture & Workflow Diagrams](#️-system-architecture--workflow-diagrams)
   - [1. Multi-Tier End-to-End System Architecture](#1-multi-tier-end-to-end-system-architecture)
-  - [2. Citizen Physiological Risk & Hydration Assessment Flow](#2-citizen-physiological-risk--hydration-assessment-flow)
+  - [2. Citizen Physiological Risk & Hydration Flow](#2-citizen-physiological-risk--hydration-flow)
   - [3. What-If Time-Shift Activity Optimization Flow](#3-what-if-time-shift-activity-optimization-flow)
   - [4. Municipal Authority Command & Predictive ML Pipeline](#4-municipal-authority-command--predictive-ml-pipeline)
-- [📁 Folder Structure Explained](#-folder-structure-explained)
-- [👥 User Roles & Permissions Matrix](#-user-roles--permissions-matrix)
-- [🤖 Machine Learning & Epidemiological Heat-Health Subsystem](#-machine-learning--epidemiological-heat-health-subsystem)
-- [⚡ Step-by-Step Setup Guide (Run in 5 Minutes)](#-step-by-step-setup-guide-run-in-5-minutes)
+- [📂 Verified Repository Structure](#-verified-repository-structure)
+- [👥 Role-Based Access Control (RBAC) Matrix](#-role-based-access-control-rbac-matrix)
+- [🤖 Audited Machine Learning Subsystem](#-audited-machine-learning-subsystem)
+  - [Controlled Experiment: Model A vs Model B](#controlled-experiment-model-a-vs-model-b)
+  - [Performance Benchmarks](#performance-benchmarks)
+  - [Leakage Correction & Temporal Expanding Prior](#leakage-correction--temporal-expanding-prior)
+  - [Transparent Interpretation of Held-Out Test R²](#transparent-interpretation-of-held-out-test-r)
+  - [Feature Importance Breakdown](#feature-importance-breakdown)
+  - [Dual-Layer Resilient Execution Architecture](#dual-layer-resilient-execution-architecture)
+- [⚡ Quickstart & Local Setup Guide](#-quickstart--local-setup-guide)
+  - [Prerequisites](#prerequisites)
+  - [Step 1: Clone Repository](#step-1-clone-repository)
+  - [Step 2: Install All Dependencies](#step-2-install-all-dependencies)
+  - [Step 3: Environment Configuration](#step-3-environment-configuration)
+  - [Step 4: Seed Initial Test Data](#step-4-seed-initial-test-data)
+  - [Step 5: Launch All Services (1 Command)](#step-5-launch-all-services-1-command)
 - [🔑 Demo Accounts & Pre-configured Credentials](#-demo-accounts--pre-configured-credentials)
 - [🧪 Step-by-Step End-to-End Demo Script](#-step-by-step-end-to-end-demo-script)
 - [📑 Complete API Reference](#-complete-api-reference)
-- [📽️ Climate Resilience & Municipal Action Impact](#-climate-resilience--municipal-action-impact)
+  - [Authentication Routes (`/api/auth`)](#-authentication-routes-apiauth)
+  - [Citizen Health Routes (`/api/citizen`)](#-citizen-health-routes-apicitizen)
+  - [Weather & Microclimate Routes (`/api/weather`)](#-weather--microclimate-routes-apiweather)
+  - [Travel Heat Shock Routes (`/api/travel`)](#-travel-heat-shock-routes-apitravel)
+  - [What-If Shift Simulator Routes (`/api/whatif`)](#-what-if-shift-simulator-routes-apiwhatif)
+  - [Municipal Authority Routes (`/api/authority`)](#-municipal-authority-routes-apiauthority)
+  - [System Administrator Routes (`/api/admin`)](#-system-administrator-routes-apiadmin)
+  - [Python FastAPI ML Microservice (`:5001`)](#-python-fastapi-ml-microservice-5001)
+- [📐 Mathematical & Biometeorological Formulations](#-mathematical--biometeorological-formulations)
+- [🏛️ National Climate Framework Alignment](#️-national-climate-framework-alignment)
 - [❓ Frequently Asked Questions (FAQ)](#-frequently-asked-questions-faq)
-- [📜 License & Acknowledgments](#-license--acknowledgments)
+- [📜 License & Data Lineage](#-license--data-lineage)
 
 ---
 
-## 🎯 Executive Summary & The Core Problem
+## 🎯 Executive Summary & The Problem
 
-Across South Asia and particularly the Indian subcontinent, climate change has transformed seasonal heat into a **recurrent public health humanitarian crisis**. In summer months, daytime temperatures routinely shatter historical records (frequently exceeding 45°C–49°C), accompanied by lethal wet-bulb temperatures and debilitating urban heat island (UHI) effects.
+Across the Indian subcontinent, climate change has transformed summer heat from an annual seasonal inconvenience into a **recurring humanitarian and public health catastrophe**. Surface temperatures in urban centers routinely exceed **45°C–49°C**, with lethal wet-bulb temperatures ($> 31^\circ\text{C}$) pushing the human body beyond its thermoregulatory limits.
 
-Despite these escalating temperatures, **traditional heat governance suffers from four systemic failures**:
+Outdoor construction laborers, delivery gig workers, street vendors, agricultural workers, senior citizens, and patients with chronic illnesses bear an extreme, disproportionate burden of acute heat illness and mortality.
 
-### The 4 Major Gaps in Conventional Heat-Health Governance:
+```
+       CONVENTIONAL HEAT GOVERNANCE               TAAP CHETNA PARADIGM SHIFT
+┌────────────────────────────────────────┐  ┌────────────────────────────────────────┐
+│  Single city airport weather reading   │─▶│ Hyperlocal ward & village microclimate │
+├────────────────────────────────────────┤  ├────────────────────────────────────────┤
+│  Generic "drink water" public bulletins│─▶│ Clinical biostatistical risk profiles  │
+├────────────────────────────────────────┤  ├────────────────────────────────────────┤
+│  Forced outdoor work during peak solar │─▶│ "What-If" time-shift shift planner     │
+├────────────────────────────────────────┤  ├────────────────────────────────────────┤
+│  Reactive post-casualty hospital triage│─▶│ Predictive ward grids & ML forecasting │
+└────────────────────────────────────────┘  └────────────────────────────────────────┘
+```
 
-1. **City-Wide Synoptic Weather Fallacy**: Municipalities rely on a single airport or regional observatory reading. This completely overlooks hyper-localized microclimates, high-density slum heat traps, asphalt radiation, and tin-roof settlements where temperatures are 4°C–8°C higher.
-2. **One-Size-Fits-All Public Health Advisories**: Broad public service announcements ("*Stay hydrated and avoid direct sun*") treat an elderly individual with cardiovascular hypertension, a pregnant mother, and a young athlete identically.
-3. **Rigid Work Scheduling for Daily-Wage Laborers**: Outdoor construction workers, gig economy delivery riders, and agricultural laborers cannot simply "stay indoors." They lack quantitative tools to simulate how shifting a labor shift by 90 minutes reduces physiological strain and core body heating.
-4. **Reactive, Disjointed Municipal Emergency Surveillance**: City authorities lack real-time ward vulnerability mapping, predictive macro-epidemiological mortality models, and localized trigger points for emergency cooling centers and water tanker deployments.
+### The 4 Structural Failures in Conventional Heat Governance
+
+1. **The Synoptic Observatory Fallacy**: Municipalities issue blanket advisories based on a single regional airport observatory. This overlooks microclimatic Urban Heat Island (UHI) traps, asphalt radiation, and tin-roof informal settlements where daytime temperatures are **4°C–8°C higher**.
+2. **Homogeneous Public Health Advisories**: Broad public service announcements treat an elderly citizen with cardiac hypertension, a pregnant woman, and a young athlete identically—ignoring critical clinical risk factors.
+3. **Inflexible Work Scheduling for Daily-Wage Laborers**: Outdoor workers cannot simply "stay indoors." They lack quantitative tools to simulate how shifting a labor shift by 90 minutes reduces core physiological strain and dehydration.
+4. **Reactive, Disconnected Municipal Emergency Response**: Municipalities lack real-time ward vulnerability mapping, proactive cooling center activations, water tanker logistics coordination, and predictive macro-epidemiological forecasting.
 
 ---
 
-## 💡 What Taap Chetna Does (The Solution)
+## 💡 The Solution: Taap Chetna
 
-**Taap Chetna (ताप चेतना — *Heat Awareness*)** is an end-to-end, multi-tier climate health intelligence and emergency management platform designed for both **citizens on the ground** and **municipal disaster authorities**:
+**Taap Chetna (ताप चेतना — *Heat Awareness*)** is an end-to-end, multi-tier climate health intelligence and emergency management platform designed for **citizens, outdoor laborers, municipal health officers, and disaster management authorities (NDMA/SDMA/DDMA)**.
 
-- 📍 **Hyperlocal Resolution & Microclimate Telemetry**: Integrates with OpenStreetMap Nominatim and Open-Meteo to resolve hyper-accurate coordinates down to village and municipal ward levels.
-- 🩺 **Personalized Physiological Risk Profiling**: Evaluates individual age brackets, pre-existing comorbidities (cardiovascular, diabetes, kidney disease, hypertension), hydration volume, direct outdoor sun exposure, and work intensity to compute medically grounded vulnerability scores.
-- ⏳ **"What-If" Time-Shift Activity Planner**: Simulates physiological strain hour-by-hour across a 24-hour horizon, recommending safer morning or evening shift alternatives that lower heat stroke probabilities.
-- 🚦 **Intra- & Inter-City Travel Heat Shock Analyzer**: Pinpoints sudden microclimate transitions between origin and destination points (e.g. traveling between dry heat corridors and humid riverine basins).
-- 🏛️ **Municipal Command & Ward Intelligence**: Role-Based Access Control (RBAC) enabling municipal officers to monitor ward vulnerability indices, declare cooling shelter activations, track water tanker deployment, and broadcast emergency bulletins.
-- 🤖 **Macro Heat-Health Burden ML Intelligence**: State-year supervised XGBoost and Decision Tree regression models trained on 14 years of state-level NCRB heatstroke fatalities and NASA POWER surface meteorology, forecasting macro population heat burdens and suggesting operational cooling protocols.
+The platform bridges atmospheric reanalysis, forward weather simulations, and clinical biostatistics into four actionable pillars:
+1. **Hyperlocal Microclimate Intelligence**: Pinpoint coordinate-level weather telemetry, UV radiation, relative humidity, wind speed, and computed NOAA Rothfusz Heat Index.
+2. **Personalized Physiological Risk Profiling**: Clinical vulnerability scoring incorporating age brackets, 8 chronic comorbidities, exertion levels, and hydration intake.
+3. **"What-If" Diurnal Shift Optimization**: Forward 24-hour simulation that models thermal curves and recommends safer working windows to mitigate heat exhaustion.
+4. **Municipal Command & Macro-Burden ML**: Ward-level vulnerability grids, real-time emergency alert dispatches, and an audited XGBoost epidemiological model forecasting macro state-year heatstroke burden.
 
 ---
 
-## ✨ Key Features & Capabilities
+## ✨ Core Capabilities & Innovations
 
-| Capability | Technical Implementation | Impact on Heat-Health Resilience |
+| Pillar | Technical Implementation | Operational & Human Impact |
 | :--- | :--- | :--- |
-| 📍 **Hyperlocal Microclimate Telemetry** | OpenStreetMap Nominatim forward/reverse geocoding + Open-Meteo multi-variable APIs (2m Temp, RH, Dew Point, Radiation, Wind). | Eliminates city-wide average errors; gives citizens neighborhood-accurate heat exposure metrics. |
-| 🩺 **Dynamic Physiological Vulnerability Engine** | Clinical risk formula factoring age vulnerability curves, 8 chronic comorbidity weights, hydration volume, and outdoor exertion duration. | Delivers tailored, medically safe work/rest cycles and customized fluid intake guidelines. |
-| ⏳ **"What-If" Time-Shift Simulator** | Multi-hourly forward simulation model interpolating weather curves with metabolic exertion rates. | Enables gig workers and outdoor laborers to shift outdoor shifts into cooler thermal windows. |
-| 🚦 **Travel Heat Transition Shock Analyzer** | Differential thermal gradient engine comparing origin vs destination wet-bulb and dry-bulb temperatures. | Warns travelers of abrupt climate acclimation shocks during intra-city commutes or cross-state transit. |
+| 📍 **Hyperlocal Microclimate Telemetry** | OpenStreetMap Nominatim geocoding + Open-Meteo multi-variable APIs (2m Temp, RH, Dew Point, Radiation, Wind). | Eliminates city-wide average errors; gives citizens neighborhood-accurate heat exposure metrics. |
+| 🩺 **Personalized Physiological Risk Engine** | Clinical risk formula factoring age vulnerability curves, 8 chronic comorbidity weights, hydration deficit, and outdoor exertion. | Delivers tailored, medically safe work/rest cycles and customized fluid/electrolyte intake guidelines. |
+| ⏳ **"What-If" Time-Shift Activity Planner** | Multi-hourly forward simulation interpolating 24-hour weather curves with metabolic exertion rates. | Enables gig workers and outdoor laborers to shift shifts into cooler thermal windows, dropping heat index exposure by up to **6.5°C**. |
+| 🚦 **Travel Heat Transition Shock Analyzer** | Differential thermal gradient engine comparing origin vs. destination wet-bulb and dry-bulb temperatures. | Warns travelers of abrupt climate acclimation shocks during intra-city commutes or cross-state transit. |
 | 🏛️ **Ward-Level Municipal Command Center** | Interactive geospatial ward vulnerability cards, live officer dispatch bulletins, and designated cooling shelter directories. | Empowers disaster management authorities (DDMA/NDMA) to orchestrate localized interventions before casualties occur. |
-| 🤖 **Supervised Macro-Burden ML Regressor** | XGBoost Regressor + Decision Tree trained on 2001–2014 NCRB heatstroke data & NASA POWER satellite surface reanalysis. | Predicts state-level excess mortality risks and generates actionable municipal preparedness advisories. |
-| 🔄 **Resilient Hybrid Architecture** | Node.js client service with automatic local schema & weight fallback if the Python ML microservice is unreachable. | Guarantees zero downtime for municipal dashboards during emergency disaster operations. |
-| 🎨 **State-of-the-Art Accessible UI/UX** | React 19 + Tailwind CSS 4.0 + Lucide icons with high-contrast heat severity palettes and full dark/light mode. | Frictionless usability across mobile smartphones and municipal desktop command centers. |
+| 🤖 **Audited Macro-Burden ML Regressor** | Supervised XGBoost Regressor trained on 2001–2014 NCRB mortality and NASA POWER satellite surface telemetry. | Predicts state-level excess mortality risks and generates actionable municipal preparedness advisories. |
+| 🔄 **Dual-Layer Resilient Failover** | Node.js backend with automatic fallback to compiled baseline schemas and weights if Python service is paused. | Guarantees zero downtime for municipal dashboards during emergency disaster operations. |
+| 🛡️ **System Administrator Portal** | Accreditation lifecycle management for municipal health officers, credential issuing, and authority auditing. | Ensures verified, role-based governance over public safety emergency broadcasts. |
 
 ---
 
 ## 👥 Team & Contributors
 
-| Name | Role | GitHub Profile |
+| Name | Role & Specialization | GitHub Profile |
 | :--- | :--- | :--- |
 | **Aaditya Singh** | Full-Stack Architect & ML Engineering | [@Aadityasingh0709](https://github.com/Aadityasingh0709) |
 | **Keshaw Jha** | UI & Backend Developer | [@keshaw006](https://github.com/keshaw006) |
+| **Sudhanshu Singh** | Database Developer | [@sudhanshu01032006](https://github.com/sudhanshu01032006) |
+| **Garima Gupta** | API Management & Frontend Developer | [@garimaguptat2](https://github.com/garimaguptat2) |
+| **Anvesha Singh** | UI & Frontend Developer | [@anveshasingh01](https://github.com/anveshasingh01) |
 
 ---
 
@@ -96,109 +146,109 @@ Despite these escalating temperatures, **traditional heat governance suffers fro
 
 ```mermaid
 graph TD
-    subgraph ClientTier ["🖥️ Frontend Client Tier (React 19 + Vite + Tailwind CSS)"]
-        UI_NAV["Navigation & Theme Provider"]
-        UI_HOME["Citizen Home & Risk Calculator"]
-        UI_WHATIF["What-If Time Shift Planner"]
-        UI_TRAVEL["Travel & Transition Analyzer"]
-        UI_ADMIN["Municipal Authority Dashboard"]
-        UI_BURDEN["Heat-Health Burden ML Panel"]
-        AUTH_CTX["Auth Context (JWT Session Store)"]
+    subgraph ClientTier ["🖥️ Frontend Client Tier (React 19 + Vite + Tailwind CSS 4.0)"]
+        UI_NAV["Navbar & Theme Provider (Dark / Light)"]
+        UI_CALC["Personal Risk Calculator (Biometeorology & Vitals)"]
+        UI_WHATIF["What-If Time Shift Planner (24h Diurnal Simulation)"]
+        UI_TRAVEL["Travel Risk Analyzer (Acclimatization Delta)"]
+        UI_AUTH["Auth Modal & JWT Session Store"]
+        UI_WARD["Municipal Officer Dashboard (Ward 17-24 Grid)"]
+        UI_BURDEN["Macro Heat-Health Burden ML Panel"]
+        UI_ADMIN["System Admin Portal (Officer Accreditation)"]
     end
 
-    subgraph GatewayTier ["⚙️ Application Backend Tier (Node.js 20 LTS + Express REST API)"]
-        AUTH_MID["JWT Authentication & RBAC Middleware"]
-        AUTH_CTRL["Auth Controller (Login, Register, Profile)"]
-        WEATHER_CTRL["Weather & OSM Geocoding Proxy"]
-        WARD_CTRL["Ward Telemetry & Alert Coordinator"]
-        ADMIN_CTRL["Admin Officer Approval & Monitoring"]
-        ML_PROXY["Heat Burden Resilient Proxy Service"]
+    subgraph GatewayTier ["⚙️ Backend Gateway Tier (Node.js 20 LTS + Express REST API :5000)"]
+        MID_AUTH["JWT Authentication & RBAC Middleware"]
+        CTRL_AUTH["Auth Controller (Register, Login, Me)"]
+        CTRL_CITIZEN["Citizen Profile & Risk Controller"]
+        CTRL_WEATHER["Weather Controller (Open-Meteo & Nominatim Proxy)"]
+        CTRL_TRAVEL["Travel Transition Differential Engine"]
+        CTRL_WHATIF["What-If Time-Shift Calculation Engine"]
+        CTRL_WARD["Ward & Alert Dispatch Controller"]
+        CTRL_ADMIN["Admin Officer Management Controller"]
+        SVC_ML_PROXY["Resilient Heat Burden Service (Port 5001 + Fallback)"]
     end
 
-    subgraph MLTier ["🤖 ML Microservice Tier (Python 3.13 + FastAPI :5001)"]
-        FAST_API["FastAPI REST Application (Uvicorn)"]
-        XGB_ENGINE["Trained XGBoost Regressor (Primary)"]
+    subgraph MLTier ["🤖 ML Microservice Tier (Python 3.10+ + FastAPI :5001)"]
+        FAST_API["FastAPI Inference Server (Uvicorn)"]
+        XGB_ENGINE["Trained XGBoost Regressor (Model B)"]
         DT_ENGINE["Trained Decision Tree Regressor (Baseline)"]
-        FEATURE_ENG["Rothfusz Heat Index & Demographics Scaler"]
-        METADATA_STORE["Model Metadata & Baseline Schemas"]
+        POP_DEMO["Intercensal Demographic Normalizer"]
+        FALLBACK_SCHEMA["feature_schema.json (Offline Local Fallback)"]
     end
 
-    subgraph DataTier ["💾 Persistence & External Telemetry Tier"]
+    subgraph PersistenceTier ["💾 Data & Telemetry Tier"]
         DB_MONGO[("MongoDB Atlas Database")]
         EXT_METEO["Open-Meteo Real-Time Weather API"]
         EXT_OSM["OpenStreetMap Nominatim Geocoding API"]
-        DATA_NCRB[("NCRB 2001-2014 Historical Mortality")]
-        DATA_NASA[("NASA POWER Satellite Surface Telemetry")]
+        DATA_NCRB[("NCRB 2001-2014 Historical Heatstroke Dataset")]
+        DATA_NASA[("NASA POWER Daily Surface Meteorology Reanalysis")]
     end
 
-    UI_HOME --> WEATHER_CTRL
-    UI_WHATIF --> WEATHER_CTRL
-    UI_TRAVEL --> WEATHER_CTRL
-    UI_ADMIN --> AUTH_MID
-    UI_ADMIN --> WARD_CTRL
-    UI_BURDEN --> ML_PROXY
-    UI_NAV --> AUTH_CTX
-    AUTH_CTX -- "Bearer JWT" --> AUTH_MID
+    UI_CALC --> CTRL_WEATHER
+    UI_WHATIF --> CTRL_WHATIF
+    UI_TRAVEL --> CTRL_TRAVEL
+    UI_WARD --> MID_AUTH
+    UI_ADMIN --> MID_AUTH
+    UI_AUTH --> CTRL_AUTH
 
-    AUTH_MID --> AUTH_CTRL
-    AUTH_MID --> ADMIN_CTRL
-    AUTH_MID --> WARD_CTRL
-    WEATHER_CTRL --> EXT_METEO
-    WEATHER_CTRL --> EXT_OSM
+    MID_AUTH --> CTRL_WARD
+    MID_AUTH --> CTRL_ADMIN
+    CTRL_WEATHER --> EXT_METEO
+    CTRL_WEATHER --> EXT_OSM
 
-    AUTH_CTRL --> DB_MONGO
-    WARD_CTRL --> DB_MONGO
-    ADMIN_CTRL --> DB_MONGO
+    CTRL_AUTH --> DB_MONGO
+    CTRL_CITIZEN --> DB_MONGO
+    CTRL_WARD --> DB_MONGO
+    CTRL_ADMIN --> DB_MONGO
 
-    ML_PROXY -- "POST /predict (:5001)" --> FAST_API
-    ML_PROXY -. "Offline Fallback to Disk Weights" .-> METADATA_STORE
-    FAST_API --> FEATURE_ENG
-    FEATURE_ENG --> XGB_ENGINE
-    FEATURE_ENG --> DT_ENGINE
-    XGB_ENGINE --> METADATA_STORE
+    CTRL_WARD --> SVC_ML_PROXY
+    SVC_ML_PROXY -- "POST /predict" --> FAST_API
+    SVC_ML_PROXY -. "Offline Fallback" .-> FALLBACK_SCHEMA
+    FAST_API --> XGB_ENGINE
+    FAST_API --> POP_DEMO
 
-    DATA_NCRB --> FEATURE_ENG
-    DATA_NASA --> FEATURE_ENG
+    DATA_NCRB -. "Trained Offline" .-> XGB_ENGINE
+    DATA_NASA -. "Trained Offline" .-> XGB_ENGINE
 ```
 
 ---
 
-### 2. Citizen Physiological Risk & Hydration Assessment Flow
+### 2. Citizen Physiological Risk & Hydration Flow
 
 ```mermaid
 flowchart TD
-    Start([Citizen Opens Taap Chetna]) --> LocChoice{Location Input Method}
+    Start([Citizen Opens Taap Chetna]) --> LocChoice{Location Input}
+    LocChoice -- "GPS Auto-detect" --> GPS[Browser Geolocation API]
+    LocChoice -- "Manual Search" --> OSM[OpenStreetMap Nominatim Geocoder]
 
-    LocChoice -- "GPS / Browser" --> GPSDetect[Query Browser Geolocation API]
-    LocChoice -- "Manual Search" --> OSMQuery[Type City/Ward -> Nominatim Search]
+    GPS --> FetchWeather[Fetch Open-Meteo Real-Time Telemetry]
+    OSM --> FetchWeather
 
-    GPSDetect --> FetchWeather[Fetch Hyperlocal Open-Meteo Telemetry]
-    OSMQuery --> FetchWeather
+    FetchWeather --> ExtractEnv[Extract Temp, RH, Wind Speed, UV & Rothfusz Heat Index]
 
-    FetchWeather --> ExtractEnv[Extract Temp, RH, Wind Speed, UV & Compute Rothfusz Heat Index]
-
-    ExtractEnv --> InputPhysio[Input Personal Health Profile]
-    subgraph PhysiologicalParameters ["Personal Health Vitals"]
-        P1["Age Bracket (<12, 18-50, >65)"]
-        P2["Comorbidities (Hypertension, Diabetes, Cardiac, Renal)"]
-        P3["Outdoor Sun Exposure Hours"]
-        P4["Work Intensity (Sedentary, Moderate, Strenuous)"]
-        P5["Daily Hydration (Litres of Water Consumed)"]
+    ExtractEnv --> InputVitals[Input Personal Health Profile]
+    subgraph VitalsParameters ["Personal Physiological Parameters"]
+        V1["Age Bracket (<12, 18-50, >65)"]
+        V2["Comorbidities (Cardiac, Hypertension, Diabetes, Renal)"]
+        V3["Direct Outdoor Sun Exposure Hours"]
+        V4["Work Exertion Intensity (Sedentary, Moderate, Strenuous)"]
+        V5["Water / Fluid Intake Today (Litres)"]
     end
 
-    InputPhysio --> PhysiologicalParameters
-    PhysiologicalParameters --> ComputeRisk[Run Clinical Vulnerability Scoring Engine]
+    InputVitals --> VitalsParameters
+    VitalsParameters --> CalcEngine[Calculate Clinical Vulnerability Index: 0 - 100]
 
-    ComputeRisk --> RiskBand{Calculated Vulnerability Band}
-    RiskBand -- "Score < 30" --> LowRisk["🟢 Low Risk: Standard hydration, regular outdoor activity permitted"]
-    RiskBand -- "Score 30 - 60" --> ModRisk["🟡 Moderate Risk: Mandatory shade breaks every 45 mins, 500ml/hr intake"]
-    RiskBand -- "Score 60 - 85" --> HighRisk["🟠 High Risk: Curtail strenuous exposure; ORS electrolyte rehydration"]
-    RiskBand -- "Score > 85" --> ExtremeRisk["🔴 Critical / Heat Stroke Risk: Immediate indoor refuge, emergency cooling required"]
+    CalcEngine --> RiskBand{Vulnerability Score Band}
+    RiskBand -- "< 30" --> Low["🟢 LOW RISK: Standard hydration (2-2.5L), normal outdoor routine"]
+    RiskBand -- "30 - 59" --> Moderate["🟡 MODERATE RISK: Mandatory shade break every 45m, 500ml/hr water"]
+    RiskBand -- "60 - 79" --> High["🟠 HIGH RISK: Curtail strenuous labor, consume ORS electrolytes"]
+    RiskBand -- "≥ 80" --> Critical["🔴 CRITICAL RISK: Immediate indoor retreat, active misting / emergency medical care"]
 
-    LowRisk --> GenAdvice[Render Actionable Work-Rest Matrix & Hydration Plan]
-    ModRisk --> GenAdvice
-    HighRisk --> GenAdvice
-    ExtremeRisk --> GenAdvice
+    Low --> ActionPlan[Render Actionable Work-Rest Matrix & Custom Hydration Guidance]
+    Moderate --> ActionPlan
+    High --> ActionPlan
+    Critical --> ActionPlan
 ```
 
 ---
@@ -207,20 +257,15 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    UserSelect([Citizen / Gig Worker Opens What-If Simulator]) --> DefineTask[Define Outdoor Activity & Expected Duration]
-    DefineTask --> CurrentTimeSlot[Select Proposed Working Slot e.g. 13:00 - 16:00]
-
-    CurrentTimeSlot --> Pull24hCurve[Pull 24-Hour Hourly Weather Forecast Curve]
-    Pull24hCurve --> SimSlot[Simulate Cumulative Heat Stress for Proposed Window]
-
-    SimSlot --> ScanAlternatives[Algorithm Scans All 24h Forward Windows for Equal Duration]
-    ScanAlternatives --> CalcDelta[Compute Relative Strain Reduction & Temperature Drops]
-
-    CalcDelta --> BestSlotIdentified{Safer Window Found?}
-    BestSlotIdentified -- Yes --> RecommendShift[🌟 Recommend Optimal Shift: e.g. 07:00 - 10:00 or 17:30 - 20:30]
-    BestSlotIdentified -- No --> MaxProtectAdvisory[⚠️ Extreme Heat Across Horizon: Restrict Activity to Indoor Only]
-
-    RecommendShift --> VisualDelta["Display Side-by-Side Comparison: Heat Index Drop (-6.5°C), Hydration Needed (-1.8L)"]
+    UserSelect([Citizen / Gig Worker Opens What-If Planner]) --> InputShift[Specify Planned Work Slot e.g. 13:00 - 16:00]
+    InputShift --> PullForecast[Fetch 24-Hour Diurnal Weather Curve]
+    PullForecast --> SimCurrent[Compute Cumulative Heat Strain for Current Window]
+    SimCurrent --> ScanSlots[Scan All 24h Forward Windows of Equal Duration]
+    ScanSlots --> RankSlots[Rank by Thermal Index Delta & Dehydration Reduction]
+    RankSlots --> OptimalFound{Safer Window Identified?}
+    OptimalFound -- Yes --> RenderBest[🌟 Recommend Optimal Window: e.g. 07:00 - 10:00 or 17:30 - 20:30]
+    OptimalFound -- No --> IndoorNotice[⚠️ Pervasive Extreme Heat: Restrict Operations to Indoor Only]
+    RenderBest --> ComparisonCard["Display Side-by-Side Comparison: Heat Index Drop (-6.5°C), Fluid Saved (-1.8L)"]
 ```
 
 ---
@@ -229,199 +274,234 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    AdminLogin([Municipal Health Officer / Disaster Authority Logs In]) --> RBACCheck{Verified Role?}
+    Login([Officer Logs In with Municipal Credentials]) --> RoleGuard{Role = MUNICIPAL_OFFICER?}
+    RoleGuard -- No --> Reject[Access Denied]
+    RoleGuard -- Yes --> LoadDashboard[Load Municipal Executive Command Center]
 
-    RBACCheck -- No --> Deny[Access Denied: Citizen View Only]
-    RBACCheck -- Yes --> LoadDashboard[Load Municipal Executive Dashboard]
+    LoadDashboard --> RenderWards[Render Ward 17 - 24 Real-Time Vulnerability Grid]
+    RenderWards --> OfficerAction{Officer Decision}
 
-    LoadDashboard --> WardGrid[Render Real-Time Ward Vulnerability Grid]
-    WardGrid --> MLInferenceReq[Trigger ML Heat-Health Burden Panel]
+    OfficerAction -- "Ward Heat Surge" --> IssueAlert[Create Emergency Heat Alert]
+    IssueAlert --> Broadcast[Save & Broadcast to Citizen Dashboard for that Ward]
 
-    subgraph MLMicroservicePipeline ["Python ML Microservice (FastAPI :5001)"]
-        SelectState["Select State & Review Summer Climate Signals"]
-        CheckHealth["Query /predict with State, Heatwave Days, Extreme Temp Days"]
-        RunXGB["XGBoost Regressor Computes Macro State-Year Mortality Estimate"]
-        GenBand["Derive Burden Band (Low / Moderate / Elevated / Critical)"]
-        GenAdvisories["Synthesize Tailored Municipal Cooling & Water Tanker Advisory"]
+    OfficerAction -- "Macro Strategic Planning" --> QueryML[Query Macro Heat-Health ML Model]
+    
+    subgraph MLServiceFlow ["Inference Pipeline (:5001)"]
+        Req[POST /predict with State, Heatwave Days, Extreme Days]
+        RunXGB[XGBoost Predicts Macro Heatstroke Excess Mortality]
+        Categorize[Categorize: LOW / MODERATE / ELEVATED / CRITICAL BURDEN]
+        Advisory[Synthesize Tailored Operational Advisory: Tankers & Cooling Centers]
     end
 
-    MLInferenceReq --> MLMicroservicePipeline
-    MLMicroservicePipeline --> RenderMLPanel[Render Visual Burden Card & Factor Importance]
-
-    RenderMLPanel --> OfficerAction{Municipal Officer Decision}
-    OfficerAction -- "High Burden / Extreme Ward Heat" --> TriggerAlert[Broadcast Ward Cooling & Hydration Alert]
-    OfficerAction -- "Vulnerable Ward Concentration" --> DeployCooling[Deploy Mobile Cooling Vans & Set Up Mist Centers]
-    OfficerAction -- "Routine Monitoring" --> LogReport[Export Ward Telemetry & File Status Report]
-
-    TriggerAlert --> AlertBulletin[Live Alert Visible to All Citizens in Ward]
+    QueryML --> MLServiceFlow
+    MLServiceFlow --> DisplayCard[Display Macro-Burden Card, Metrics & Explanations]
+    DisplayCard --> DeployUnits[Mobilize Water Tankers, Activate Public Mist Cooling Shelters]
 ```
 
 ---
 
-## 📁 Folder Structure Explained
+## 📂 Verified Repository Structure
 
 ```text
 taap-chetna/
-├── frontend/                     # React 19 Client Application (Vite + Tailwind CSS)
-│   ├── public/                   # Static icons, logos, and web assets
+├── frontend/                                # React 19 Client Application (Vite + Tailwind CSS 4.0)
+│   ├── public/                              # Static public icons, assets, and SVGs
 │   ├── src/
-│   │   ├── components/           # UI Components
-│   │   │   ├── HeatHealthBurdenPanel.jsx  # Interactive ML macro-burden card
-│   │   │   ├── MunicipalDashboard.jsx     # Authority ward control center
-│   │   │   ├── PersonalRiskAssessment.jsx # Clinical citizen risk questionnaire
-│   │   │   ├── WhatIfPlanner.jsx          # Time-shift activity optimizer
-│   │   │   ├── TravelAnalyzer.jsx         # Origin-destination heat shock tool
-│   │   │   ├── Navbar.jsx                 # Dynamic responsive navigation bar
-│   │   │   └── ProtectedRoute.jsx         # RBAC route guard
-│   │   ├── context/              # React Context Providers
-│   │   │   ├── AuthContext.jsx   # Session management & JWT token persistence
-│   │   │   └── ThemeContext.jsx  # Dark/Light theme switching
-│   │   ├── data/                 # Curated dataset of Indian cities & wards
-│   │   ├── services/             # Axios API client integrations
-│   │   │   └── api.js            # Unified REST endpoint connectors
-│   │   ├── App.jsx               # Main application routing tree
-│   │   ├── main.jsx              # React DOM mounting entry point
-│   │   └── index.css             # Tailwind CSS tokens & custom styling
-│   └── package.json              # Frontend client dependencies
+│   │   ├── components/                      # Modular UI Components
+│   │   │   ├── PersonalRiskCalculator.jsx   # Clinical physiological risk assessment & live weather
+│   │   │   ├── WhatIfPlanner.jsx            # 24-hour diurnal time-shift activity optimizer
+│   │   │   ├── TravelRiskAnalyzer.jsx       # Origin-destination thermal transition shock analyzer
+│   │   │   ├── MunicipalDashboard.jsx       # Ward vulnerability grid, alerts & cooling center ops
+│   │   │   ├── HeatHealthBurdenPanel.jsx    # Supervised ML macro-burden forecasting card
+│   │   │   ├── AdminPortal.jsx              # System admin accreditation & officer credential manager
+│   │   │   ├── AuthModal.jsx                # Secure login & registration modal with role selector
+│   │   │   ├── PlaceSearchInput.jsx         # Debounced OSM Nominatim autocomplete input
+│   │   │   ├── Navbar.jsx                   # High-contrast navigation bar with role badge & theme toggle
+│   │   │   ├── Footer.jsx                   # National framework credits & emergency numbers
+│   │   │   ├── ScrollProgressBar.jsx        # Subtle reading / evaluation progress indicator
+│   │   │   ├── ScrollToTopButton.jsx        # 3D floating quick-return button
+│   │   │   └── ProtectedRoute.jsx           # RBAC route guarding
+│   │   ├── context/                         # React Context State Stores
+│   │   │   ├── AuthContext.jsx              # JWT persistence, session lifecycle & role-based routing
+│   │   │   └── ThemeContext.jsx             # Dark / Light mode toggle provider
+│   │   ├── data/                            # Curated city & ward metadata
+│   │   ├── services/
+│   │   │   └── api.js                       # Axios HTTP client with unified backend endpoints
+│   │   ├── App.jsx                          # Main routing tree & RBAC guards
+│   │   ├── main.jsx                         # Application root mount
+│   │   └── index.css                        # Tailwind CSS 4.0 design tokens & animations
+│   ├── package.json                         # Frontend dependencies
+│   └── vite.config.js                       # Vite build configuration
 │
-├── backend/                      # Node.js 20 LTS Express REST API
+├── backend/                                 # Node.js 20 LTS Express REST API Gateway
 │   ├── config/
-│   │   ├── db.js                 # MongoDB connection & reconnect logic
-│   │   └── seed.js               # Database seeder (Admin, Municipal Officers, Wards)
+│   │   ├── db.js                            # MongoDB Atlas connection & auto-reconnect logic
+│   │   └── seed.js                          # Database seeder (Admin, Officers, Wards, Sample Alerts)
 │   ├── controllers/
-│   │   ├── authController.js     # Citizen & Officer authentication
-│   │   ├── authorityController.js# Ward management, alerts, and ML proxy handler
-│   │   ├── weatherController.js  # Open-Meteo & Nominatim geocoding proxy
-│   │   ├── adminController.js    # Administrative officer approvals & audit logs
-│   │   └── whatifController.js   # Time-shift calculation backend
+│   │   ├── authController.js                # Citizen registration, login & JWT profile retrieval
+│   │   ├── citizenController.js             # Citizen health profile management & risk computation
+│   │   ├── weatherController.js             # Open-Meteo & Nominatim geocoding proxy
+│   │   ├── travelController.js              # Origin vs. destination thermal transition calculator
+│   │   ├── whatIfController.js              # Diurnal weather curve time-shift optimizer
+│   │   ├── authorityController.js           # Ward grid, alert broadcast & ML proxy handler
+│   │   └── adminController.js               # Officer accreditation review & credential generation
 │   ├── middleware/
-│   │   ├── auth.js               # JWT verification & RBAC role enforcement
-│   │   └── errorHandler.js       # Centralized HTTP error handler
+│   │   ├── auth.js                          # Bearer JWT token verification
+│   │   ├── role.js                          # Strict Role-Based Access Control (RBAC) enforcement
+│   │   └── errorHandler.js                  # Centralized HTTP error handler
 │   ├── models/
-│   │   ├── User.js               # User schema (Citizen, Municipal Officer, Admin)
-│   │   ├── Ward.js               # Ward geographical & risk schema
-│   │   ├── Alert.js              # Emergency public alert broadcast schema
-│   │   └── AuthorityRequest.js   # Officer accreditation request schema
+│   │   ├── User.js                          # User schema (Citizen, Municipal Officer, Admin)
+│   │   ├── Ward.js                          # Ward vulnerability & demographic schema
+│   │   ├── Alert.js                         # Emergency public alert broadcast schema
+│   │   └── AuthorityRequest.js              # Officer accreditation review schema
 │   ├── routes/
-│   │   ├── auth.js               # Auth routes (/api/auth)
-│   │   ├── authority.js          # Authority routes (/api/authority)
-│   │   ├── weather.js            # Weather proxy routes (/api/weather)
-│   │   ├── citizen.js            # Citizen assessment routes (/api/citizen)
-│   │   ├── travel.js             # Travel analyzer routes (/api/travel)
-│   │   └── whatif.js             # What-If simulation routes (/api/whatif)
+│   │   ├── auth.js                          # /api/auth routes
+│   │   ├── citizen.js                       # /api/citizen routes
+│   │   ├── weather.js                       # /api/weather routes
+│   │   ├── travel.js                        # /api/travel routes
+│   │   ├── whatif.js                        # /api/whatif routes
+│   │   ├── authority.js                     # /api/authority routes
+│   │   └── admin.js                         # /api/admin routes
 │   ├── services/
-│   │   ├── weatherService.js     # Weather parsing & Rothfusz computation
-│   │   └── heatBurdenService.js  # ML microservice client with offline fallback
-│   ├── .env.example              # Sample backend environment configuration
-│   └── package.json              # Backend dependencies & seed scripts
+│   │   ├── weatherService.js                # Weather data parsing & Rothfusz computation
+│   │   └── heatBurdenService.js             # ML microservice client with offline fallback
+│   ├── .env.example                         # Environment configuration template
+│   ├── index.js                             # Express application server entry point (:5000)
+│   └── package.json                         # Backend dependencies
 │
-├── ml/                           # Python Machine Learning Subsystem
-│   ├── data/                     # Training datasets & state mappings
-│   │   ├── heatstroke_mortality_state_year_2001_2014.csv  # 2001-2014 NCRB observations
-│   │   ├── state_name_mapping.csv                         # State nomenclature resolution
-│   │   └── state_year_heat_health_training_dataset.csv     # Compiled training dataset
-│   ├── models/                   # Serialized model artifacts & evaluation files
-│   │   ├── xgboost_heat_health_model.joblib        # Pre-trained XGBoost Regressor
-│   │   ├── decision_tree_heat_health_model.joblib  # Interpretable Decision Tree
-│   │   ├── feature_importance.csv                  # Relative feature weights
-│   │   ├── feature_schema.json                     # Feature schema & state baselines
-│   │   ├── model_metadata.json                     # Hyperparameters & data lineage
-│   │   └── model_metrics.json                      # R2, MAE, RMSE benchmark scores
-│   ├── scripts/                  # Automated data ingestion & aggregation scripts
-│   │   ├── download_environment_2001_2014.py       # NASA POWER downloader
-│   │   └── aggregate_state_year.py                 # Multi-year spatial-temporal aggregator
-│   ├── utils/                    # Core mathematical & epidemiological utilities
-│   │   ├── heat_metrics.py       # Rothfusz Heat Index & wet-bulb equations
-│   │   ├── geo_utils.py          # State boundary resolution via GeoJSON
-│   │   └── population_data.py    # Intercensal demographic scaling
-│   ├── train_pipeline.py         # End-to-end model training, validation & export
-│   └── serve.py                  # High-performance FastAPI inference microservice (:5001)
+├── ml/                                      # Python Machine Learning Subsystem
+│   ├── data/                                # Cleaned training datasets & state mappings
+│   │   ├── heatstroke_mortality_state_year_2001_2014.csv  # 14-year historical NCRB observations
+│   │   ├── state_name_mapping.csv                         # State name resolution dictionary
+│   │   └── state_year_heat_health_training_dataset.csv     # Compiled training matrix (336 state-years)
+│   ├── models/                              # Serialized model artifacts & evaluation files
+│   │   ├── xgboost_heat_health_model.joblib        # Audited primary XGBoost Regressor (Model B)
+│   │   ├── xgboost_no_target_encoding.joblib       # Ablation model without baseline (Model A)
+│   │   ├── decision_tree_heat_health_model.joblib  # Interpretable Decision Tree baseline
+│   │   ├── feature_importance.csv                  # Relative feature weights & rankings
+│   │   ├── feature_schema.json                     # Feature schema & offline state medians
+│   │   ├── model_metadata.json                     # Hyperparameters, metrics & lineage
+│   │   ├── model_metrics.json                      # Audited train/val/test evaluation scores
+│   │   └── predictions_test.csv                    # Held-out test set predictions vs actuals
+│   ├── scripts/                             # Ingestion & aggregation pipelines
+│   │   ├── download_environment_2001_2014.py       # NASA POWER reanalysis ingestion script
+│   │   └── aggregate_state_year.py                 # Spatial-temporal state aggregator
+│   ├── utils/                               # Mathematical & demographic utilities
+│   │   ├── heat_metrics.py                         # Rothfusz Heat Index & wet-bulb equations
+│   │   ├── geo_utils.py                            # Spatial boundary resolution
+│   │   └── population_data.py                      # Intercensal demographic scaling
+│   ├── train_pipeline.py                    # End-to-end model training, validation & serialization
+│   └── serve.py                             # High-performance FastAPI inference microservice (:5001)
 │
-├── ML_REPORT.md                  # Comprehensive ML benchmark report & feature analysis
-├── .gitignore                    # Git ignore excluding secrets & large raw datasets
-├── start-all.bat                 # 1-Click Windows launch script (Node + Vite + FastAPI)
-└── package.json                  # Root orchestration script (concurrently runner)
+├── ML_REPORT.md                             # Comprehensive scientific ML benchmark & audit report
+├── start-all.bat                            # 1-Click Windows launch script (Node + Vite + FastAPI)
+├── package.json                             # Root orchestration script (concurrently runner)
+├── LICENSE                                  # MIT Open-Source License
+└── README.md                                # Platform documentation
 ```
 
 ---
 
-## 👥 User Roles & Permissions Matrix
+## 👥 Role-Based Access Control (RBAC) Matrix
 
-Taap Chetna implements strict **Role-Based Access Control (RBAC)** to ensure data integrity and operational security:
+Taap Chetna implements strict multi-role governance to prevent unauthorized public alert broadcasts while preserving friction-free citizen access:
 
-| Feature / Resource | 👤 Citizen / Laborer | 🩺 Health Worker (ASHA / ANM) | 🏛️ Municipal Officer | 🛡️ System Admin |
-| :--- | :---: | :---: | :---: | :---: |
-| **Personal Risk Assessment** | ✅ Read / Write | ✅ Read / Write | ✅ Read / Write | ✅ Full Access |
-| **"What-If" Shift Simulator** | ✅ Full Access | ✅ Full Access | ✅ Full Access | ✅ Full Access |
-| **Travel Heat Shock Analyzer** | ✅ Full Access | ✅ Full Access | ✅ Full Access | ✅ Full Access |
-| **Hyperlocal Weather Telemetry** | ✅ Read-Only | ✅ Read-Only | ✅ Read-Only | ✅ Full Access |
-| **Ward Vulnerability Grid** | ❌ No Access | 🟡 Ward Summary Only | ✅ Full Ward View | ✅ Full Access |
-| **Broadcast Emergency Alerts** | ❌ No Access | ❌ No Access | ✅ Create & Publish | ✅ Full Access |
-| **ML Macro-Burden Predictor** | ❌ No Access | ❌ No Access | ✅ State Simulation | ✅ Full Access |
-| **Approve Officer Accreditations** | ❌ No Access | ❌ No Access | ❌ No Access | ✅ Full Access |
-| **System Database Seeding** | ❌ No Access | ❌ No Access | ❌ No Access | ✅ Full Access |
+| Feature / Resource | 👤 Citizen / Laborer | 🏛️ Municipal Officer | 🛡️ System Administrator |
+| :--- | :---: | :---: | :---: |
+| **Personal Heat Risk Calculator** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
+| **"What-If" Shift Simulator** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
+| **Travel Heat Shock Analyzer** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
+| **Hyperlocal Weather Telemetry** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
+| **Ward Vulnerability Grid** | ❌ Protected | ✅ Full Ward View | ✅ Full Ward View |
+| **Broadcast Emergency Ward Alerts** | ❌ Protected | ✅ Create & Publish | ✅ Full Access |
+| **Macro Heat-Health Burden ML Panel** | ❌ Protected | ✅ Query & Simulate | ✅ Query & Simulate |
+| **Review Officer Accreditations** | ❌ Protected | ❌ Protected | ✅ Approve / Reject |
+| **Create Municipal Officer Accounts** | ❌ Protected | ❌ Protected | ✅ Full Management |
+| **System Database Seeding** | ❌ Protected | ❌ Protected | ✅ Full Access |
 
 ---
 
-## 🤖 Machine Learning & Epidemiological Heat-Health Subsystem
+## 🤖 Audited Machine Learning Subsystem
 
 The platform incorporates a **supervised macro-level epidemiological forecasting subsystem** designed to bridge the gap between atmospheric climate telemetry and public health action.
 
-### Model Architecture & Performance
+### Controlled Experiment: Model A vs Model B
+
+To rigorously determine whether state-level historical baselines are scientifically justified versus pure atmospheric and demographic telemetry, two distinct XGBoost architectures were trained on identical chronological splits:
+
+- **Model A (No Target Encoding)**: 22 features comprising pure environmental telemetry (temperature, heat index, humidity, wind, solar radiation, precipitation, heatwave days) and demographic exposure (population, density). Zero target-derived features.
+- **Model B (Temporally Valid Baseline — Primary)**: 23 features comprising the identical 22 environmental/demographic features plus the strictly temporally valid prior `state_baseline_deaths`.
+- **Baseline Model**: Scikit-Learn Decision Tree Regressor (`max_depth=4`, `min_samples_leaf=4`).
+
+### Chronological Data Split
+- **Training Set (2001–2010)**: 10 years, 240 state-year observations (71.4%)
+- **Validation Set (2011–2012)**: 2 years, 48 state-year observations (14.3%)
+- **Held-Out Test Set (2013–2014)**: 2 years, 48 state-year observations (14.3%) — evaluated strictly once.
+
+### Performance Benchmarks
+
+| Model Architecture | Features Evaluated | Validation MAE | Validation R² | Held-Out Test MAE | Held-Out Test RMSE | Held-Out Test R² |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Decision Tree Baseline** | 22 (Env + Demo) | 21.62 | 0.5341 | 32.78 | 67.02 | 0.3573 |
+| **XGBoost Model A** | 22 (Env + Demo only) | 22.04 | 0.6129 | 28.88 | 65.38 | 0.3885 |
+| **XGBoost Model B (Selected)** | **23 (Temporal Prior + Env + Demo)** | **20.62** | **0.7123** | **25.10** | **61.33** | **0.4618** |
+
+### Leakage Correction & Temporal Expanding Prior
+
+In initial prototypes, computing a global state baseline across all years leaked future target information. In the audited pipeline:
+$$\text{state\_baseline\_deaths}_{s, t} = \frac{1}{\sum_{y < t} 1} \sum_{y < t} \text{deaths}_{s, y}$$
+- For **2001**: Initialized to `0.0` (zero prior historical observations exist in the series).
+- For **2013–2014 (Held-Out Test Set)**: Strictly computed using only historical records from $2001 \le y \le 2012$.
+- **Result**: Zero target leakage, zero self-contribution, zero future information.
+
+### Transparent Interpretation of Held-Out Test R² (~0.46)
+
+> [!IMPORTANT]
+> **A held-out test $R^2 \approx 0.46$ on 48 observations is an honest, scientifically grounded result in macro-epidemiology.**
+> 
+> Annual state heatstroke fatalities in India exhibit severe target asymmetry—ranging from `0` (Kerala, Meghalaya) to `418` (Andhra Pradesh during the 2013 heatwave). A single catastrophic heatwave year introduces significant variance that heavily penalizes squared error metrics. 
+> 
+> An $R^2 \approx 0.46$ confirms that non-linear interactions between prolonged thermal streaks, peak heat index, population exposure, and prior baseline explain roughly 46% of the variance across unseen future years. It is deployed as a **macro-level prioritization signal** for municipal resource prepositioning, not a clinical prediction instrument.
+
+### Feature Importance Breakdown
 
 ```text
-┌────────────────────────────────────────────────────────────────────────┐
-│                   State-Year Training Data (2001–2014)                 │
-│      NCRB Heatstroke Fatalities + NASA POWER Daily Surface Telemetry    │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │
-               ┌────────────────────┴────────────────────┐
-               ▼                                         ▼
-   ┌───────────────────────┐                 ┌───────────────────────┐
-   │ XGBoost Model B (Pri) │                 │ Decision Tree Baseline │
-   │  n_estimators = 75    │                 │      max_depth = 4    │
-   │  learning_rate = 0.03 │                 │                       │
-   │      Test R²: 0.4618  │                 │      Test R²: 0.3573  │
-   │      Test MAE: 25.10  │                 │      Test MAE: 32.78  │
-   └───────────┬───────────┘                 └───────────┬───────────┘
-               │                                         │
-               └────────────────────┬────────────────────┘
-                                    ▼
-                ┌───────────────────────────────────────┐
-                │        FastAPI Microservice (:5001)   │
-                │    /health, /predict, /metadata       │
-                └───────────────────┬───────────────────┘
-                                    │ (Graceful Fallback)
-                                    ▼
-                ┌───────────────────────────────────────┐
-                │     Node.js Authority Controller      │
-                │     MunicipalDashboard.jsx (React)    │
-                └───────────────────────────────────────┘
+Feature Name                Importance Score   Operational Significance
+─────────────────────────────────────────────────────────────────────────────
+state_baseline_deaths           24.8%         Historical state reporting baseline
+heatwave_days                    9.3%         Prolonged extreme heat duration (Tmax ≥ 40°C)
+max_consecutive_hot_days         5.9%         Compound cardiovascular fatigue trigger
+population_millions              5.5%         Macro demographic exposure scale
+extreme_hi_days_52               5.1%         Days exceeding physiological tolerance (HI ≥ 52°C)
+annual_precip_mm                 4.5%         Pre-monsoon drought / dry-heat indicator
+annual_tmax_max                  4.3%         Peak annual atmospheric ceiling
+summer_tmax_mean                 4.2%         Baseline summer heat exposure
 ```
 
-### Top Predictive Features (from audited `feature_importance.csv`):
-1. **`state_baseline_deaths` (24.8%)**: Strictly temporally valid prior historical state mortality baseline ($year < current\_year$).
-2. **`heatwave_days` (9.3%)**: Annual count of extreme thermal days ($T_{\text{max}} \ge 40^\circ\text{C}$ or prolonged multi-day heat streak $\ge 3$ days).
-3. **`max_consecutive_hot_days` (5.9%)**: Maximum consecutive days of acute thermal stress compounding physiological fatigue.
-4. **`population_millions` (5.5%)**: Intercensal demographic scaling of exposed population under thermal stress.
-5. **`extreme_hi_days_52` (5.1%)**: Frequency of dangerous wet-bulb/heat index days exceeding physiological tolerance ($HI \ge 52^\circ\text{C}$).
+### Dual-Layer Resilient Execution Architecture
 
-### Resilient Dual-Layer Execution:
-- **Primary Online Mode**: Real-time inference executed by the Python FastAPI microservice at `http://127.0.0.1:5001/predict` within `< 15ms`.
-- **Resilient Offline Fallback**: If the Python environment is paused, the Express backend automatically falls back to compiled baseline schemas and weights stored in `ml/models/feature_schema.json`, ensuring uninterrupted municipal operations.
+1. **Primary Online Mode**: When the Python FastAPI microservice is running, the Node.js backend issues an HTTP request to `http://127.0.0.1:5001/predict` (typical latency `< 15ms`).
+2. **Graceful Offline Fallback**: If the Python process is stopped or port `5001` is unreachable, `backend/services/heatBurdenService.js` automatically loads compiled feature schemas and state baseline weights from `ml/models/feature_schema.json` without throwing an error or interrupting municipal operations.
 
 ---
 
-## ⚡ Step-by-Step Setup Guide (Run in 5 Minutes)
+## ⚡ Quickstart & Local Setup Guide
 
-### Prerequisites:
-- **Node.js**: `v18.0.0` or higher ([Download Node.js](https://nodejs.org/))
-- **Python**: `3.10` or higher ([Download Python](https://www.python.org/))
-- **MongoDB**: Local MongoDB instance or MongoDB Atlas free connection URI
+Follow this guide to run the complete Taap Chetna platform locally in **under 5 minutes**.
+
+### Prerequisites
+
+| Tool | Minimum Version | Verification Command |
+| :--- | :--- | :--- |
+| **Node.js** | `v18.0.0` or higher | `node -v` |
+| **Python** | `3.10` or higher | `python --version` |
+| **npm** | `v9.0.0` or higher | `npm -v` |
+| **MongoDB** | Local MongoDB (`mongodb://localhost:27017`) or free MongoDB Atlas cluster | `mongod --version` |
 
 ---
 
-### 1️⃣ Clone the Repository
+### Step 1: Clone Repository
+
 ```bash
 git clone https://github.com/Aadityasingh0709/taap-chetna.git
 cd taap-chetna
@@ -429,22 +509,32 @@ cd taap-chetna
 
 ---
 
-### 2️⃣ Install All Dependencies (1 Command)
-Install root, backend, and frontend packages simultaneously:
+### Step 2: Install All Dependencies
+
+Install root, backend, and frontend dependencies simultaneously with the root script:
 ```bash
 npm run install-all
 ```
 
-Install Python ML dependencies:
+Install the Python machine learning requirements:
 ```bash
 pip install fastapi uvicorn xgboost scikit-learn pandas numpy joblib requests
 ```
 
 ---
 
-### 3️⃣ Configure Environment Variables
+### Step 3: Environment Configuration
 
-Create `backend/.env` (or copy from `backend/.env.example`):
+Create a `.env` file in the `backend/` folder:
+```bash
+# On Windows PowerShell:
+Copy-Item backend/.env.example backend/.env
+
+# On Linux / macOS:
+cp backend/.env.example backend/.env
+```
+
+Ensure `backend/.env` contains:
 ```env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/taap-chetna
@@ -453,176 +543,308 @@ JWT_EXPIRES_IN=7d
 ML_SERVICE_URL=http://127.0.0.1:5001
 ```
 
+> [!NOTE]
+> If you are using MongoDB Atlas, replace `MONGO_URI` with your connection string: `mongodb+srv://<username>:<password>@cluster0.mongodb.net/taap-chetna?retryWrites=true&w=majority`.
+
 ---
 
-### 4️⃣ Seed Test Data
-Populate pre-configured municipal accounts, wards, and alert samples:
+### Step 4: Seed Initial Test Data
+
+Populate the database with pre-configured administrative accounts, municipal officer credentials, Kolkata Municipal Corporation wards (Wards 17–24), sample alerts, and pending accreditation requests:
+
 ```bash
 npm run seed --prefix backend
 ```
 
+Output:
+```text
+  ✅ Seeded SYSTEM_ADMIN: admin@tapchetna.gov.in
+  ✅ Seeded MUNICIPAL_OFFICER: officer@tapchetna.gov.in
+  ✅ Seeded 8 ward records
+  ✅ Seeded 2 authority requests
+  ✅ Seeded 2 alerts
+  ✅ Database seeding complete
+```
+
 ---
 
-### 5️⃣ Launch the Entire Platform (1 Command)
+### Step 5: Launch All Services (1 Command)
 
-#### On Windows (Double-click or run):
-```bash
+#### On Windows (Fastest):
+Double-click `start-all.bat` or run in terminal:
+```cmd
 start-all.bat
 ```
 
-#### On Linux / macOS / PowerShell:
+#### On Linux / macOS / Cross-Platform:
 ```bash
 npm run dev
 ```
 
-This single command launches **all three concurrent services**:
-- 🌐 **Frontend Client**: [http://localhost:5173](http://localhost:5173)
-- ⚙️ **Backend REST API**: [http://localhost:5000](http://localhost:5000)
-- 🤖 **Python ML Engine**: [http://localhost:5001](http://localhost:5001) (API Docs at [http://127.0.0.1:5001/docs](http://127.0.0.1:5001/docs))
+The unified orchestrator concurrently launches all three services:
+
+| Component | URL | Description |
+| :--- | :--- | :--- |
+| 🌐 **Frontend Client** | [http://localhost:5173](http://localhost:5173) | Interactive React 19 UI with Tailwind CSS 4.0 |
+| ⚙️ **Backend REST API** | [http://localhost:5000](http://localhost:5000) | Express API Gateway with health check at `/api/health` |
+| 🤖 **Python ML Engine** | [http://127.0.0.1:5001](http://127.0.0.1:5001) | FastAPI inference service (Docs at `/docs`) |
 
 ---
 
 ## 🔑 Demo Accounts & Pre-configured Credentials
 
-Use these verified credentials to test both citizen and administrative workflows immediately:
+The seeder creates pre-configured accounts for testing both citizen and administrative workflows immediately:
 
-| Role | Email | Password | Scope & Municipality |
+| Persona | Email | Password | Role & Scope |
 | :--- | :--- | :--- | :--- |
-| 🛡️ **System Administrator** | `admin@tapchetna.gov.in` | `Admin123!` | System-wide administrative privileges & officer accreditation approvals |
-| 🏛️ **Municipal Health Officer** | `officer@tapchetna.gov.in` | `Pass123!` | Kolkata Municipal Corporation (Ward 17 Command) |
-| 👤 **Citizen / Public User** | *Register any email or explore without login* | — | Public physiological assessment, What-If simulator, and travel analyzer |
+| 🛡️ **System Administrator** | `admin@tapchetna.gov.in` | `Admin123!` | System-wide administrative portal, officer accreditation review, credential issuing |
+| 🏛️ **Municipal Health Officer** | `officer@tapchetna.gov.in` | `Pass123!` | Kolkata Municipal Corporation (Ward 17–24 Command, alert broadcasting, ML panel) |
+| 👤 **Citizen / Public User** | *Explore without login or register any test email* | — | Public physiological risk assessment, What-If simulator, travel transition analyzer |
 
 ---
 
 ## 🧪 Step-by-Step End-to-End Demo Script
 
-Follow this sequential walkthrough to evaluate all features during a review or presentation:
+Follow this 5-phase evaluation walkthrough to verify all core capabilities during a review:
 
 ### Phase 1: Hyperlocal Citizen Risk Calculator & Live Weather Telemetry
-1. Open [http://localhost:5173](http://localhost:5173).
-2. Enter your location (e.g. *Kolkata*, *Jaipur*, or *Nagpur*).
-3. Observe live hyperlocal weather parameters: Ambient Temp, Relative Humidity, Wind Speed, UV Index, and **Rothfusz Heat Index**.
-4. Adjust your personal parameters: Age `68`, pre-existing conditions `Hypertension + Diabetes`, `3.5 hours outdoor exposure`, and `1.2 Litres water`.
-5. Observe the calculated **Vulnerability Score** transition to `High / Critical`, triggering actionable clinical precautions (electrolytes, shade intervals, emergency cooling instructions).
+1. Open [http://localhost:5173](http://localhost:5173) in your browser.
+2. In the location search input, type **Kolkata** (or *Jaipur*, *Nagpur*, *Ahmedabad*) and select it.
+3. Observe live hyperlocal weather parameters: Ambient Temperature, Relative Humidity, Wind Speed, UV Index, and **Rothfusz Heat Index**.
+4. Adjust personal health parameters:
+   - Age: `68`
+   - Chronic Conditions: Select **Hypertension** and **Diabetes**
+   - Direct Outdoor Sun Exposure: `4 hours`
+   - Work Intensity: **Strenuous Labor**
+   - Fluid Consumed Today: `1.2 Litres`
+5. The **Vulnerability Score** dynamically shifts to `HIGH / CRITICAL`, rendering:
+   - Tailored clinical work/rest ratios (e.g. 15-minute shade break every 30 minutes).
+   - Targeted rehydration guidance with ORS electrolyte instructions.
+   - Immediate warning against prolonged unshaded exposure.
 
 ### Phase 2: "What-If" Time-Shift Activity Planner
-1. Navigate to the **What-If Planner** tab.
-2. Select an outdoor labor task scheduled for **13:00 to 16:00** (peak radiation).
+1. Click **What-If Planner** in the navigation bar.
+2. Set the proposed shift window to peak afternoon radiation: **13:00 to 16:00** (3 hours).
 3. Click **Simulate Safer Window**.
-4. Observe the platform identify an optimal shift (e.g. **07:00 to 10:00**), highlighting an estimated **6.5°C drop in thermal index** and a **45% decrease in dehydration risk**.
+4. The simulation pulls the 24-hour diurnal curve and identifies the safest alternative window (e.g., **07:00 to 10:00** or **17:30 to 20:30**).
+5. Review the side-by-side comparison card displaying:
+   - **Heat Index Reduction**: ~**6.5°C lower thermal exposure**
+   - **Dehydration Savings**: ~**1.8 Litres lower fluid deficit**
+   - Actionable work recommendation for gig delivery workers and construction laborers.
 
 ### Phase 3: Travel & Transition Heat Shock Analyzer
-1. Open the **Travel Analyzer** tab.
-2. Input Origin: *Shimla* (Hill station, 22°C) and Destination: *Delhi* (Urban plains, 44°C).
-3. Review the **Acclimatization Thermal Shock Warning** detailing dangerous physiological transition gradients and transit hydration protocols.
+1. Click **Travel Risk** in the navigation bar.
+2. Enter **Origin**: *Shimla* (Hill station ~22°C) and **Destination**: *Delhi* (Urban plains ~43°C).
+3. Click **Analyze Transition Risk**.
+4. Review the **Acclimatization Thermal Shock Warning**, detailing the sharp temperature gradient ($+21^\circ\text{C}$ leap) and transit hydration protocols.
 
 ### Phase 4: Municipal Authority Command Center
-1. Log in as Municipal Officer: `officer@tapchetna.gov.in` / `Pass123!`.
-2. Inspect the **Ward Vulnerability Grid** for Kolkata Municipal Corporation (Wards 17 through 24).
-3. Note high-risk wards highlighted in amber/red based on population density and solar traps.
-4. Click **Issue Emergency Alert** for Ward 17: Choose alert level `HIGH`, type emergency advisory instructions, and submit.
-5. The alert is published instantly and will display on all citizen dashboards within that ward.
+1. Click **Sign In** in the navbar and log in as Municipal Officer:
+   - Email: `officer@tapchetna.gov.in`
+   - Password: `Pass123!`
+2. You will be redirected to `/authority` (Municipal Command Center).
+3. Inspect the **Ward Vulnerability Grid** for Kolkata Municipal Corporation (Wards 17 through 24).
+4. Identify high-risk wards highlighted in amber/red.
+5. Click **Issue Emergency Alert** for Ward 17:
+   - Select Alert Level: `EXTREME`
+   - Enter Message: *"Severe Heatwave: Wet-bulb temperature exceeding 31°C. Mandatory shade breaks for outdoor workers."*
+   - Add Actions: *"Deploy Water Tankers"*, *"Activate Cooling Centers"*
+   - Click **Broadcast Alert**.
+6. Observe the alert publish instantly.
 
-### Phase 5: Supervised ML Heat-Health Burden Forecaster
-1. In the Municipal Dashboard, scroll to the **Macro Heat-Health Burden Intelligence** panel.
-2. Select state: *Rajasthan* or *Andhra Pradesh*.
-3. Review the model-derived macro heat-health burden projection (deaths/year baseline estimate).
-4. Inspect the top contributing features (**State Historical Baseline**, **Heatwave Days**, **Exposed Population Scale**).
-5. Read the synthesized operational advisory for emergency water tanker and mobile cooling station deployment.
+### Phase 5: Supervised ML Macro Heat-Health Burden Forecaster
+1. On the Municipal Dashboard, locate the **Macro Heat-Health Burden Intelligence** panel.
+2. Select State: **Rajasthan** or **Andhra Pradesh**.
+3. The panel queries the Python FastAPI microservice (`:5001`) with graceful fallback.
+4. Review the model-derived macro heat-health burden projection (deaths/year baseline estimate).
+5. Inspect the explainable contributing factors (**State Historical Baseline**, **Heatwave Days**, **Exposed Population Scale**, **Max Consecutive Hot Days**).
+6. Review the synthesized operational advisory for emergency water tanker and mobile cooling station deployment.
+
+### Phase 6: System Administrator Portal (Optional)
+1. Sign out and log in as Administrator:
+   - Email: `admin@tapchetna.gov.in`
+   - Password: `Admin123!`
+2. Navigate to `/admin`.
+3. Review pending authority accreditation requests (e.g. *Sunil Verma*, *Pooja Iyer*).
+4. Click **Approve Request** on a pending applicant to witness cryptographically secure temporary credential generation (`Officer#<hex>!`).
 
 ---
 
 ## 📑 Complete API Reference
 
-### 🔐 Authentication & Profile Endpoints (`/api/auth`)
+### 🔐 Authentication Routes (`/api/auth`)
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Public | Register citizen account |
-| `POST` | `/api/auth/login` | Public | Authenticate user & return signed JWT |
-| `GET` | `/api/auth/profile` | Authenticated | Retrieve current user profile |
-| `POST` | `/api/auth/request-authority` | Authenticated | Submit municipal officer accreditation request |
+| `POST` | `/api/auth/register` | Public | Register a new citizen account (`name`, `email`, `password`) |
+| `POST` | `/api/auth/login` | Public | Authenticate user & return signed JWT token |
+| `GET` | `/api/auth/me` | Authenticated | Retrieve current user profile & role from token |
 
 ---
 
-### 🌤️ Weather & Geocoding Endpoints (`/api/weather`)
+### 🩺 Citizen Health Routes (`/api/citizen`)
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/weather/search?query=...` | Public | Forward geocode Indian cities and wards via OSM |
+| `GET` | `/api/citizen/profile` | Authenticated | Retrieve stored personal health profile |
+| `PUT` | `/api/citizen/profile` | Authenticated | Update personal health vitals & comorbidity history |
+| `POST` | `/api/citizen/calculate-risk` | Public | Compute clinical physiological heat vulnerability score |
+
+---
+
+### 🌤️ Weather & Microclimate Routes (`/api/weather`)
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/weather/search?query=...` | Public | Forward geocode Indian cities and wards via OSM Nominatim |
+| `GET` | `/api/weather/reverse?lat=...&lon=...` | Public | Reverse geocode coordinates to district/locality |
 | `GET` | `/api/weather/current?lat=...&lon=...` | Public | Fetch real-time weather & computed Rothfusz heat index |
-| `GET` | `/api/weather/hourly?lat=...&lon=...` | Public | Fetch 24-hour weather curve for simulation |
+| `GET` | `/api/weather/forecast?lat=...&lon=...` | Public | Fetch 24-hour hourly weather forecast curve |
 
 ---
 
-### 🏛️ Municipal Authority & Alert Endpoints (`/api/authority`)
+### 🚦 Travel Heat Shock Routes (`/api/travel`)
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/authority/dashboard` | Municipal Officer | Fetch municipal overview, active alerts, and ward statistics |
-| `GET` | `/api/authority/wards` | Municipal Officer | List all wards within officer's municipal jurisdiction |
-| `POST` | `/api/authority/alerts` | Municipal Officer | Broadcast emergency heat/cooling alert to citizens |
+| `POST` | `/api/travel/check` | Public | Compute origin vs destination thermal gradient & transit shock |
+
+---
+
+### ⏳ What-If Shift Simulator Routes (`/api/whatif`)
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/whatif/compare` | Public | Compare proposed time window against optimal 24h alternatives |
+
+---
+
+### 🏛️ Municipal Authority Routes (`/api/authority`)
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/authority/dashboard` | Municipal Officer | Fetch municipal overview, active alerts, and ward stats |
+| `GET` | `/api/authority/wards` | Municipal Officer | List all wards within officer's jurisdiction |
 | `GET` | `/api/authority/alerts` | Municipal Officer | Retrieve history of municipal alerts |
-| `POST` | `/api/authority/heat-health-burden` | Municipal Officer | Query Python ML microservice with offline fallback |
+| `POST` | `/api/authority/alerts` | Municipal Officer | Broadcast emergency heat/cooling alert to citizens |
+| `PATCH` | `/api/authority/alerts/:id` | Municipal Officer | Update or resolve existing alert |
+| `GET` | `/api/authority/recommendations` | Municipal Officer | Get ward-level operational action matrix |
+| `GET` | `/api/authority/heat-health-burden` | Municipal Officer | Query Python ML microservice with offline fallback |
 
 ---
 
-### 🤖 Python ML Microservice Endpoints (`:5001`)
+### 🛡️ System Administrator Routes (`/api/admin`)
 
 | Method | Endpoint | Access | Description |
 | :--- | :--- | :--- | :--- |
-| `GET` | `http://127.0.0.1:5001/health` | Public | Microservice health check & model artifact verification |
-| `POST` | `http://127.0.0.1:5001/predict` | Public | Predict state-year heat-health burden using XGBoost |
-| `GET` | `http://127.0.0.1:5001/feature-importance` | Public | Return feature importance rankings |
-| `GET` | `http://127.0.0.1:5001/metadata` | Public | Inspect model hyperparameters, training lineage, and metrics |
-| `GET` | `http://127.0.0.1:5001/docs` | Public | Interactive Swagger API documentation |
+| `GET` | `/api/admin/requests` | System Admin | Fetch all pending authority accreditation requests |
+| `POST` | `/api/admin/requests/:id/approve` | System Admin | Approve officer request & generate temporary credentials |
+| `POST` | `/api/admin/requests/:id/reject` | System Admin | Reject officer accreditation request |
+| `GET` | `/api/admin/authorities` | System Admin | List all active municipal officers across jurisdictions |
+| `PATCH` | `/api/admin/authorities/:id` | System Admin | Update officer assignments or permissions |
+| `POST` | `/api/admin/authorities` | System Admin | Directly create and provision a municipal officer account |
 
 ---
 
-## 📽️ Climate Resilience & Municipal Action Impact
+### 🤖 Python FastAPI ML Microservice (`:5001`)
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `http://127.0.0.1:5001/health` | Health check & model artifact verification |
+| `GET` | `http://127.0.0.1:5001/model-info` | Model metadata, feature schema, and benchmark metrics |
+| `POST` | `http://127.0.0.1:5001/predict` | Predict state-year heat-health burden using XGBoost |
+| `GET` | `http://127.0.0.1:5001/state-burden/{state}` | Quick state baseline burden lookup |
+| `GET` | `http://127.0.0.1:5001/docs` | Interactive Swagger UI API documentation |
+
+---
+
+## 📐 Mathematical & Biometeorological Formulations
+
+### 1. NOAA / Rothfusz Heat Index Formulation
+For ambient temperature $T \ge 25^\circ\text{C}$ and Relative Humidity $R \in [0, 100]$%:
+
+$$\text{HI} = c_1 + c_2 T + c_3 R + c_4 T R + c_5 T^2 + c_6 R^2 + c_7 T^2 R + c_8 T R^2 + c_9 T^2 R^2$$
+
+Where empirical coefficients in Celsius are:
+- $c_1 = -8.78469475556$
+- $c_2 = 1.61139411$
+- $c_3 = 2.33854883889$
+- $c_4 = -0.14611605$
+- $c_5 = -0.012308094$
+- $c_6 = -0.0164248277778$
+- $c_7 = 0.002211732$
+- $c_8 = 0.00072546$
+- $c_9 = -0.000003582$
+
+### 2. Personalized Clinical Vulnerability Scoring Engine
+Personal Vulnerability Index ($V \in [0, 100]$) is computed by compounding biometeorological environmental stress with physiological vulnerability multipliers:
+
+$$V = \min\left(100, \; \text{BaseThermalScore}(HI) \times W_{\text{age}} \times \left(1 + \sum w_{\text{comorbidities}}\right) \times W_{\text{exertion}} - \text{HydrationCredit}\right)$$
+
+Where:
+- $W_{\text{age}} \in \{1.0, 1.35, 1.6\}$ for young adults, children $<12$, and seniors $>65$ respectively.
+- $\sum w_{\text{comorbidities}}$ applies additive penalties for Cardiovascular Disease ($+0.25$), Hypertension ($+0.20$), Diabetes ($+0.15$), and Renal Disease ($+0.25$).
+- $\text{HydrationCredit}$ rewards adequate water intake while severely penalizing dehydration deficits during strenuous labor.
+
+---
+
+## 🏛️ National Climate Framework Alignment
+
+Taap Chetna aligns with Indian national climate resilience and heatwave management mandates:
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                      TAAP CHETNA: ACTIONABLE CLIMATE RESILIENCE                        │
-├──────────────────────────────┬──────────────────────────────┬───────────────────────────┤
-│    Pillar 1: Citizen Safety  │  Pillar 2: Worker Resilience │ Pillar 3: Governance      │
-├──────────────────────────────┼──────────────────────────────┼───────────────────────────┤
-│ • Hyperlocal alerts prevent  │ • "What-If" planner prevents │ • Wards prioritize water  │
-│   heat exhaustion before it  │   severe dehydration among   │   tankers and cooling     │
-│   escalates to heat stroke   │   gig and daily laborers     │   shelters proactively    │
-│ • Medically grounded advice  │ • Scientific scheduling      │ • Supervised ML models    │
-│   protects vulnerable elders │   sustains livelihood with   │   support data-backed     │
-│   and chronic patients       │   reduced health risk        │   Disaster Action Plans   │
-└──────────────────────────────┴──────────────────────────────┴───────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        INDIAN NATIONAL HEAT-HEALTH ALIGNMENT                           │
+├──────────────────────────────┬─────────────────────────────┬───────────────────────────┤
+│ NDMA Heat Action Plan        │ MoHFW NAPCCHH Directive     │ IMD Heatwave Criteria     │
+├──────────────────────────────┼─────────────────────────────┼───────────────────────────┤
+│ • Ward-level vulnerability   │ • Vulnerability scoring for │ • Operates on IMD heat    │
+│   prioritization             │   at-risk demographics      │   alert tiers (Yellow,    │
+│ • Emergency cooling shelters │ • Targeted hydration & ORS  │   Orange, Red)            │
+│   and tanker deployment      │   preventive protocols      │ • Incorporates compound   │
+│ • Outdoor labor rest cycles  │ • Hospital emergency room   │   wet-bulb thresholds     │
+│   during peak solar hours    │   preparedness advisories   │   exceeding 31°C          │
+└──────────────────────────────┴─────────────────────────────┴───────────────────────────┘
 ```
+
+1. **National Disaster Management Authority (NDMA)**:
+   Complies with the *National Guidelines for Preparation of Action Plan - Prevention and Management of Heat Wave*, supporting localized ward-level Heat Action Plans (HAP).
+2. **Ministry of Health and Family Welfare (MoHFW)**:
+   Supports the *National Action Plan on Climate Change and Human Health (NAPCCHH)* by identifying clinically vulnerable populations (elderly, infants, chronic disease patients) before heat exhaustion escalates.
+3. **India Meteorological Department (IMD)**:
+   Incorporates IMD heatwave thresholds and wet-bulb indicators to trigger timely municipal interventions.
 
 ---
 
 ## ❓ Frequently Asked Questions (FAQ)
 
-### Q1: How does Taap Chetna compute the Heat Index?
-We utilize the **NOAA Rothfusz regression equation** adjusted for ambient dry-bulb temperature and relative humidity:
-$$\text{HI} = -42.379 + 2.04901523 T + 10.14333127 R - 0.22475541 T R - \dots$$
-High-heat and low-humidity adjustments are applied dynamically to ensure accuracy across both arid desert climates (e.g. Rajasthan) and humid coastal zones (e.g. West Bengal, Kerala).
+### Q1: Does the ML model predict whether an individual citizen will survive?
+**No.** Predicting individual survival from climate data is scientifically invalid. The ML subsystem predicts **macro population-level heat-health burden (estimated excess mortality across a state-year cohort)**. This equips municipal commissioners and disaster management authorities to preposition water tankers, emergency medical teams, and cooling centers.
 
-### Q2: Does the ML model predict whether an individual person will die?
-**No.** Predicting individual mortality from meteorological data is scientifically invalid. The ML engine predicts **macro population-level heat-health burden (estimated excess mortality across a state-year cohort)** to assist municipal commissioners, state disaster authorities, and health departments in prepositioning emergency resources.
+### Q2: What happens if the Python ML microservice is stopped?
+The Node.js backend client (`backend/services/heatBurdenService.js`) includes **graceful offline resilience**. If port `5001` is unreachable, the system automatically falls back to compiled baseline schemas and weights from `ml/models/feature_schema.json` without failing or disrupting the municipal dashboard.
 
-### Q3: What happens if the Python ML microservice is stopped?
-The Node.js backend client (`backend/services/heatBurdenService.js`) includes **graceful offline resilience**. If port `5001` does not respond within 3000ms, the system falls back to compiled baseline weights from `ml/models/feature_schema.json` without failing or disrupting the user experience.
+### Q3: How is data leakage prevented in the ML model?
+As documented in [`ML_REPORT.md`](ML_REPORT.md), the `state_baseline_deaths` feature strictly utilizes an **expanding temporal prior** ($y < t$). For any observation, only mortality records strictly prior to that year are computed. Observations in 2001 are initialized to `0.0`. The held-out test set (2013–2014) utilizes strictly $2001 \le y \le 2012$ data.
 
-### Q4: Can Taap Chetna be deployed in municipalities with low internet bandwidth?
-**Yes.** The frontend is lightweight (under 650 KB compressed bundle), and the entire backend and ML inference engine run locally or on low-spec cloud VMs without requiring GPU accelerators.
+### Q4: Can this be deployed in low-bandwidth municipal field environments?
+**Yes.** The frontend bundle is optimized and compressed ($< 650\text{ KB}$), and all backend APIs respond in under $50\text{ms}$. The system operates reliably on low-specification cloud instances or local municipal servers without requiring GPU accelerators.
 
 ---
 
-## 📜 License & Acknowledgments
+## 📜 License & Data Lineage
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for complete details.
 
-### Acknowledgments & Data Sources:
-- **National Crime Records Bureau (NCRB)**: Historical Accidental Deaths and Suicides in India (ADSI) reports (2001–2014 heatstroke records).
-- **NASA POWER Project**: Prediction of Worldwide Energy Resources satellite surface meteorology.
-- **Open-Meteo**: Real-time high-resolution weather forecast API.
-- **OpenStreetMap & Nominatim**: Open geospatial geocoding data under the ODbL license.
-- **Indian Meteorological Department (IMD)**: Heatwave classification criteria and public health thresholds.
+### Data Lineage & Acknowledgments
+- **National Crime Records Bureau (NCRB)**: Historical *Accidental Deaths and Suicides in India (ADSI)* reports (2001–2014 state heatstroke records).
+- **NASA POWER Project**: *Prediction of Worldwide Energy Resources* daily satellite surface meteorology reanalysis.
+- **Open-Meteo**: Real-time high-resolution global meteorological forecast API.
+- **OpenStreetMap & Nominatim**: Open geospatial boundary and reverse geocoding data under the ODbL license.
+- **India Meteorological Department (IMD)**: Heatwave classification standards and biometeorological alert thresholds.
+
+---
+
+<p align="center">
+  <strong>Taap Chetna</strong> — <em>Empowering Indian communities with predictive climate health resilience.</em>
+</p>
