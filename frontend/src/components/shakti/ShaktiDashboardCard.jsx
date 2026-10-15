@@ -9,7 +9,6 @@ import {
   CalendarClock,
   Info,
   ChevronRight,
-  ShieldCheck,
 } from 'lucide-react';
 import { useShakti } from '../../context/ShaktiContext';
 import { SHAKTI_SUGGESTED_PROMPTS } from './shaktiMockData';

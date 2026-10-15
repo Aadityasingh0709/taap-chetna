@@ -7,13 +7,9 @@ import {
   PhoneOff,
   Volume2,
   VolumeX,
-  Sparkles,
   ChevronDown,
   ChevronUp,
   Flame,
-  User,
-  ShieldCheck,
-  AlertTriangle,
 } from 'lucide-react';
 import { useShakti } from '../../context/ShaktiContext';
 import { LIVE_VOICE_DEMO_TRANSCRIPT } from './shaktiMockData';

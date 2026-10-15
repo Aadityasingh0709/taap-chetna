@@ -45,7 +45,7 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
       <div className="flex justify-end gap-2.5 items-end mb-4 animate-fadeIn">
         <div className="max-w-[82%] sm:max-w-[75%] flex flex-col items-end">
           <div
-            className="px-4 py-3 rounded-2xl rounded-br-xs text-sm font-medium leading-relaxed text-white shadow-md select-text"
+            className="px-4 py-3 rounded-2xl rounded-br-xs text-sm font-medium leading-relaxed text-white shadow-md select-text break-words [overflow-wrap:anywhere]"
             style={{
               background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
               boxShadow: '0 4px 14px rgba(234, 88, 12, 0.25)',
@@ -98,7 +98,7 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
           </div>
 
           {/* Body Content */}
-          <div className="text-xs sm:text-[13px] leading-relaxed space-y-2 select-text">
+          <div className="text-xs sm:text-[13px] leading-relaxed space-y-2 select-text break-words [overflow-wrap:anywhere]">
             {message.text.split('\n\n').map((paragraph, idx) => {
               // Format bullet points nicely
               if (paragraph.includes('•')) {

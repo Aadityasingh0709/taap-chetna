@@ -9,8 +9,6 @@ import {
   Sparkles,
   Volume2,
   RefreshCw,
-  Info,
-  CheckCircle2,
 } from 'lucide-react';
 import { useShakti } from '../../context/ShaktiContext';
 

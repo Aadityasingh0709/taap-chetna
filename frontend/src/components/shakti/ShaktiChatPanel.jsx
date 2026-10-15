@@ -7,8 +7,6 @@ import {
   RotateCcw,
   Settings,
   Sparkles,
-  Info,
-  Check,
   Languages,
 } from 'lucide-react';
 import { useShakti } from '../../context/ShaktiContext';
