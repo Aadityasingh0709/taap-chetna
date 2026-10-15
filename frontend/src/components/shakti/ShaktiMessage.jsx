@@ -1,5 +1,5 @@
 // client/src/components/shakti/ShaktiMessage.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Flame,
   User,
@@ -16,17 +16,98 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
   const isUser = message.sender === 'user';
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { showFeedbackToast } = useShakti();
+  const { showFeedbackToast, locale } = useShakti();
+  const utteranceRef = useRef(null);
+
+  // Clean up any ongoing speech synthesis when component unmounts
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const stripMarkdownForSpeech = (rawText) => {
+    if (!rawText) return '';
+    return rawText
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // [link text](url) -> link text
+      .replace(/[#*_~`>]/g, ' ')               // remove markdown formatting tokens
+      .replace(/[-+*]\s+/g, '. ')              // bullets to pauses
+      .replace(/\n+/g, '. ')                   // line breaks to pauses
+      .replace(/🌡️|🙏|☀️|🚨|💧|⚠️|✅|🚩/g, '')     // strip common emojis that sound jarring
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
 
   const handleToggleAudio = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      showFeedbackToast('Text-to-speech is not supported by your browser.');
+      return;
+    }
+
     if (isPlayingAudio) {
+      window.speechSynthesis.cancel();
       setIsPlayingAudio(false);
       showFeedbackToast('Audio playback stopped.');
-    } else {
-      setIsPlayingAudio(true);
-      showFeedbackToast('Voice playback preview: Text-to-speech engine connects in Phase 2.');
-      // Auto-revert simulated playback state after a few seconds
-      setTimeout(() => setIsPlayingAudio(false), 4000);
+      return;
+    }
+
+    // Cancel any other currently speaking utterance
+    window.speechSynthesis.cancel();
+
+    const cleanText = stripMarkdownForSpeech(message.text);
+    if (!cleanText) {
+      showFeedbackToast('No text available to read aloud.');
+      return;
+    }
+
+    try {
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utteranceRef.current = utterance;
+
+      // Detect language (Devanagari characters or active Hindi locale)
+      const hasDevanagari = /[\u0900-\u097F]/.test(cleanText);
+      const isHindi = hasDevanagari || locale === 'hi';
+      utterance.lang = isHindi ? 'hi-IN' : 'en-IN';
+      utterance.rate = 0.95; // Natural, clear cadence
+      utterance.pitch = 1.0;
+
+      // Select best matching voice from available voices
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const matchingVoice = voices.find((v) =>
+          isHindi
+            ? v.lang.toLowerCase().startsWith('hi')
+            : (v.lang.toLowerCase().startsWith('en-in') || v.lang.toLowerCase().startsWith('en'))
+        );
+        if (matchingVoice) {
+          utterance.voice = matchingVoice;
+        }
+      }
+
+      utterance.onstart = () => {
+        setIsPlayingAudio(true);
+        showFeedbackToast('Playing response aloud...');
+      };
+
+      utterance.onend = () => {
+        setIsPlayingAudio(false);
+      };
+
+      utterance.onerror = (e) => {
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          console.error('[Shakti TTS] Speech synthesis error:', e);
+          showFeedbackToast('Could not complete audio playback.');
+        }
+        setIsPlayingAudio(false);
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.error('[Shakti TTS] Execution error:', err);
+      setIsPlayingAudio(false);
+      showFeedbackToast('Speech synthesis unavailable.');
     }
   };
 
@@ -155,8 +236,8 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
                     ? 'bg-orange-500 text-white border-orange-600 shadow-xs'
                     : 'bg-stone-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 border-stone-200 dark:border-slate-700'
                 }`}
-                title={isPlayingAudio ? 'Stop playback preview' : 'Play response aloud (Preview)'}
-                aria-label={isPlayingAudio ? 'Stop playback' : 'Play response aloud'}
+                title={isPlayingAudio ? 'Stop audio playback' : 'Listen to response aloud'}
+                aria-label={isPlayingAudio ? 'Stop audio playback' : 'Listen to response aloud'}
               >
                 {isPlayingAudio ? (
                   <>

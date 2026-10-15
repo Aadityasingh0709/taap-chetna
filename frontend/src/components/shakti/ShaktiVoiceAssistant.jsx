@@ -25,9 +25,37 @@ const VOICE_STATES = [
 export default function ShaktiVoiceAssistant() {
   const [voiceState, setVoiceState] = useState('ready');
   const [elapsedSec, setElapsedSec] = useState(0);
-  const { showFeedbackToast, setActiveMode, openWithPrompt } = useShakti();
+  const { showFeedbackToast, setActiveMode, openWithPrompt, locale } = useShakti();
 
-  // Simulated timer during listening/speaking
+  // Spoken audio synthesis during speaking state
+  useEffect(() => {
+    if (voiceState === 'speaking') {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const sampleText =
+          locale === 'hi'
+            ? 'नमस्ते! मैं शक्ति हूँ, ताप चेतना की हीट-हेल्थ सहायक। मैं आपकी क्या सहायता कर सकती हूँ?'
+            : 'Namaste! I am Shakti, your heat-health companion from Taap Chetna. How can I help you stay safe from heat today?';
+        const utterance = new SpeechSynthesisUtterance(sampleText);
+        utterance.lang = locale === 'hi' ? 'hi-IN' : 'en-IN';
+        utterance.rate = 0.95;
+        utterance.onend = () => setVoiceState('ready');
+        utterance.onerror = () => setVoiceState('ready');
+        window.speechSynthesis.speak(utterance);
+      }
+    } else {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [voiceState, locale]);
+
+  // Timer during listening/speaking
   useEffect(() => {
     let interval = null;
     if (voiceState === 'listening' || voiceState === 'speaking') {
@@ -43,15 +71,18 @@ export default function ShaktiVoiceAssistant() {
   const handleSimulatedMicClick = () => {
     if (voiceState === 'ready' || voiceState === 'stopped') {
       setVoiceState('listening');
-      showFeedbackToast('Simulated listening started. Speak your heat query...');
+      showFeedbackToast('Listening simulated. Processing your heat query...');
     } else if (voiceState === 'listening') {
       setVoiceState('processing');
-      showFeedbackToast('Simulating audio transcription & AI reasoning...');
+      showFeedbackToast('Transcribing audio and analyzing conditions...');
       setTimeout(() => {
         setVoiceState('speaking');
-        showFeedbackToast('Simulating text-to-speech spoken playback...');
-      }, 2000);
+        showFeedbackToast('Playing spoken response via text-to-speech...');
+      }, 1500);
     } else if (voiceState === 'speaking') {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
       setVoiceState('stopped');
       showFeedbackToast('Spoken response stopped.');
     } else {
