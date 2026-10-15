@@ -81,11 +81,10 @@ export default function ShaktiMessageComposer({ onSend, onMicClick, disabled }) 
 
       {/* Helper caption */}
       <div className="flex items-center justify-between text-[10px] text-slate-700 dark:text-slate-300 px-1 pt-2">
-        <span className="hidden sm:inline">Press <kbd className="font-mono bg-stone-100 dark:bg-slate-800 px-1 py-0.5 rounded border border-stone-200 dark:border-slate-700">Enter ↵</kbd> to send, <kbd className="font-mono bg-stone-100 dark:bg-slate-800 px-1 py-0.5 rounded border border-stone-200 dark:border-slate-700">Shift + Enter</kbd> for new line</span>
-        <span className="sm:hidden">Local UI Preview Mode</span>
-        <span className="inline-flex items-center gap-1 font-semibold text-amber-700 dark:text-amber-400">
+        <span className="sm:hidden">Conversational AI Mode</span>
+        <span className="inline-flex items-center gap-1 font-semibold text-emerald-700 dark:text-emerald-400">
           <Sparkles className="w-2.5 h-2.5" />
-          Phase 1 Interactive Preview
+          GroqCloud AI Active
         </span>
       </div>
     </div>

@@ -46,6 +46,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/weather', require('./routes/weather'));
 app.use('/api/travel', require('./routes/travel'));
 app.use('/api/whatif', require('./routes/whatif'));
+app.use('/api/shakti', require('./routes/shakti'));
 
 // Global error handler
 app.use((err, req, res, next) => {

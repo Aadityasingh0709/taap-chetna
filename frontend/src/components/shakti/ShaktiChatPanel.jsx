@@ -22,6 +22,8 @@ export default function ShaktiChatPanel() {
     minimizeShakti,
     activeMode,
     setActiveMode,
+    locale,
+    setLocale,
     clearConversation,
     feedbackToast,
     showFeedbackToast,
@@ -63,12 +65,12 @@ export default function ShaktiChatPanel() {
               >
                 Shakti <span className="text-orange-500 font-sans text-xs font-semibold">(शक्ति)</span>
               </span>
-              <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-400/25">
-                Phase 1 Preview
+              <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400/25">
+                GroqCloud AI
               </span>
             </div>
             <p className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
-              Citizen Heat Assistant • Offline Mode
+              Citizen Heat-Health Intelligence Assistant
             </p>
           </div>
         </div>
@@ -112,13 +114,35 @@ export default function ShaktiChatPanel() {
                       Language Mode
                     </label>
                     <div className="flex items-center gap-1.5">
-                      <span className="px-2 py-1 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold border border-orange-400/30 flex items-center gap-1 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLocale('en');
+                          showFeedbackToast('Language set to English');
+                        }}
+                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 text-[11px] cursor-pointer transition-all ${
+                          locale === 'en'
+                            ? 'bg-orange-500 text-white shadow-xs'
+                            : 'bg-stone-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-stone-200 dark:border-slate-700'
+                        }`}
+                      >
                         <Languages className="w-3 h-3" />
-                        English (Primary)
-                      </span>
-                      <span className="px-2 py-1 rounded-lg bg-stone-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-stone-200 dark:border-slate-700 text-[11px]">
-                        हिन्दी (Phase 2)
-                      </span>
+                        English
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLocale('hi');
+                          showFeedbackToast('भाषा बदलकर हिन्दी कर दी गई है');
+                        }}
+                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 text-[11px] cursor-pointer transition-all ${
+                          locale === 'hi'
+                            ? 'bg-orange-500 text-white shadow-xs'
+                            : 'bg-stone-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-stone-200 dark:border-slate-700'
+                        }`}
+                      >
+                        हिन्दी (Hindi)
+                      </button>
                     </div>
                   </div>
 

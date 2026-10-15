@@ -87,10 +87,21 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
               <span className="text-xs font-black tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 Shakti <span className="text-[10px] font-normal text-slate-700 dark:text-slate-300 font-sans">(शक्ति)</span>
               </span>
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-amber-500/12 text-amber-700 dark:text-amber-400 border border-amber-400/25">
-                <Sparkles className="w-2.5 h-2.5" />
-                Phase 1 Preview
-              </span>
+              {message.isError ? (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-rose-500/15 text-rose-700 dark:text-rose-400 border border-rose-400/25">
+                  Service Notice
+                </span>
+              ) : message.isAi ? (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-400/25">
+                  <Sparkles className="w-2.5 h-2.5" />
+                  GroqCloud AI
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-amber-500/12 text-amber-700 dark:text-amber-400 border border-amber-400/25">
+                  <Sparkles className="w-2.5 h-2.5" />
+                  Phase 2 Connected
+                </span>
+              )}
             </div>
             <span className="text-[10px] text-slate-700 dark:text-slate-300 font-semibold font-mono">
               {message.timestamp}
@@ -188,7 +199,13 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
 
             <div className="flex items-center gap-1 text-[10px] text-slate-700 dark:text-slate-300 font-medium">
               <Info className="w-2.5 h-2.5 text-slate-600 dark:text-slate-400" />
-              <span>Offline Local Guidance</span>
+              <span>
+                {message.toolCalls && message.toolCalls.length > 0
+                  ? `Grounded via ${message.toolCalls.map((t) => (t.tool || '').replace(/_/g, ' ')).join(', ')}`
+                  : message.isAi
+                  ? 'Grounded AI Intelligence'
+                  : 'Heat Safety Guidance'}
+              </span>
             </div>
           </div>
         </div>

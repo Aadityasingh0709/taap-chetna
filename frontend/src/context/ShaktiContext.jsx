@@ -1,6 +1,6 @@
 // client/src/context/ShaktiContext.jsx
-import React, { createContext, useContext, useState, useEffect, useCallback, useTransition } from 'react';
-import { getShaktiPreviewResponse } from '../components/shakti/shaktiMockData';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { sendShaktiChatMessage } from '../services/api';
 
 const ShaktiContext = createContext(null);
 
@@ -8,6 +8,7 @@ export const ShaktiProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [activeMode, setActiveMode] = useState('text'); // 'text' | 'voice' | 'live'
+  const [locale, setLocale] = useState('en'); // 'en' | 'hi'
   const [messages, setMessages] = useState(() => {
     // Preserve conversation during current browser session
     try {
@@ -19,7 +20,6 @@ export const ShaktiProvider = ({ children }) => {
   });
   const [isThinking, setIsThinking] = useState(false);
   const [feedbackToast, setFeedbackToast] = useState(null);
-  const [, startTransition] = useTransition();
 
   // Sync messages to session storage so re-opening preserves history
   useEffect(() => {
@@ -70,7 +70,7 @@ export const ShaktiProvider = ({ children }) => {
     }
   }, []);
 
-  const sendMessage = useCallback((rawText) => {
+  const sendMessage = useCallback(async (rawText) => {
     const text = (rawText || '').trim();
     if (!text) return;
 
@@ -81,28 +81,53 @@ export const ShaktiProvider = ({ children }) => {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
+    // Optimistically append user message
     setMessages((prev) => [...prev, userMsg]);
     setIsThinking(true);
 
-    // Natural simulated formulation delay for Phase 1 local preview
-    setTimeout(() => {
-      startTransition(() => {
-        const previewData = getShaktiPreviewResponse(text);
-        const shaktiMsg = {
-          id: `shakti_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-          sender: 'shakti',
-          text: previewData.text,
-          bullets: previewData.bullets || [],
-          suggestedNext: previewData.suggestedNext || [],
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          isPreview: true,
-        };
+    try {
+      // Format recent conversation context for the backend
+      const historyToSend = [...messages, userMsg]
+        .slice(-8)
+        .map((m) => ({
+          role: m.sender === 'user' ? 'user' : 'assistant',
+          content: m.text,
+        }));
 
-        setMessages((prev) => [...prev, shaktiMsg]);
-        setIsThinking(false);
-      });
-    }, 700);
-  }, [startTransition]);
+      const res = await sendShaktiChatMessage(historyToSend, locale);
+      const data = res.data;
+
+      const shaktiMsg = {
+        id: `shakti_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        sender: 'shakti',
+        text: data.message || 'I have analyzed your query.',
+        model: data.model,
+        toolCalls: data.toolCallsExecuted || [],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isAi: true,
+      };
+
+      setMessages((prev) => [...prev, shaktiMsg]);
+    } catch (err) {
+      console.error('[ShaktiContext] Chat error:', err);
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Shakti AI service is currently unavailable. Please verify backend configuration.';
+
+      const fallbackMsg = {
+        id: `shakti_${Date.now()}_err`,
+        sender: 'shakti',
+        text: `⚠️ **Service Notice:** ${errorMsg}\n\n*General Heat Safety Tip:* Drink adequate water with electrolyte salts (ORS) and avoid unshaded outdoor exertion between 12:00 PM and 3:30 PM.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isError: true,
+      };
+
+      setMessages((prev) => [...prev, fallbackMsg]);
+    } finally {
+      setIsThinking(false);
+    }
+  }, [messages, locale]);
 
   const openWithPrompt = useCallback((promptText) => {
     setIsOpen(true);
@@ -124,6 +149,8 @@ export const ShaktiProvider = ({ children }) => {
         restoreShakti,
         activeMode,
         setActiveMode,
+        locale,
+        setLocale,
         messages,
         isThinking,
         sendMessage,
