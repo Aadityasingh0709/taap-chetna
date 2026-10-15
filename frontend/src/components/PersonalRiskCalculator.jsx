@@ -23,6 +23,7 @@ import { getCurrentWeather, getCitizenProfile, updateCitizenProfile } from '../s
 import { useAuth } from '../context/AuthContext';
 import { POPULAR_INDIAN_PLACES, EXPANDED_OCCUPATIONS } from '../data/indianPlaces';
 import PlaceSearchInput from './PlaceSearchInput';
+import ShaktiDashboardCard from './shakti/ShaktiDashboardCard';
 
 export default function PersonalRiskCalculator() {
   const { user } = useAuth();
@@ -666,6 +667,9 @@ export default function PersonalRiskCalculator() {
         <span>📍 Weather Grounded For: <strong className="text-slate-900 dark:text-white">{selectedCity}</strong></span>
         <span className="font-semibold text-emerald-700 dark:text-emerald-400">● {weather.source}</span>
       </div>
+
+      {/* Shakti Citizen Heat-Health AI Assistant Card */}
+      <ShaktiDashboardCard />
 
       {/* Main 2-Column Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

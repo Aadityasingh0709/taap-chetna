@@ -19,10 +19,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useShakti } from '../context/ShaktiContext';
 
 export default function Navbar({ onOpenAuth }) {
   const { user, role, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { openShakti } = useShakti();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
@@ -178,6 +180,19 @@ export default function Navbar({ onOpenAuth }) {
                   <CalendarClock className="w-3.5 h-3.5 text-amber-500" />
                   What-If Planner
                 </NavLink>
+
+                <button
+                  type="button"
+                  onClick={openShakti}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none bg-orange-500/10 hover:bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-400/30 hover:-translate-y-px"
+                  title="Ask Shakti AI Citizen Heat Assistant"
+                >
+                  <Flame className="w-3.5 h-3.5 text-orange-500" />
+                  <span>Shakti AI</span>
+                  <span className="text-[9px] font-extrabold uppercase px-1 py-0.2 rounded bg-orange-500/20 text-orange-600 dark:text-orange-300">
+                    Preview
+                  </span>
+                </button>
               </>
             )}
 
@@ -316,6 +331,23 @@ export default function Navbar({ onOpenAuth }) {
                 </span>
                 What-If Planner
               </NavLink>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openShakti();
+                }}
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-orange-700 dark:text-orange-300 bg-orange-50/70 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-900/40 border border-orange-300/60 dark:border-orange-800/60 transition-all duration-150 cursor-pointer"
+              >
+                <span className="w-7 h-7 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                  <Flame className="w-4 h-4 text-orange-500" />
+                </span>
+                <span className="flex-1 text-left font-bold">Shakti Heat Assistant</span>
+                <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-600 dark:text-orange-300">
+                  Preview
+                </span>
+              </button>
             </>
           )}
 

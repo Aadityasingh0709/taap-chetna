@@ -39,7 +39,7 @@ export default function ScrollToTopButton() {
 
   return (
     <div
-      className="fixed bottom-7 right-7 z-50"
+      className="fixed bottom-24 right-7 sm:bottom-26 sm:right-8 z-40"
       style={{ animation: 'scaleUp 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards' }}
     >
       {/* SVG arc progress ring */}

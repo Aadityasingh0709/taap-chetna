@@ -13,6 +13,8 @@ import AuthModal from './components/AuthModal';
 import Footer from './components/Footer';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import ScrollToTopButton from './components/ScrollToTopButton';
+import { ShaktiProvider } from './context/ShaktiContext';
+import ShaktiAssistant from './components/shakti/ShaktiAssistant';
 import './App.css';
 
 // Route Guard for Municipal Officers
@@ -130,6 +132,9 @@ function MainApp() {
 
       {/* Floating 3D Scroll to Top Action Button */}
       <ScrollToTopButton />
+
+      {/* Shakti Citizen Heat-Health AI Assistant (Citizen & Guest Only) */}
+      <ShaktiAssistant />
     </div>
   );
 }
@@ -139,7 +144,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <Router>
-          <MainApp />
+          <ShaktiProvider>
+            <MainApp />
+          </ShaktiProvider>
         </Router>
       </AuthProvider>
     </ThemeProvider>
