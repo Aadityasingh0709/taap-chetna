@@ -1,6 +1,6 @@
 // client/src/context/ShaktiContext.jsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { sendShaktiChatMessage } from '../services/api';
+import { sendShaktiChatMessage, getShaktiStatus } from '../services/api';
 
 const ShaktiContext = createContext(null);
 
