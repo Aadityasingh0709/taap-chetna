@@ -2,32 +2,51 @@
  * aiProvider.js
  * Provider abstraction layer for conversational AI.
  * 
- * Initial implementation uses GroqCloud (via groq-sdk).
- * Designed for future migration to Ollama or local inference without
- * altering application routes, tools, or frontend contracts.
+ * Supports:
+ *  1. Local Ollama inference (e.g., Qwen3 4B on http://127.0.0.1:11434)
+ *  2. Cloud GroqCloud inference (via groq-sdk)
+ * 
+ * Controlled via environment variable:
+ *  AI_PROVIDER=ollama (default) | groq
  */
 
+const axios = require('axios');
 const Groq = require('groq-sdk');
 
-const DEFAULT_MODEL = 'qwen/qwen3.8-27b';
+const DEFAULT_GROQ_MODEL = 'qwen/qwen3.8-27b';
+const DEFAULT_OLLAMA_MODEL = 'qwen3:4b';
+const DEFAULT_OLLAMA_BASE_URL = 'http://127.0.0.1:11434';
 
 /**
- * Validates whether the AI provider is configured with necessary credentials.
+ * Validates and returns active AI provider configuration.
  */
 function getProviderStatus() {
-  const hasKey = Boolean(process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim().length > 0);
-  const model = process.env.GROQ_MODEL || DEFAULT_MODEL;
+  const provider = (process.env.AI_PROVIDER || 'ollama').trim().toLowerCase();
+
+  if (provider === 'groq') {
+    const hasKey = Boolean(process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim().length > 0);
+    const model = process.env.GROQ_MODEL || DEFAULT_GROQ_MODEL;
+    return {
+      provider: 'groq',
+      configured: hasKey,
+      model,
+    };
+  }
+
+  // Default: Ollama local instance
+  const baseUrl = (process.env.OLLAMA_BASE_URL || DEFAULT_OLLAMA_BASE_URL).replace(/\/+$/, '');
+  const model = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
 
   return {
-    provider: 'groq',
-    configured: hasKey,
+    provider: 'ollama',
+    configured: true,
     model,
+    baseUrl,
   };
 }
 
 /**
  * Initializes the Groq client.
- * Throws a safe, non-sensitive error if the API key is not configured.
  */
 function getGroqClient() {
   const apiKey = (process.env.GROQ_API_KEY || '').trim();
@@ -42,16 +61,165 @@ function getGroqClient() {
 }
 
 /**
- * Submits a conversation to Groq with optional tool execution.
+ * Submits a conversation to the active provider (Ollama or Groq) with optional tool execution.
  * 
  * @param {Object} options
  * @param {Array} options.messages - Sanitized chat messages [{ role, content }]
  * @param {string} options.systemPrompt - Instructions for assistant persona and rules
  * @param {Array} [options.tools] - Approved tool definitions
  * @param {Function} [options.executeTool] - Function to run a tool server-side (name, args) => Promise<Object>
- * @param {number} [options.maxIterations=3] - Maximum tool call loops to prevent runaway execution
+ * @param {number} [options.maxIterations=3] - Maximum tool call loops
  */
-async function generateChatResponse({
+async function generateChatResponse(options) {
+  const provider = (process.env.AI_PROVIDER || 'ollama').trim().toLowerCase();
+
+  if (provider === 'groq') {
+    return generateGroqResponse(options);
+  }
+
+  return generateOllamaResponse(options);
+}
+
+/**
+ * Local Ollama chat completion using native POST /api/chat.
+ */
+async function generateOllamaResponse({
+  messages = [],
+  systemPrompt,
+  tools = [],
+  executeTool,
+  maxIterations = 3,
+}) {
+  const baseUrl = (process.env.OLLAMA_BASE_URL || DEFAULT_OLLAMA_BASE_URL).replace(/\/+$/, '');
+  const model = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
+  const numCtx = parseInt(process.env.OLLAMA_NUM_CTX, 10) || 4096;
+  const numPredict = Math.max(350, parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 450);
+
+  // Build the message stream starting with the system prompt
+  const conversation = [
+    { role: 'system', content: systemPrompt },
+    ...messages,
+  ];
+
+  const toolsExecuted = [];
+  let iterations = 0;
+
+  while (iterations < maxIterations) {
+    iterations += 1;
+
+    try {
+      // Important: do not include the "think" field in the request.
+      const payload = {
+        model,
+        messages: conversation,
+        stream: false,
+        options: {
+          num_ctx: numCtx,
+          num_predict: numPredict,
+        },
+      };
+
+      if (process.env.OLLAMA_ENABLE_TOOLS === 'true' && tools && tools.length > 0) {
+        payload.tools = tools;
+      }
+
+      const response = await axios.post(`${baseUrl}/api/chat`, payload, {
+        timeout: 90000, // 90s timeout for CPU inference
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const assistantMessage = response.data && response.data.message;
+      if (!assistantMessage) {
+        throw new Error('Ollama returned an empty response object.');
+      }
+
+      conversation.push(assistantMessage);
+
+      // Check if Ollama requested function / tool calls
+      const toolCalls = assistantMessage.tool_calls;
+      if (toolCalls && toolCalls.length > 0 && typeof executeTool === 'function') {
+        for (const call of toolCalls) {
+          const fnName = call.function?.name;
+          const fnArgs = call.function?.arguments;
+
+          toolsExecuted.push({
+            id: call.id || `call_${Date.now()}`,
+            tool: fnName,
+          });
+
+          let toolResult;
+          try {
+            toolResult = await executeTool(fnName, fnArgs);
+          } catch (tErr) {
+            toolResult = {
+              success: false,
+              error: `Tool execution failed: ${tErr.message}`,
+            };
+          }
+
+          conversation.push({
+            role: 'tool',
+            content: JSON.stringify(toolResult),
+          });
+        }
+        // Iterate to allow model to synthesize final answer from tool outputs
+        continue;
+      }
+
+      // Clean message content: strip any lingering think blocks
+      let cleanContent = (assistantMessage.content || '')
+        .replace(/<think>[\s\S]*?<\/think>/gi, '')
+        .trim();
+
+      // Safe handling if model returned empty content
+      if (!cleanContent) {
+        cleanContent = 'Shakti local AI is connected. Please ask your heat-health question (e.g., current temperature, outdoor precautions, or personal heat risk).';
+      }
+
+      return {
+        success: true,
+        content: cleanContent,
+        model: response.data.model || model,
+        provider: 'ollama',
+        toolsExecuted,
+      };
+    } catch (err) {
+      console.error('[AIProvider Ollama Error]:', err.message || err);
+
+      let statusCode = 502;
+      let userFriendlyMessage = 'Local AI service encountered an error. Please try again.';
+
+      if (err.code === 'ECONNREFUSED' || err.message?.includes('ECONNREFUSED')) {
+        statusCode = 503;
+        userFriendlyMessage = `Local Ollama service is unreachable at ${baseUrl}. Please ensure Ollama is running locally with 'ollama serve'.`;
+      } else if (err.response?.status === 404 || err.message?.includes('404') || err.message?.includes('not found')) {
+        statusCode = 503;
+        userFriendlyMessage = `Model "${model}" was not found in local Ollama. Please run 'ollama pull ${model}' in your terminal.`;
+      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+        statusCode = 504;
+        userFriendlyMessage = 'Local AI generation timed out. Your CPU may be under heavy load. Please retry with a shorter prompt.';
+      }
+
+      const normalizedErr = new Error(userFriendlyMessage);
+      normalizedErr.status = statusCode;
+      normalizedErr.originalCode = err.code || err.response?.status || 'OLLAMA_ERROR';
+      throw normalizedErr;
+    }
+  }
+
+  return {
+    success: true,
+    content: 'I gathered data for your query, but reached maximum tool iterations. Please ask a more specific follow-up question.',
+    model,
+    provider: 'ollama',
+    toolsExecuted,
+  };
+}
+
+/**
+ * Cloud GroqCloud chat completion (retained for dual-provider support).
+ */
+async function generateGroqResponse({
   messages = [],
   systemPrompt,
   tools = [],
@@ -59,9 +227,8 @@ async function generateChatResponse({
   maxIterations = 3,
 }) {
   const client = getGroqClient();
-  const model = process.env.GROQ_MODEL || DEFAULT_MODEL;
+  const model = process.env.GROQ_MODEL || DEFAULT_GROQ_MODEL;
 
-  // Build the message stream starting with the system instructions
   const conversation = [
     { role: 'system', content: systemPrompt },
     ...messages,
@@ -95,7 +262,6 @@ async function generateChatResponse({
       const assistantMessage = choice.message;
       conversation.push(assistantMessage);
 
-      // Check if model requested tool execution
       const toolCalls = assistantMessage.tool_calls;
       if (toolCalls && toolCalls.length > 0 && typeof executeTool === 'function') {
         for (const call of toolCalls) {
@@ -123,21 +289,19 @@ async function generateChatResponse({
             content: JSON.stringify(toolResult),
           });
         }
-        // Iterate to allow model to synthesize final answer from tool outputs
         continue;
       }
 
-      // Final assistant response generated
       return {
         success: true,
         content: assistantMessage.content || '',
         model: response.model || model,
+        provider: 'groq',
         toolsExecuted,
         usage: response.usage,
       };
     } catch (err) {
-      // Normalize Groq / network errors into clean, non-sensitive format
-      console.error('[AIProvider Error]:', err.message || err);
+      console.error('[AIProvider Groq Error]:', err.message || err);
 
       let statusCode = 502;
       let userFriendlyMessage = 'The AI service encountered an error. Please try again.';
@@ -166,11 +330,11 @@ async function generateChatResponse({
     }
   }
 
-  // Fallback if maxIterations exceeded
   return {
     success: true,
     content: 'I gathered data for your query, but reached maximum tool iterations. Please ask a more specific follow-up question.',
     model,
+    provider: 'groq',
     toolsExecuted,
   };
 }

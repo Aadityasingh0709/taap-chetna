@@ -144,6 +144,7 @@ const chat = asyncHandler(async (req, res) => {
     res.json({
       message: aiResponse.content,
       model: aiResponse.model,
+      provider: aiResponse.provider,
       toolCallsExecuted: aiResponse.toolsExecuted || [],
       timestamp: new Date().toISOString(),
     });

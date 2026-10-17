@@ -175,7 +175,9 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
               ) : message.isAi ? (
                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-400/25">
                   <Sparkles className="w-2.5 h-2.5" />
-                  GroqCloud AI
+                  {message.provider === 'ollama' || message.model?.includes('qwen3:4b') || message.model?.includes(':')
+                    ? `Local Ollama (${message.model || 'qwen3:4b'})`
+                    : (message.model ? `Groq: ${message.model}` : 'Connected AI')}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-amber-500/12 text-amber-700 dark:text-amber-400 border border-amber-400/25">

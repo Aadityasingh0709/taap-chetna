@@ -27,6 +27,7 @@ export default function ShaktiChatPanel() {
     clearConversation,
     feedbackToast,
     showFeedbackToast,
+    providerInfo,
   } = useShakti();
 
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -66,7 +67,7 @@ export default function ShaktiChatPanel() {
                 Shakti <span className="text-orange-500 font-sans text-xs font-semibold">(शक्ति)</span>
               </span>
               <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400/25">
-                GroqCloud AI
+                {providerInfo?.provider === 'ollama' ? 'Local Ollama AI' : 'GroqCloud AI'}
               </span>
             </div>
             <p className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">

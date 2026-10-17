@@ -20,6 +20,18 @@ export const ShaktiProvider = ({ children }) => {
   });
   const [isThinking, setIsThinking] = useState(false);
   const [feedbackToast, setFeedbackToast] = useState(null);
+  const [providerInfo, setProviderInfo] = useState({ provider: 'ollama', model: 'qwen3:4b', configured: true });
+
+  // Fetch active AI provider status on mount
+  useEffect(() => {
+    getShaktiStatus()
+      .then((res) => {
+        if (res.data) setProviderInfo(res.data);
+      })
+      .catch(() => {
+        // Fallback silently if offline
+      });
+  }, []);
 
   // Sync messages to session storage so re-opening preserves history
   useEffect(() => {
@@ -102,6 +114,7 @@ export const ShaktiProvider = ({ children }) => {
         sender: 'shakti',
         text: data.message || 'I have analyzed your query.',
         model: data.model,
+        provider: data.provider,
         toolCalls: data.toolCallsExecuted || [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isAi: true,
@@ -158,6 +171,7 @@ export const ShaktiProvider = ({ children }) => {
         openWithPrompt,
         feedbackToast,
         showFeedbackToast,
+        providerInfo,
       }}
     >
       {children}

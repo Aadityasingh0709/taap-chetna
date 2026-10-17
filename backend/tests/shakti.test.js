@@ -78,7 +78,7 @@ test('Shakti Phase 2: Tool Execution Security & Allowlist Enforcement', async ()
 
 test('Shakti Phase 2: Provider Status & Configuration Safety', () => {
   const status = getProviderStatus();
-  assert.equal(status.provider, 'groq');
+  assert.ok(['ollama', 'groq'].includes(status.provider), 'Provider must be ollama or groq');
   assert.ok(typeof status.configured === 'boolean', 'Status must return boolean configured flag');
   assert.ok(status.model.length > 0, 'Must have a model ID configured');
 });
