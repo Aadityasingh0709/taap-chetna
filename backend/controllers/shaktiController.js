@@ -8,7 +8,7 @@
 
 const asyncHandler = require('express-async-handler');
 const { generateChatResponse, getProviderStatus } = require('../services/aiProvider');
-const { SHAKTI_SYSTEM_PROMPT } = require('../services/shaktiSystemPrompt');
+const { SHAKTI_SYSTEM_PROMPT, OLLAMA_SHAKTI_SYSTEM_PROMPT } = require('../services/shaktiSystemPrompt');
 const { SHAKTI_TOOL_DEFINITIONS, executeShaktiTool } = require('../services/shaktiTools');
 
 // Lightweight in-memory rate-limiter (per IP window: 20 requests / 60 seconds)
@@ -126,8 +126,10 @@ const chat = asyncHandler(async (req, res) => {
     });
   }
 
-  // 3. Optional contextual hint if user preferred Hindi
-  let dynamicSystemPrompt = SHAKTI_SYSTEM_PROMPT;
+  // 3. Select system prompt: concise for local CPU inference, full for cloud
+  const provider = (process.env.AI_PROVIDER || 'ollama').trim().toLowerCase();
+  let basePrompt = provider === 'ollama' ? OLLAMA_SHAKTI_SYSTEM_PROMPT : SHAKTI_SYSTEM_PROMPT;
+  let dynamicSystemPrompt = basePrompt;
   if (locale === 'hi') {
     dynamicSystemPrompt += '\n\n[Citizen Preferred Locale: Hindi. Please respond predominantly in Hindi (देवनागरी).]';
   }

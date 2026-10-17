@@ -124,7 +124,7 @@ async function generateOllamaResponse({
       }
 
       const response = await axios.post(`${baseUrl}/api/chat`, payload, {
-        timeout: 90000, // 90s timeout for CPU inference
+        timeout: 120000, // 120s timeout for CPU inference
         headers: { 'Content-Type': 'application/json' },
       });
 
