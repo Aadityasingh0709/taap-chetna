@@ -93,7 +93,7 @@ async function generateOllamaResponse({
   const baseUrl = (process.env.OLLAMA_BASE_URL || DEFAULT_OLLAMA_BASE_URL).replace(/\/+$/, '');
   const model = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
   const numCtx = parseInt(process.env.OLLAMA_NUM_CTX, 10) || 4096;
-  const numPredict = Math.max(350, parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 450);
+  const numPredict = Math.max(500, parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 1024);
 
   // Build the message stream starting with the system prompt
   const conversation = [
@@ -124,7 +124,7 @@ async function generateOllamaResponse({
       }
 
       const response = await axios.post(`${baseUrl}/api/chat`, payload, {
-        timeout: 120000, // 120s timeout for CPU inference
+        timeout: 180000, // 180s timeout for CPU inference
         headers: { 'Content-Type': 'application/json' },
       });
 
@@ -171,9 +171,20 @@ async function generateOllamaResponse({
         .replace(/<think>[\s\S]*?<\/think>/gi, '')
         .trim();
 
-      // Safe handling if model returned empty content
+      // If content was empty, check if reasoning concluded in thinking
+      if (!cleanContent && assistantMessage.thinking) {
+        const thinkingClean = assistantMessage.thinking
+          .replace(/<think>[\s\S]*?<\/think>/gi, '')
+          .trim();
+        // If thinking has content, extract concluding thoughts
+        if (thinkingClean.length > 50) {
+          cleanContent = thinkingClean;
+        }
+      }
+
+      // Safe handling if model returned completely empty response
       if (!cleanContent) {
-        cleanContent = 'Shakti local AI is connected. Please ask your heat-health question (e.g., current temperature, outdoor precautions, or personal heat risk).';
+        cleanContent = 'I apologize, but I could not formulate a complete response to your query. Please ask your question again or check the live dashboard.';
       }
 
       return {
