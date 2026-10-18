@@ -8,6 +8,7 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
   <img src="https://img.shields.io/badge/Python-3.10%2B%20ML-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+ ML" />
   <img src="https://img.shields.io/badge/ML%20Engine-XGBoost%20%26%20FastAPI-FF6F00?style=for-the-badge&logo=fastapi&logoColor=white" alt="XGBoost & FastAPI" />
+  <img src="https://img.shields.io/badge/Conversational%20AI-Shakti%20%28Qwen3%204B%20%7C%20Ollama%20%26%20Groq%29-FF5722?style=for-the-badge&logoColor=white" alt="Shakti AI" />
   <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB Atlas" />
   <img src="https://img.shields.io/badge/TailwindCSS-4.0-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4.0" />
   <img src="https://img.shields.io/badge/License-MIT-1E88E5?style=for-the-badge" alt="License MIT" />
@@ -19,6 +20,7 @@
 
 <p align="center">
   <a href="#-quickstart--local-setup-guide">⚡ Run in 5 Minutes</a> •
+  <a href="#-shakti-शक्ति--conversational-heat-health-ai-assistant">🤖 Shakti AI Assistant</a> •
   <a href="#-demo-accounts--pre-configured-credentials">🔑 Demo Credentials</a> •
   <a href="#-step-by-step-end-to-end-demo-script">🧪 Evaluator Testing Script</a> •
   <a href="#️-system-architecture--workflow-diagrams">🏗️ Architecture</a> •
@@ -33,12 +35,21 @@
   - [The 4 Structural Failures in Conventional Heat Governance](#the-4-structural-failures-in-conventional-heat-governance)
 - [💡 The Solution: Taap Chetna](#-the-solution-taap-chetna)
 - [✨ Core Capabilities & Innovations](#-core-capabilities--innovations)
+- [🤖 Shakti (शक्ति) — Conversational Heat-Health AI Assistant](#-shakti-शक्ति--conversational-heat-health-ai-assistant)
+  - [Hyperlocal Context-Aware Intelligence](#hyperlocal-context-aware-intelligence)
+  - [Dual-Provider Engine: Local Ollama (Qwen3 4B) & GroqCloud](#dual-provider-engine-local-ollama-qwen3-4b--groqcloud)
+  - [5-Tier Location Resolution Hierarchy](#5-tier-location-resolution-hierarchy)
+  - [Verified Weather & Telemetry Integration](#verified-weather--telemetry-integration)
+  - [Event & Festive Heat Planning (Pandal Hopping)](#event--festive-heat-planning-pandal-hopping)
+  - [Truth, Integrity & Graceful Degradation](#truth-integrity--graceful-degradation)
+  - [Multilingual TTS Voice & Accessibility](#multilingual-tts-voice--accessibility)
 - [👥 Team & Contributors](#-team--contributors)
 - [🏗️ System Architecture & Workflow Diagrams](#️-system-architecture--workflow-diagrams)
   - [1. Multi-Tier End-to-End System Architecture](#1-multi-tier-end-to-end-system-architecture)
   - [2. Citizen Physiological Risk & Hydration Flow](#2-citizen-physiological-risk--hydration-flow)
   - [3. What-If Time-Shift Activity Optimization Flow](#3-what-if-time-shift-activity-optimization-flow)
   - [4. Municipal Authority Command & Predictive ML Pipeline](#4-municipal-authority-command--predictive-ml-pipeline)
+  - [5. Shakti Context-Aware Conversational Intelligence Flow](#5-shakti-context-aware-conversational-intelligence-flow)
 - [📂 Verified Repository Structure](#-verified-repository-structure)
 - [👥 Role-Based Access Control (RBAC) Matrix](#-role-based-access-control-rbac-matrix)
 - [🤖 Audited Machine Learning Subsystem](#-audited-machine-learning-subsystem)
@@ -60,6 +71,7 @@
 - [📑 Complete API Reference](#-complete-api-reference)
   - [Authentication Routes (`/api/auth`)](#-authentication-routes-apiauth)
   - [Citizen Health Routes (`/api/citizen`)](#-citizen-health-routes-apicitizen)
+  - [Shakti Conversational AI Routes (`/api/shakti`)](#-shakti-conversational-ai-routes-apishakti)
   - [Weather & Microclimate Routes (`/api/weather`)](#-weather--microclimate-routes-apiweather)
   - [Travel Heat Shock Routes (`/api/travel`)](#-travel-heat-shock-routes-apitravel)
   - [What-If Shift Simulator Routes (`/api/whatif`)](#-what-if-shift-simulator-routes-apiwhatif)
@@ -125,6 +137,110 @@ The platform bridges atmospheric reanalysis, forward weather simulations, and cl
 | 🤖 **Audited Macro-Burden ML Regressor** | Supervised XGBoost Regressor trained on 2001–2014 NCRB mortality and NASA POWER satellite surface telemetry. | Predicts state-level excess mortality risks and generates actionable municipal preparedness advisories. |
 | 🔄 **Dual-Layer Resilient Failover** | Node.js backend with automatic fallback to compiled baseline schemas and weights if Python service is paused. | Guarantees zero downtime for municipal dashboards during emergency disaster operations. |
 | 🛡️ **System Administrator Portal** | Accreditation lifecycle management for municipal health officers, credential issuing, and authority auditing. | Ensures verified, role-based governance over public safety emergency broadcasts. |
+| 🤖 **Shakti (शक्ति) Conversational AI Assistant** | Context-enriched LLM engine (Local Ollama Qwen3 4B on CPU / GroqCloud Llama 3.3) grounded in live Open-Meteo telemetry with 5-tier location resolution. | Delivers natural language advisory for heatwave precautions, pandal hopping/festive scheduling, personal risk mitigation, and emergency triage without hallucinated weather. |
+
+---
+
+## 🤖 Shakti (शक्ति) — Conversational Heat-Health AI Assistant
+
+**Shakti (शक्ति — *Inner Strength & Resilience*)** is Taap Chetna's citizen-facing conversational heat-health intelligence agent. Designed specifically for Indian climate realities, festivals, daily-wage laborers, and vulnerable demographics, Shakti moves beyond generic AI chatbots by anchoring every single response in **verified real-time biometeorological data**.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           CITIZEN QUERY INPUT                               │
+│        "How is the weather today?" or "Pandal hopping from 6 PM?"           │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   5-TIER LOCATION RESOLUTION HIERARCHY                      │
+│ 1. Entity in Query  ▶  2. Selected City  ▶  3. Profile  ▶  4. GPS  ▶  5. Ask│
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   OPEN-METEO LIVE TELEMETRY ENRICHMENT                      │
+│ Temp (29.2°C) | Feels Like (32.8°C) | Humidity (68%) | UV (5.2) | Rain (0%) │
+│ Wind (14 km/h) | Min/Max (24.1°C / 33.4°C) | Computed Rothfusz Heat Index    │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   STRUCTURED SYSTEM PROMPT INJECTION                        │
+│ 1-2 sentence direct answer | Grounded numbers only | 3-4 bullet precautions │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       DUAL-PROVIDER AI INFERENCE                            │
+│  Primary: Local Ollama (Qwen3 4B on CPU)   │  Fallback: GroqCloud Llama 3.3 │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 CITIZEN INTERFACE & ACCESSIBILITY (TTS)                     │
+│ Markdown formatting | Risk Pills | Web Speech API Text-to-Speech playback   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Hyperlocal Context-Aware Intelligence
+
+Traditional LLM chatbots have no inherent concept of current weather, leading to dangerous hallucinations during severe heat events or useless disclaimers (*"I am an AI and cannot access current weather"*). 
+
+Shakti solves this through proactive context enrichment:
+- **Zero-Hallucination Grounding**: Before reaching the language model, incoming queries are classified for weather, heat-health, activity, and location intent.
+- **Microclimate Injection**: If the query touches upon outdoor plans, weather, temperature, or hydration, the backend automatically fetches or retrieves cached Open-Meteo microclimate metrics and injects them directly into the system context.
+- **Deterministic Number Matching**: The LLM is strictly constrained to cite the exact ground-truth values provided (temperature, humidity, wind, UV, rain probability) without inventing unverified numbers.
+
+### Dual-Provider Engine: Local Ollama (Qwen3 4B) & GroqCloud
+
+To ensure both data privacy, offline operational resilience, and low-latency cloud fallback, Shakti features a dual-engine architecture controlled seamlessly via environment variables:
+
+1. **Local Ollama with Qwen3 4B (Default / Primary)**:
+   - Runs entirely on local consumer hardware (verified on Intel Core i3 13th Gen, 16 GB RAM, CPU-only execution).
+   - Optimized for low latency with `temperature: 0.2`, `num_predict: 500`, and reasoning suppression (`think: false`) to avoid CPU overhead while generating crisp, actionable advisories in seconds.
+   - 100% private, sovereign data execution—no citizen queries leave the host machine.
+2. **GroqCloud with Llama 3.3 70B Versatile (Cloud High-Speed Alternative)**:
+   - Instant sub-second inference using Groq LPUs.
+   - Automatically engaged when `AI_PROVIDER=groq` or as a resilient fallback if the local Ollama daemon is unreachable.
+
+### 5-Tier Location Resolution Hierarchy
+
+When a citizen asks *"How is the weather today?"* without explicitly typing a city name, Shakti never makes an arbitrary guess. It resolves location through an authoritative 5-tier resolution pipeline:
+
+| Tier | Priority Source | Mechanism | Example |
+| :---: | :--- | :--- | :--- |
+| **1** | **Explicit Query Entity** | Regex entity extractor matching curated Indian cities (Kolkata, Delhi, Mumbai, Jaipur, Nagpur, Ahmedabad, etc.). | *"What is the weather in Delhi?"* ➔ `Delhi` |
+| **2** | **Selected Dashboard City** | Active place chosen by the user in the main Taap Chetna search bar. | Citizen selected `Kolkata` on home screen ➔ `Kolkata` |
+| **3** | **Citizen Account Profile** | City or district saved in the authenticated user's MongoDB profile. | Stored profile city ➔ `Patna` |
+| **4** | **Browser Geolocation GPS** | GPS coordinates passed from browser navigator API, reverse-geocoded via Nominatim. | Lat/Lon `(22.5726, 88.3639)` ➔ `Kolkata` |
+| **5** | **Polite Ingestion Request** | If no location is detectable across all tiers, Shakti politely requests the citizen's city before attempting weather answers. | *"Could you please let me know your city so I can check live conditions?"* |
+
+### Verified Weather & Telemetry Integration
+
+Shakti reuses the existing, audited `weatherService.js` in-memory 5-minute cache (`weatherCache`), ensuring **zero redundant external API calls** to Open-Meteo:
+- **Surface Parameters**: 2m Temperature, Apparent Feels-Like, Relative Humidity, Wind Speed, UV Index.
+- **Precipitation & Cloud Metrics**: Live precipitation (mm), Daily maximum precipitation probability (`%`), and Cumulative rain sum.
+- **Diurnal Extremes**: Forecast daily minimum and daily maximum temperatures.
+- **Clinical Rothfusz Heat Index**: Computed NOAA Heat Index with low/medium/high/extreme danger threshold categorization.
+
+### Event & Festive Heat Planning (Pandal Hopping)
+
+In India, massive public gatherings during festivals (Durga Puja, Diwali, Chhath Puja, Eid, Ganesh Utsav) subject millions of citizens to prolonged outdoor heat, high humidity, and crushing crowd densities.
+
+Shakti features dedicated prompt and context engineering for festival and event planning:
+- **Crowd Microclimate Warning**: Explains that dense pandal queues elevate local ambient temperature and trap humidity ($+2^\circ\text{C}$ to $+4^\circ\text{C}$ perceived heat).
+- **Diurnal Window Optimization**: Advises evening departures (after sunset or post 18:00–19:00) when direct solar radiation is zero.
+- **Breathable Traditional Attire**: Recommends loose, light-colored cotton or linen clothing over synthetic fabrics to facilitate sweat evaporation.
+- **Tactical Hydration & Electrolytes**: Prescribes carrying a reusable water bottle, consuming ORS/coconut water every 45–60 minutes, and strictly avoiding caffeinated or high-sugar sodas that accelerate dehydration.
+
+### Truth, Integrity & Graceful Degradation
+
+- **Never False Claims**: Shakti will never claim to have live weather for an unknown location or when offline.
+- **Triage Safety First**: For red-flag heatstroke symptoms (cessation of sweating, hot dry skin, core temp $>40^\circ\text{C}$, confusion, fainting), Shakti immediately displays emergency protocols: call 108/112, move to shade, wet the skin, and apply cold packs to armpits/groin.
+- **Concise Formatting**: Responses are formatted with a 1–2 sentence direct takeaway, followed by 3–4 scannable bullet points for rapid reading on mobile devices.
+
+### Multilingual TTS Voice & Accessibility
+
+To serve citizens with varying literacy levels or outdoor gig workers on motorcycles:
+- **Integrated Web Speech API**: Browser-native Text-to-Speech playback button on every assistant response.
+- **Indian Voice Preference**: Automatically prioritizes Indian English (`en-IN`) and Hindi (`hi-IN`) synthesis voices when available on the client device.
+- **Clean Speech Sanitization**: Strips markdown asterisks, bold tags, and bullet symbols before speaking to provide a natural, pleasant listening experience.
 
 ---
 
@@ -155,6 +271,7 @@ graph TD
         UI_WARD["Municipal Officer Dashboard (Ward 17-24 Grid)"]
         UI_BURDEN["Macro Heat-Health Burden ML Panel"]
         UI_ADMIN["System Admin Portal (Officer Accreditation)"]
+        UI_SHAKTI["Shakti Conversational Assistant (Fab, Drawer & Speech)"]
     end
 
     subgraph GatewayTier ["⚙️ Backend Gateway Tier (Node.js 20 LTS + Express REST API :5000)"]
@@ -166,10 +283,18 @@ graph TD
         CTRL_WHATIF["What-If Time-Shift Calculation Engine"]
         CTRL_WARD["Ward & Alert Dispatch Controller"]
         CTRL_ADMIN["Admin Officer Management Controller"]
+        CTRL_SHAKTI["Shakti Chat Controller (/api/shakti)"]
+        SVC_SHAKTI_CTX["Shakti Context Service (5-Tier Location & Weather Cache)"]
+        SVC_AI["AI Provider Router (Ollama / GroqCloud)"]
         SVC_ML_PROXY["Resilient Heat Burden Service (Port 5001 + Fallback)"]
     end
 
-    subgraph MLTier ["🤖 ML Microservice Tier (Python 3.10+ + FastAPI :5001)"]
+    subgraph AITier ["🤖 Conversational AI Engine Tier"]
+        LLM_OLLAMA["Local Ollama Daemon (Qwen3 4B on CPU :11434)"]
+        LLM_GROQ["GroqCloud API (Llama 3.3 70B Versatile)"]
+    end
+
+    subgraph MLTier ["📊 Macro ML Microservice Tier (Python 3.10+ + FastAPI :5001)"]
         FAST_API["FastAPI Inference Server (Uvicorn)"]
         XGB_ENGINE["Trained XGBoost Regressor (Model B)"]
         DT_ENGINE["Trained Decision Tree Regressor (Baseline)"]
@@ -191,6 +316,7 @@ graph TD
     UI_WARD --> MID_AUTH
     UI_ADMIN --> MID_AUTH
     UI_AUTH --> CTRL_AUTH
+    UI_SHAKTI --> CTRL_SHAKTI
 
     MID_AUTH --> CTRL_WARD
     MID_AUTH --> CTRL_ADMIN
@@ -201,6 +327,13 @@ graph TD
     CTRL_CITIZEN --> DB_MONGO
     CTRL_WARD --> DB_MONGO
     CTRL_ADMIN --> DB_MONGO
+
+    CTRL_SHAKTI --> SVC_SHAKTI_CTX
+    SVC_SHAKTI_CTX --> EXT_METEO
+    SVC_SHAKTI_CTX --> EXT_OSM
+    CTRL_SHAKTI --> SVC_AI
+    SVC_AI --> LLM_OLLAMA
+    SVC_AI --> LLM_GROQ
 
     CTRL_WARD --> SVC_ML_PROXY
     SVC_ML_PROXY -- "POST /predict" --> FAST_API
@@ -300,6 +433,57 @@ flowchart TD
 
 ---
 
+### 5. Shakti Context-Aware Conversational Intelligence Flow
+
+```mermaid
+flowchart TD
+    UserQuery([Citizen Submits Message in Shakti Drawer / Fullscreen]) --> IntentCheck{Classify Query Intent}
+    
+    IntentCheck -- "Weather / Heat / Activity / Outdoor" --> LocPipeline["5-Tier Location Resolution Pipeline"]
+    IntentCheck -- "General / Medical / Help" --> PromptAssembler
+    
+    subgraph LocationResolution ["5-Tier Location Strategy"]
+        L1["1. Match City Entity in Query Text"] --> FoundL1{Matched?}
+        FoundL1 -- No --> L2["2. Check Active Dashboard City"]
+        L2 --> FoundL2{Available?}
+        FoundL2 -- No --> L3["3. Check User Account Profile City"]
+        L3 --> FoundL3{Available?}
+        FoundL3 -- No --> L4["4. Reverse Geocode Browser GPS"]
+        L4 --> FoundL4{Available?}
+        FoundL4 -- No --> L5["5. Flag Needs City Name from Citizen"]
+    end
+    
+    LocPipeline --> LocationResolution
+    FoundL1 -- Yes --> CacheCheck["Query Shared Weather Cache (5-min TTL)"]
+    FoundL2 -- Yes --> CacheCheck
+    FoundL3 -- Yes --> CacheCheck
+    FoundL4 -- Yes --> CacheCheck
+    FoundL5 --> PoliteAsk["Direct LLM to Politely Inquire Citizen's City"]
+    
+    CacheCheck -- "Cache Hit" --> GroundedContext["Extract Temp, Feels-like, Humidity, Wind, UV, Rain, Min/Max"]
+    CacheCheck -- "Cache Miss" --> CallMeteo["Fetch Real-Time Open-Meteo & Nominatim"]
+    CallMeteo --> GroundedContext
+    
+    GroundedContext --> PromptAssembler["Assemble Dynamic System Prompt + Chat History"]
+    PoliteAsk --> PromptAssembler
+    
+    subgraph EngineRouting ["Dual-Provider LLM Engine"]
+        CheckProv{AI_PROVIDER?}
+        CheckProv -- "ollama (Default)" --> OllamaReq["HTTP POST /api/chat :11434 (Qwen3 4B on CPU)"]
+        CheckProv -- "groq (Cloud)" --> GroqReq["GroqCloud API (Llama 3.3 70B Versatile)"]
+        OllamaReq -. "On Network Timeout / Failure" .-> GroqReq
+    end
+    
+    PromptAssembler --> EngineRouting
+    OllamaReq --> ParseResp["Clean Think Tags, Sanitize Markdown & Extract Answer"]
+    GroqReq --> ParseResp
+    
+    ParseResp --> RenderClient["Render Shakti Chat Message + Risk Pill + Voice Button"]
+    RenderClient --> TTS["Optional Web Speech API (en-IN / hi-IN Voice Playback)"]
+```
+
+---
+
 ## 📂 Verified Repository Structure
 
 ```text
@@ -308,6 +492,12 @@ taap-chetna/
 │   ├── public/                              # Static public icons, assets, and SVGs
 │   ├── src/
 │   │   ├── components/                      # Modular UI Components
+│   │   │   ├── shakti/                      # Shakti Conversational Assistant Subsystem
+│   │   │   │   ├── ShaktiChatDrawer.jsx     # Slide-over chat container & fullscreen toggle
+│   │   │   │   ├── ShaktiMessageList.jsx    # Formatted chat history with TTS voice buttons
+│   │   │   │   ├── ShaktiMessageComposer.jsx # Text input with send & error state handling
+│   │   │   │   ├── ShaktiQuickPrompts.jsx   # Curated festival, weather, and labor prompt pills
+│   │   │   │   └── ShaktiRiskPill.jsx       # Embedded biometeorological context pill
 │   │   │   ├── PersonalRiskCalculator.jsx   # Clinical physiological risk assessment & live weather
 │   │   │   ├── WhatIfPlanner.jsx            # 24-hour diurnal time-shift activity optimizer
 │   │   │   ├── TravelRiskAnalyzer.jsx       # Origin-destination thermal transition shock analyzer
@@ -323,6 +513,7 @@ taap-chetna/
 │   │   │   └── ProtectedRoute.jsx           # RBAC route guarding
 │   │   ├── context/                         # React Context State Stores
 │   │   │   ├── AuthContext.jsx              # JWT persistence, session lifecycle & role-based routing
+│   │   │   ├── ShaktiContext.jsx            # Shakti assistant state, drawer visibility & active location sync
 │   │   │   └── ThemeContext.jsx             # Dark / Light mode toggle provider
 │   │   ├── data/                            # Curated city & ward metadata
 │   │   ├── services/
@@ -344,7 +535,8 @@ taap-chetna/
 │   │   ├── travelController.js              # Origin vs. destination thermal transition calculator
 │   │   ├── whatIfController.js              # Diurnal weather curve time-shift optimizer
 │   │   ├── authorityController.js           # Ward grid, alert broadcast & ML proxy handler
-│   │   └── adminController.js               # Officer accreditation review & credential generation
+│   │   ├── adminController.js               # Officer accreditation review & credential generation
+│   │   └── shaktiController.js              # Shakti context enrichment & AI provider invocation
 │   ├── middleware/
 │   │   ├── auth.js                          # Bearer JWT token verification
 │   │   ├── role.js                          # Strict Role-Based Access Control (RBAC) enforcement
@@ -361,10 +553,16 @@ taap-chetna/
 │   │   ├── travel.js                        # /api/travel routes
 │   │   ├── whatif.js                        # /api/whatif routes
 │   │   ├── authority.js                     # /api/authority routes
-│   │   └── admin.js                         # /api/admin routes
+│   │   ├── admin.js                         # /api/admin routes
+│   │   └── shakti.js                        # /api/shakti routes
 │   ├── services/
-│   │   ├── weatherService.js                # Weather data parsing & Rothfusz computation
+│   │   ├── aiProvider.js                    # Dual-engine router (Local Ollama Qwen3 / GroqCloud)
+│   │   ├── shaktiContextService.js          # 5-tier location resolution & telemetry context enricher
+│   │   ├── shaktiSystemPrompt.js            # Prompt engineering, triage rules & festival precautions
+│   │   ├── weatherService.js                # Weather data parsing, rain metrics & Rothfusz computation
 │   │   └── heatBurdenService.js             # ML microservice client with offline fallback
+│   ├── scripts/
+│   │   └── run_shakti_live_tests.js         # Automated 8-suite live test runner for Shakti
 │   ├── .env.example                         # Environment configuration template
 │   ├── index.js                             # Express application server entry point (:5000)
 │   └── package.json                         # Backend dependencies
@@ -412,6 +610,7 @@ Taap Chetna implements strict multi-role governance to prevent unauthorized publ
 | **"What-If" Shift Simulator** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
 | **Travel Heat Shock Analyzer** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
 | **Hyperlocal Weather Telemetry** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
+| **Shakti Conversational Assistant** | ✅ Full Access | ✅ Full Access | ✅ Full Access |
 | **Ward Vulnerability Grid** | ❌ Protected | ✅ Full Ward View | ✅ Full Ward View |
 | **Broadcast Emergency Ward Alerts** | ❌ Protected | ✅ Create & Publish | ✅ Full Access |
 | **Macro Heat-Health Burden ML Panel** | ❌ Protected | ✅ Query & Simulate | ✅ Query & Simulate |
@@ -491,12 +690,13 @@ Follow this guide to run the complete Taap Chetna platform locally in **under 5 
 
 ### Prerequisites
 
-| Tool | Minimum Version | Verification Command |
+| **Tool** | **Minimum Version** | **Verification Command** |
 | :--- | :--- | :--- |
 | **Node.js** | `v18.0.0` or higher | `node -v` |
 | **Python** | `3.10` or higher | `python --version` |
 | **npm** | `v9.0.0` or higher | `npm -v` |
 | **MongoDB** | Local MongoDB (`mongodb://localhost:27017`) or free MongoDB Atlas cluster | `mongod --version` |
+| **Ollama** *(Recommended)* | `v0.4.0` or higher (for private offline Shakti AI) | `ollama --version` |
 
 ---
 
@@ -521,6 +721,11 @@ Install the Python machine learning requirements:
 pip install fastapi uvicorn xgboost scikit-learn pandas numpy joblib requests
 ```
 
+If you plan to use local Shakti AI, pull the verified lightweight model into Ollama:
+```bash
+ollama pull qwen3:4b
+```
+
 ---
 
 ### Step 3: Environment Configuration
@@ -541,7 +746,21 @@ MONGO_URI=mongodb://localhost:27017/taap-chetna
 JWT_SECRET=taap_chetna_secure_jwt_secret_2026
 JWT_EXPIRES_IN=7d
 ML_SERVICE_URL=http://127.0.0.1:5001
+
+# Conversational Heat-Health AI Assistant (Shakti)
+AI_PROVIDER=ollama
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen3:4b
+
+# Cloud LLM Fallback (Optional — if using Groq instead of Ollama)
+GROQ_API_KEY=gsk_your_groq_api_key_here
+GROQ_MODEL=llama-3.3-70b-versatile
 ```
+
+> [!TIP]
+> **Running Shakti on CPU**: The `qwen3:4b` model runs smoothly on standard modern dual/quad-core CPUs (e.g. Intel Core i3 13th Gen, 16GB RAM) without requiring an expensive dedicated GPU.
+>
+> **Switching to GroqCloud**: If you do not have Ollama installed or want lightning-fast cloud inference, simply set `AI_PROVIDER=groq` and supply your free [GroqCloud API key](https://console.groq.com).
 
 > [!NOTE]
 > If you are using MongoDB Atlas, replace `MONGO_URI` with your connection string: `mongodb+srv://<username>:<password>@cluster0.mongodb.net/taap-chetna?retryWrites=true&w=majority`.
@@ -605,7 +824,7 @@ The seeder creates pre-configured accounts for testing both citizen and administ
 
 ## 🧪 Step-by-Step End-to-End Demo Script
 
-Follow this 5-phase evaluation walkthrough to verify all core capabilities during a review:
+Follow this 7-phase evaluation walkthrough to verify all core capabilities during a review:
 
 ### Phase 1: Hyperlocal Citizen Risk Calculator & Live Weather Telemetry
 1. Open [http://localhost:5173](http://localhost:5173) in your browser.
@@ -638,7 +857,19 @@ Follow this 5-phase evaluation walkthrough to verify all core capabilities durin
 3. Click **Analyze Transition Risk**.
 4. Review the **Acclimatization Thermal Shock Warning**, detailing the sharp temperature gradient ($+21^\circ\text{C}$ leap) and transit hydration protocols.
 
-### Phase 4: Municipal Authority Command Center
+### Phase 4: Shakti Conversational AI Assistant (Live Telemetry & Festival Guidance)
+1. Click the floating **"Ask Shakti"** chat bubble (or the flame icon in the navigation bar).
+2. The sleek slide-over drawer animates into view with quick-prompt suggestions.
+3. Observe the dynamic **Context Risk Pill** at the top confirming the detected city (e.g. *Kolkata*), active temperature, and clinical risk state.
+4. Try a weather query without repeating the city name:
+   - Type: *"How is the weather today?"*
+   - Observe Shakti cite exact live Open-Meteo values (temperature, feels-like, relative humidity, wind speed, UV index, and rain chances) without hallucinations.
+5. Try a festival planning scenario:
+   - Type: *"If I want to go out for pandal hopping from 6 PM, what kind of precautions should I take?"*
+   - Observe Shakti provide tailored advice: crowd microclimate heat elevation, post-sunset departure advantage, light cotton attire, and hydration/electrolyte intervals.
+6. Test accessibility: Click the **Listen 🔊** voice button on the response to trigger browser-native Text-to-Speech synthesized in natural Indian English/Hindi cadence.
+
+### Phase 5: Municipal Authority Command Center
 1. Click **Sign In** in the navbar and log in as Municipal Officer:
    - Email: `officer@tapchetna.gov.in`
    - Password: `Pass123!`
@@ -652,7 +883,7 @@ Follow this 5-phase evaluation walkthrough to verify all core capabilities durin
    - Click **Broadcast Alert**.
 6. Observe the alert publish instantly.
 
-### Phase 5: Supervised ML Macro Heat-Health Burden Forecaster
+### Phase 6: Supervised ML Macro Heat-Health Burden Forecaster
 1. On the Municipal Dashboard, locate the **Macro Heat-Health Burden Intelligence** panel.
 2. Select State: **Rajasthan** or **Andhra Pradesh**.
 3. The panel queries the Python FastAPI microservice (`:5001`) with graceful fallback.
@@ -660,7 +891,7 @@ Follow this 5-phase evaluation walkthrough to verify all core capabilities durin
 5. Inspect the explainable contributing factors (**State Historical Baseline**, **Heatwave Days**, **Exposed Population Scale**, **Max Consecutive Hot Days**).
 6. Review the synthesized operational advisory for emergency water tanker and mobile cooling station deployment.
 
-### Phase 6: System Administrator Portal (Optional)
+### Phase 7: System Administrator Portal (Optional)
 1. Sign out and log in as Administrator:
    - Email: `admin@tapchetna.gov.in`
    - Password: `Admin123!`
@@ -689,6 +920,15 @@ Follow this 5-phase evaluation walkthrough to verify all core capabilities durin
 | `GET` | `/api/citizen/profile` | Authenticated | Retrieve stored personal health profile |
 | `PUT` | `/api/citizen/profile` | Authenticated | Update personal health vitals & comorbidity history |
 | `POST` | `/api/citizen/calculate-risk` | Public | Compute clinical physiological heat vulnerability score |
+
+---
+
+### 🤖 Shakti Conversational AI Routes (`/api/shakti`)
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/shakti/status` | Public | Health check verifying AI provider (`ollama` / `groq`), model name, and context engine readiness |
+| `POST` | `/api/shakti/chat` | Public | Context-enriched LLM completion endpoint: accepts query message, history, and client telemetry context |
 
 ---
 
@@ -829,6 +1069,9 @@ As documented in [`ML_REPORT.md`](ML_REPORT.md), the `state_baseline_deaths` fea
 
 ### Q4: Can this be deployed in low-bandwidth municipal field environments?
 **Yes.** The frontend bundle is optimized and compressed ($< 650\text{ KB}$), and all backend APIs respond in under $50\text{ms}$. The system operates reliably on low-specification cloud instances or local municipal servers without requiring GPU accelerators.
+
+### Q5: How does the Shakti AI Assistant avoid hallucinating live weather data?
+Shakti employs a **grounded context injection pipeline** (`backend/services/shaktiContextService.js`). Before any prompt reaches the LLM (whether local Ollama Qwen3 or GroqCloud), the citizen's location is resolved via a strict 5-tier strategy and live verified telemetry (temperature, feels-like, relative humidity, wind speed, UV index, rain probability, and daily extremes) is retrieved from the shared Open-Meteo cache. The system instructions strictly bound the model to cite only these empirical numbers. If no location can be detected across all tiers, Shakti politely requests the citizen's city rather than guessing or fabricating weather.
 
 ---
 
