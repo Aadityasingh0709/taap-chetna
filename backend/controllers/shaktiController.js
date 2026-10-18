@@ -3,15 +3,19 @@
  * Controller handling Shakti conversational AI endpoints.
  * 
  * Enforces request validation, rate limiting, context truncation,
+ * trusted location resolution, real weather service integration,
  * and safe error shielding.
  */
 
 const asyncHandler = require('express-async-handler');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 const { generateChatResponse, getProviderStatus } = require('../services/aiProvider');
 const { SHAKTI_SYSTEM_PROMPT, OLLAMA_SHAKTI_SYSTEM_PROMPT } = require('../services/shaktiSystemPrompt');
 const { SHAKTI_TOOL_DEFINITIONS, executeShaktiTool } = require('../services/shaktiTools');
+const { enrichShaktiContext } = require('../services/shaktiContextService');
 
-// Lightweight in-memory rate-limiter (per IP window: 20 requests / 60 seconds)
+// Lightweight in-memory rate-limiter (per IP window: 25 requests / 60 seconds)
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 25;
@@ -76,7 +80,7 @@ const chat = asyncHandler(async (req, res) => {
   }
 
   // 2. Body & Messages Validation
-  const { messages, locale = 'en' } = req.body;
+  const { messages, locale = 'en', context = {} } = req.body;
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({
@@ -99,7 +103,7 @@ const chat = asyncHandler(async (req, res) => {
     }
 
     const role = (msg.role || '').toLowerCase();
-    if (role !== 'user' && role !== 'assistant') {
+    if (role !== 'user' && role !== 'assistant' && role !== 'system') {
       return res.status(400).json({
         message: `Invalid message role "${msg.role}". Only "user" and "assistant" are permitted.`,
         code: 'INVALID_ROLE',
@@ -126,7 +130,42 @@ const chat = asyncHandler(async (req, res) => {
     });
   }
 
-  // 3. Select system prompt: concise for local CPU inference, full for cloud
+  // 3. Optional Authentication: Identify logged in citizen to access profile location
+  let authenticatedUser = null;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'tapchetna_secret_key_2026');
+      if (decoded && decoded.id) {
+        authenticatedUser = await User.findById(decoded.id).select('-password');
+      }
+    } catch {
+      // Optional auth: treat as guest citizen if token is absent/invalid
+    }
+  }
+
+  // 4. Server-Side Context Enrichment: Proactively resolve location & fetch verified weather
+  let enrichedConversation = sanitizedMessages;
+  let resolvedLocation = null;
+  let weatherData = null;
+  let proactiveTools = [];
+
+  try {
+    const enrichment = await enrichShaktiContext({
+      messages: sanitizedMessages,
+      locale,
+      context,
+      user: authenticatedUser,
+    });
+    enrichedConversation = enrichment.enrichedMessages;
+    resolvedLocation = enrichment.resolvedLocation;
+    weatherData = enrichment.weatherData;
+    proactiveTools = enrichment.toolsExecuted || [];
+  } catch (enrichErr) {
+    console.error('[ShaktiController] Context enrichment error:', enrichErr.message);
+  }
+
+  // 5. Select system prompt: concise for local CPU inference, full for cloud
   const provider = (process.env.AI_PROVIDER || 'ollama').trim().toLowerCase();
   let basePrompt = provider === 'ollama' ? OLLAMA_SHAKTI_SYSTEM_PROMPT : SHAKTI_SYSTEM_PROMPT;
   let dynamicSystemPrompt = basePrompt;
@@ -134,10 +173,10 @@ const chat = asyncHandler(async (req, res) => {
     dynamicSystemPrompt += '\n\n[Citizen Preferred Locale: Hindi. Please respond predominantly in Hindi (देवनागरी).]';
   }
 
-  // 4. Generate AI Completion via Provider
+  // 6. Generate AI Completion via Provider
   try {
     const aiResponse = await generateChatResponse({
-      messages: sanitizedMessages,
+      messages: enrichedConversation,
       systemPrompt: dynamicSystemPrompt,
       tools: SHAKTI_TOOL_DEFINITIONS,
       executeTool: executeShaktiTool,
@@ -147,7 +186,26 @@ const chat = asyncHandler(async (req, res) => {
       message: aiResponse.content,
       model: aiResponse.model,
       provider: aiResponse.provider,
-      toolCallsExecuted: aiResponse.toolsExecuted || [],
+      resolvedLocation,
+      weatherSummary: weatherData ? {
+        location: weatherData.location,
+        temperature: weatherData.temperature,
+        apparentTemperature: weatherData.apparentTemperature,
+        humidity: weatherData.humidity,
+        condition: weatherData.condition,
+        precipitation: weatherData.precipitation,
+        rainProbability: weatherData.precipitationProbabilityMax,
+        heatIndex: weatherData.heatIndex,
+        wetBulb: weatherData.wetBulb,
+        riskLevel: weatherData.riskLevel,
+        isLive: weatherData.isLive,
+        source: weatherData.source,
+        timestamp: weatherData.timestamp,
+      } : null,
+      toolCallsExecuted: [
+        ...proactiveTools,
+        ...(aiResponse.toolsExecuted || []),
+      ],
       timestamp: new Date().toISOString(),
     });
   } catch (err) {

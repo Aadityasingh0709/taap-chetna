@@ -93,7 +93,7 @@ async function generateOllamaResponse({
   const baseUrl = (process.env.OLLAMA_BASE_URL || DEFAULT_OLLAMA_BASE_URL).replace(/\/+$/, '');
   const model = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
   const numCtx = parseInt(process.env.OLLAMA_NUM_CTX, 10) || 4096;
-  const numPredict = Math.max(500, parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 1024);
+  const numPredict = parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 500;
 
   // Build the message stream starting with the system prompt
   const conversation = [
@@ -116,6 +116,7 @@ async function generateOllamaResponse({
         options: {
           num_ctx: numCtx,
           num_predict: numPredict,
+          temperature: 0.2,
         },
       };
 
@@ -176,9 +177,20 @@ async function generateOllamaResponse({
         const thinkingClean = assistantMessage.thinking
           .replace(/<think>[\s\S]*?<\/think>/gi, '')
           .trim();
-        // If thinking has content, extract concluding thoughts
-        if (thinkingClean.length > 50) {
-          cleanContent = thinkingClean;
+        // Look for drafted final answer in quotes or after "response:" / "draft:"
+        const draftMatch = thinkingClean.match(/(?:response|draft|final response|answer):\s*["'“]([\s\S]*?)["'”]/i) ||
+                           thinkingClean.match(/["'“](Today in [^"'”]+|In [A-Z][a-zA-Z\s]+, [^"'”]+)["'”]/i);
+        if (draftMatch && draftMatch[1]) {
+          cleanContent = draftMatch[1].trim();
+        } else {
+          // Take the last paragraph of thinking as concluding answer
+          const paragraphs = thinkingClean.split('\n\n').map(p => p.trim()).filter(Boolean);
+          const lastPara = paragraphs[paragraphs.length - 1];
+          if (lastPara && lastPara.length > 20 && !lastPara.toLowerCase().startsWith('let')) {
+            cleanContent = lastPara;
+          } else if (thinkingClean.length > 30) {
+            cleanContent = thinkingClean;
+          }
         }
       }
 

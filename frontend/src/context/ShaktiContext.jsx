@@ -82,6 +82,56 @@ export const ShaktiProvider = ({ children }) => {
     }
   }, []);
 
+  const getActiveClientContext = useCallback(() => {
+    let selectedLocation = null;
+    let coords = null;
+
+    try {
+      selectedLocation = localStorage.getItem('tapchetna_selected_location');
+      const coordsRaw = localStorage.getItem('tapchetna_selected_coords');
+      if (coordsRaw) {
+        coords = JSON.parse(coordsRaw);
+      }
+    } catch {
+      // storage unavailable
+    }
+
+    if (!selectedLocation) {
+      try {
+        const savedProfileRaw = localStorage.getItem('tapchetna_saved_profile');
+        if (savedProfileRaw) {
+          const profile = JSON.parse(savedProfileRaw);
+          if (profile.homeLocation) selectedLocation = profile.homeLocation;
+          if (profile.selectedCoords) coords = profile.selectedCoords;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    return {
+      selectedLocation: selectedLocation || null,
+      coords: coords || null,
+    };
+  }, []);
+
+  const updateActiveLocation = useCallback((location, coords = null) => {
+    try {
+      if (location) {
+        localStorage.setItem('tapchetna_selected_location', location);
+      } else {
+        localStorage.removeItem('tapchetna_selected_location');
+      }
+      if (coords) {
+        localStorage.setItem('tapchetna_selected_coords', JSON.stringify(coords));
+      } else {
+        localStorage.removeItem('tapchetna_selected_coords');
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const sendMessage = useCallback(async (rawText) => {
     const text = (rawText || '').trim();
     if (!text) return;
@@ -98,6 +148,8 @@ export const ShaktiProvider = ({ children }) => {
     setIsThinking(true);
 
     try {
+      const clientContext = getActiveClientContext();
+
       // Format recent conversation context for the backend
       const historyToSend = [...messages, userMsg]
         .slice(-8)
@@ -106,7 +158,7 @@ export const ShaktiProvider = ({ children }) => {
           content: m.text,
         }));
 
-      const res = await sendShaktiChatMessage(historyToSend, locale);
+      const res = await sendShaktiChatMessage(historyToSend, locale, clientContext);
       const data = res.data;
 
       const shaktiMsg = {
@@ -115,6 +167,8 @@ export const ShaktiProvider = ({ children }) => {
         text: data.message || 'I have analyzed your query.',
         model: data.model,
         provider: data.provider,
+        resolvedLocation: data.resolvedLocation,
+        weatherSummary: data.weatherSummary,
         toolCalls: data.toolCallsExecuted || [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isAi: true,
@@ -140,7 +194,7 @@ export const ShaktiProvider = ({ children }) => {
     } finally {
       setIsThinking(false);
     }
-  }, [messages, locale]);
+  }, [messages, locale, getActiveClientContext]);
 
   const openWithPrompt = useCallback((promptText) => {
     setIsOpen(true);
@@ -172,6 +226,8 @@ export const ShaktiProvider = ({ children }) => {
         feedbackToast,
         showFeedbackToast,
         providerInfo,
+        getActiveClientContext,
+        updateActiveLocation,
       }}
     >
       {children}

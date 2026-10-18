@@ -185,6 +185,11 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
                   Phase 2 Connected
                 </span>
               )}
+              {message.resolvedLocation && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-blue-500/12 text-blue-700 dark:text-blue-300 border border-blue-400/25">
+                  📍 {message.resolvedLocation.split(',')[0]}
+                </span>
+              )}
             </div>
             <span className="text-[10px] text-slate-700 dark:text-slate-300 font-semibold font-mono">
               {message.timestamp}

@@ -145,6 +145,18 @@ export default function PersonalRiskCalculator() {
   };
 
   useEffect(() => {
+    if (selectedCity) {
+      try {
+        localStorage.setItem('tapchetna_selected_location', selectedCity);
+        if (selectedCoords) {
+          localStorage.setItem('tapchetna_selected_coords', JSON.stringify(selectedCoords));
+        } else {
+          localStorage.removeItem('tapchetna_selected_coords');
+        }
+      } catch {
+        // storage quota / unavailable
+      }
+    }
     fetchLiveWeather(selectedCity, selectedCoords);
   }, [selectedCity, selectedCoords]);
 

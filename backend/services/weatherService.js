@@ -196,7 +196,7 @@ async function fetchLiveWeatherByCoords(lat, lon, locationName = 'Your Location'
 
   try {
     const forecastDays = Math.max(1, Math.min(14, Math.abs(dayOffset) + 2));
-    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,apparent_temperature&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean&forecast_days=${forecastDays}&timezone=auto`;
+    const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation&daily=temperature_2m_max,temperature_2m_min,relative_humidity_2m_mean,precipitation_sum,precipitation_probability_max&forecast_days=${forecastDays}&timezone=auto`;
     const weatherRes = await axios.get(weatherUrl, { timeout: 5000 });
     const current = weatherRes.data?.current;
 
@@ -204,6 +204,14 @@ async function fetchLiveWeatherByCoords(lat, lon, locationName = 'Your Location'
       let temp = Math.round(current.temperature_2m * 10) / 10;
       let humidity = Math.round(current.relative_humidity_2m);
       let apparentTemp = Math.round(current.apparent_temperature * 10) / 10;
+      const precipitation = current.precipitation !== undefined ? Math.round(current.precipitation * 10) / 10 : 0.0;
+
+      const dailyProbMax = (weatherRes.data?.daily?.precipitation_probability_max && weatherRes.data?.daily?.precipitation_probability_max[dayOffset !== undefined ? Math.abs(dayOffset) : 0] !== undefined)
+        ? weatherRes.data.daily.precipitation_probability_max[Math.abs(dayOffset) || 0]
+        : null;
+      const dailyPrecipSum = (weatherRes.data?.daily?.precipitation_sum && weatherRes.data?.daily?.precipitation_sum[dayOffset !== undefined ? Math.abs(dayOffset) : 0] !== undefined)
+        ? weatherRes.data.daily.precipitation_sum[Math.abs(dayOffset) || 0]
+        : null;
 
       // If targetDate is specified and valid within forecast range
       if (targetDate && dayOffset !== 0) {
@@ -248,6 +256,9 @@ async function fetchLiveWeatherByCoords(lat, lon, locationName = 'Your Location'
         humidity,
         windSpeed: current.wind_speed_10m || 8,
         apparentTemperature: apparentTemp,
+        precipitation,
+        precipitationProbabilityMax: dailyProbMax,
+        precipitationSum: dailyPrecipSum,
         heatIndex,
         wetBulb,
         condition,
@@ -323,6 +334,9 @@ function getSimulatedWeather(location, lat = 22.57, lon = 88.36, targetDate = nu
     humidity,
     windSpeed: 10,
     apparentTemperature: heatIndex,
+    precipitation: 0.0,
+    precipitationProbabilityMax: 5,
+    precipitationSum: 0.0,
     heatIndex,
     wetBulb,
     condition: 'Warm & Humid',

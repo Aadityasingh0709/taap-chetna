@@ -121,11 +121,10 @@ export default function ShaktiChatPanel() {
                           setLocale('en');
                           showFeedbackToast('Language set to English');
                         }}
-                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 text-[11px] cursor-pointer transition-all ${
-                          locale === 'en'
+                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 text-[11px] cursor-pointer transition-all ${locale === 'en'
                             ? 'bg-orange-500 text-white shadow-xs'
                             : 'bg-stone-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-stone-200 dark:border-slate-700'
-                        }`}
+                          }`}
                       >
                         <Languages className="w-3 h-3" />
                         English
@@ -136,11 +135,10 @@ export default function ShaktiChatPanel() {
                           setLocale('hi');
                           showFeedbackToast('भाषा बदलकर हिन्दी कर दी गई है');
                         }}
-                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 text-[11px] cursor-pointer transition-all ${
-                          locale === 'hi'
+                        className={`px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 text-[11px] cursor-pointer transition-all ${locale === 'hi'
                             ? 'bg-orange-500 text-white shadow-xs'
                             : 'bg-stone-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-stone-200 dark:border-slate-700'
-                        }`}
+                          }`}
                       >
                         हिन्दी (Hindi)
                       </button>

@@ -83,7 +83,7 @@ export const createAdminAuthority = (data) => api.post('/admin/authorities', dat
 
 // Shakti AI Assistant endpoints
 export const getShaktiStatus = () => api.get('/shakti/status');
-export const sendShaktiChatMessage = (messages, locale = 'en') =>
-  api.post('/shakti/chat', { messages, locale }, { timeout: 190000 });
+export const sendShaktiChatMessage = (messages, locale = 'en', context = {}) =>
+  api.post('/shakti/chat', { messages, locale, context }, { timeout: 190000 });
 
 export default api;
