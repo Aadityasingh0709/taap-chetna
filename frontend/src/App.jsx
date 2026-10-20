@@ -1,6 +1,6 @@
 // client/src/App.jsx
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -50,17 +50,21 @@ function CitizenOnlyRoute({ children }) {
 function MainApp() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const { role } = useAuth();
+  const location = useLocation();
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-orange-500 selection:text-white relative">
       {/* Scroll Progress Indicator Bar */}
       <ScrollProgressBar />
 
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+
       {/* Navigation Bar with Theme Switcher & Segregated Navigation */}
       <Navbar onOpenAuth={() => setAuthModalOpen(true)} />
 
       {/* Main Role-Specific Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+      <main id="main-content" tabIndex="-1" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+        <div key={location.pathname} className="route-view">
         <Routes>
           {/* Citizen Routes */}
           <Route
@@ -122,6 +126,7 @@ function MainApp() {
             }
           />
         </Routes>
+        </div>
       </main>
 
       {/* Auth Modal */}

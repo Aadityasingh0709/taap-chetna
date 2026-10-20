@@ -10,10 +10,8 @@ import {
   Train,
   Plane,
   Car,
-  Bus,
   RefreshCw,
   Radio,
-  AlertTriangle
 } from 'lucide-react';
 import { getCurrentWeather } from '../services/api';
 import { POPULAR_INDIAN_PLACES } from '../data/indianPlaces';
@@ -101,40 +99,56 @@ export default function TravelRiskAnalyzer() {
   });
 
   // Real-time weather telemetry for origin & destination
-  const [originWeather, setOriginWeather] = useState({ temp: 18, humidity: 55, heatIndex: 18, isLive: false, condition: 'Temperate', location: 'Shimla' });
-  const [destWeather, setDestWeather] = useState({ temp: 35, humidity: 48, heatIndex: 38, isLive: false, condition: 'Hot & Dry', location: 'Ahmedabad' });
+  const [originWeather, setOriginWeather] = useState({ temp: null, humidity: null, heatIndex: null, isLive: false, condition: 'Weather unavailable', location: 'Shimla' });
+  const [destWeather, setDestWeather] = useState({ temp: null, humidity: null, heatIndex: null, isLive: false, condition: 'Weather unavailable', location: 'Ahmedabad' });
   const [loadingWeather, setLoadingWeather] = useState(false);
 
   // Load live weather for both endpoints via Open-Meteo using OSM coords & travel date
   const loadRouteWeather = async (targetDate = travelDate) => {
     setLoadingWeather(true);
+    setOriginWeather({ temp: null, humidity: null, heatIndex: null, isLive: false, condition: 'Loading weather data', location: fromCity });
+    setDestWeather({ temp: null, humidity: null, heatIndex: null, isLive: false, condition: 'Loading weather data', location: toCity });
     try {
       const [resFrom, resTo] = await Promise.all([
         getCurrentWeather(fromCity, fromCoords, targetDate),
         getCurrentWeather(toCity, toCoords, targetDate),
       ]);
-      if (resFrom.data) {
-        setOriginWeather({
-          temp: resFrom.data.temperature || 24,
-          humidity: resFrom.data.humidity || 50,
-          heatIndex: resFrom.data.heatIndex || resFrom.data.temperature || 24,
-          condition: resFrom.data.condition || 'Temperate',
-          isLive: resFrom.data.isLive !== false,
-          location: resFrom.data.location || fromCity,
-        });
+      const originTempValue = resFrom.data?.temperature;
+      const originHumidityValue = resFrom.data?.humidity;
+      const destinationTempValue = resTo.data?.temperature;
+      const destinationHumidityValue = resTo.data?.humidity;
+      const originTemp = Number(originTempValue);
+      const originHumidity = Number(originHumidityValue);
+      const destinationTemp = Number(destinationTempValue);
+      const destinationHumidity = Number(destinationHumidityValue);
+      if ([originTempValue, originHumidityValue, destinationTempValue, destinationHumidityValue]
+        .some((value) => value === null || value === undefined)
+        || ![originTemp, originHumidity, destinationTemp, destinationHumidity].every(Number.isFinite)) {
+        throw new Error('Weather data is incomplete for the selected route.');
       }
-      if (resTo.data) {
-        setDestWeather({
-          temp: resTo.data.temperature || 35,
-          humidity: resTo.data.humidity || 45,
-          heatIndex: resTo.data.heatIndex || resTo.data.temperature || 36,
-          condition: resTo.data.condition || 'Warm',
-          isLive: resTo.data.isLive !== false,
-          location: resTo.data.location || toCity,
-        });
-      }
-    } catch {
-      // Fallback — keep existing values
+
+      const originHeatIndex = Number(resFrom.data.heatIndex);
+      const destinationHeatIndex = Number(resTo.data.heatIndex);
+      setOriginWeather({
+        temp: originTemp,
+        humidity: originHumidity,
+        heatIndex: Number.isFinite(originHeatIndex) ? originHeatIndex : originTemp,
+        condition: resFrom.data.condition || 'Weather data loaded',
+        isLive: resFrom.data.isLive === true,
+        location: resFrom.data.location || fromCity,
+      });
+      setDestWeather({
+        temp: destinationTemp,
+        humidity: destinationHumidity,
+        heatIndex: Number.isFinite(destinationHeatIndex) ? destinationHeatIndex : destinationTemp,
+        condition: resTo.data.condition || 'Weather data loaded',
+        isLive: resTo.data.isLive === true,
+        location: resTo.data.location || toCity,
+      });
+    } catch (err) {
+      console.warn('Could not load route weather:', err.message);
+      setOriginWeather({ temp: null, humidity: null, heatIndex: null, isLive: false, condition: 'Weather unavailable', location: fromCity });
+      setDestWeather({ temp: null, humidity: null, heatIndex: null, isLive: false, condition: 'Weather unavailable', location: toCity });
     } finally {
       setLoadingWeather(false);
     }
@@ -144,8 +158,12 @@ export default function TravelRiskAnalyzer() {
     loadRouteWeather(travelDate);
   }, [fromCity, toCity, fromCoords, toCoords, travelDate]);
 
-  const deltaTemp = Math.round((destWeather.temp - originWeather.temp) * 10) / 10;
-  const deltaHI = Math.round((destWeather.heatIndex - originWeather.heatIndex) * 10) / 10;
+  const hasRouteWeather = Number.isFinite(originWeather.temp)
+    && Number.isFinite(originWeather.humidity)
+    && Number.isFinite(destWeather.temp)
+    && Number.isFinite(destWeather.humidity);
+  const deltaTemp = hasRouteWeather ? Math.round((destWeather.temp - originWeather.temp) * 10) / 10 : null;
+  const deltaHI = hasRouteWeather ? Math.round((destWeather.heatIndex - originWeather.heatIndex) * 10) / 10 : null;
 
   // Assess acclimatization lag and thermal shock
   const getAcclimatizationRisk = () => {
@@ -158,7 +176,7 @@ export default function TravelRiskAnalyzer() {
     const isRoadNonAc = transitGroup === 'road' && (selectedRoadClass === 'road_car_non_ac' || selectedRoadClass === 'road_bus_non_ac');
 
     // Tailored transit advice depending on mode
-    const getTransitText = (level) => {
+    const getTransitText = () => {
       if (isBike) {
         return 'Highway two-wheeler riding exposes rider to 50°C+ asphalt thermal radiation and high-velocity loo. Rest in shade every 45-60 min with electrolytes.';
       }
@@ -198,7 +216,7 @@ export default function TravelRiskAnalyzer() {
         cardBg: 'bg-red-50 dark:bg-red-950/30',
         shockScore,
         warning: `Sudden thermal jump of +${deltaTemp}°C (+${deltaHI}°C Heat Index). Your cardiovascular system requires 3–5 days to upregulate sweat gland density. Avoid immediate physical labor upon arrival.`,
-        transitEffect: getTransitText('critical'),
+        transitEffect: getTransitText(),
       };
     }
     if (deltaTemp >= 7 || deltaHI >= 8) {
@@ -213,7 +231,7 @@ export default function TravelRiskAnalyzer() {
         cardBg: 'bg-orange-50 dark:bg-orange-950/30',
         shockScore,
         warning: `Noticeable warming shift of +${deltaTemp}°C. Drink plenty of electrolyte-rich liquids on travel day and plan shaded rest breaks.`,
-        transitEffect: getTransitText('elevated'),
+        transitEffect: getTransitText(),
       };
     }
     if (deltaTemp > 0) {
@@ -226,7 +244,7 @@ export default function TravelRiskAnalyzer() {
         cardBg: 'bg-amber-50 dark:bg-amber-950/30',
         shockScore,
         warning: 'Mild environmental temperature variation. Regular hydration and sun protection will keep you comfortable.',
-        transitEffect: getTransitText('moderate'),
+        transitEffect: getTransitText(),
       };
     }
     return {
@@ -240,32 +258,32 @@ export default function TravelRiskAnalyzer() {
     };
   };
 
-  const risk = getAcclimatizationRisk();
+  const risk = hasRouteWeather ? getAcclimatizationRisk() : null;
 
   // Derive display names for origin/destination
   const originDisplay = fromCity.split(',')[0] || 'Origin';
   const destDisplay = toCity.split(',')[0] || 'Destination';
 
   return (
-    <div className="space-y-6">
+    <div className="travel-page space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-300 dark:border-slate-800 pb-5">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="p-3 rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-400/30">
             <Compass className="w-6 h-6" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <h1 className="min-w-0 text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 Travel Heat-Transition & Acclimatization
               </h1>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
-                <Radio className="w-3 h-3 text-emerald-600 animate-pulse" />
-                Live Satellite Sensor Sync
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center gap-1">
+                <Radio className="w-3 h-3 text-slate-500" />
+                {loadingWeather ? 'Loading weather' : 'Weather-based comparison'}
               </span>
             </div>
             <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
-              Live thermal difference analysis across all Indian cities, towns, and villages for train, roadways (own vehicle/cab/bus), and flight journeys.
+              Compare expected heat conditions for selected travel dates, routes, and transport modes.
             </p>
           </div>
         </div>
@@ -281,10 +299,10 @@ export default function TravelRiskAnalyzer() {
       </div>
 
       {/* Input Route Selector */}
-      <div className="glass-panel card-3d p-6 rounded-2xl space-y-5">
+      <div className="travel-config glass-panel card-3d p-6 rounded-2xl space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
           {/* Origin Selection */}
-          <div className="md:col-span-5 bg-stone-50 dark:bg-slate-900/90 p-4 rounded-xl border border-stone-300 dark:border-slate-800 space-y-2">
+          <div className="route-endpoint md:col-span-5 space-y-2">
             <div className="flex items-center justify-between mb-1">
               <span className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
                 <MapPin className="w-3.5 h-3.5 text-emerald-600" />
@@ -327,23 +345,25 @@ export default function TravelRiskAnalyzer() {
             )}
 
             <div className="flex items-center justify-between text-xs font-semibold pt-1 border-t border-stone-200 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Live Departure Temp:</span>
-              <span className="text-slate-900 dark:text-white font-mono font-bold">{originWeather.temp}°C (HI: {originWeather.heatIndex}°C)</span>
+              <span className="text-slate-600 dark:text-slate-400">Departure temperature:</span>
+              <span className="text-slate-900 dark:text-white font-mono font-bold">
+                {originWeather.temp ?? '—'}{originWeather.temp !== null ? `°C (HI: ${originWeather.heatIndex}°C)` : ''}
+              </span>
             </div>
           </div>
 
           {/* Transition Arrow */}
-          <div className="md:col-span-2 flex flex-col items-center justify-center pt-4">
+          <div className="travel-route-arrow md:col-span-2 flex flex-col items-center justify-center pt-4">
             <div className="w-10 h-10 rounded-full bg-orange-500/15 border border-orange-500/40 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-sm">
               <ArrowRight className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 mt-1">
-              {deltaTemp > 0 ? `+${deltaTemp}°C Shift` : `${deltaTemp}°C Shift`}
+              {deltaTemp === null ? 'Awaiting weather' : deltaTemp > 0 ? `+${deltaTemp}°C Shift` : `${deltaTemp}°C Shift`}
             </span>
           </div>
 
           {/* Destination Selection */}
-          <div className="md:col-span-5 bg-stone-50 dark:bg-slate-900/90 p-4 rounded-xl border border-stone-300 dark:border-slate-800 space-y-2">
+          <div className="route-endpoint md:col-span-5 space-y-2">
             <div className="flex items-center justify-between mb-1">
               <span className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
                 <MapPin className="w-3.5 h-3.5 text-rose-600" />
@@ -386,8 +406,10 @@ export default function TravelRiskAnalyzer() {
             )}
 
             <div className="flex items-center justify-between text-xs font-semibold pt-1 border-t border-stone-200 dark:border-slate-800">
-              <span className="text-slate-600 dark:text-slate-400">Live Arrival Temp:</span>
-              <span className="text-slate-900 dark:text-white font-mono font-bold">{destWeather.temp}°C (HI: {destWeather.heatIndex}°C)</span>
+              <span className="text-slate-600 dark:text-slate-400">Arrival temperature:</span>
+              <span className="text-slate-900 dark:text-white font-mono font-bold">
+                {destWeather.temp ?? '—'}{destWeather.temp !== null ? `°C (HI: ${destWeather.heatIndex}°C)` : ''}
+              </span>
             </div>
           </div>
         </div>
@@ -402,6 +424,7 @@ export default function TravelRiskAnalyzer() {
               <button
                 type="button"
                 onClick={() => setTransitGroup('train')}
+                aria-pressed={transitGroup === 'train'}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'train'
                     ? 'btn-3d btn-3d-orange'
@@ -415,6 +438,7 @@ export default function TravelRiskAnalyzer() {
               <button
                 type="button"
                 onClick={() => setTransitGroup('road')}
+                aria-pressed={transitGroup === 'road'}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'road'
                     ? 'btn-3d btn-3d-emerald'
@@ -428,6 +452,7 @@ export default function TravelRiskAnalyzer() {
               <button
                 type="button"
                 onClick={() => setTransitGroup('flight')}
+                aria-pressed={transitGroup === 'flight'}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer transition-all ${
                   transitGroup === 'flight'
                     ? 'btn-3d btn-3d-cyan'
@@ -515,11 +540,13 @@ export default function TravelRiskAnalyzer() {
         </div>
       </div>
 
-      {/* Environmental Comparison Cards with 3D Depth */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-panel card-3d p-5 rounded-2xl space-y-2 stagger-1 animate-fadeIn">
+      {risk ? (
+        <>
+      {/* Environmental Comparison */}
+      <div className="travel-summary-grid grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="travel-metric-primary glass-panel card-3d p-5 rounded-2xl space-y-2 stagger-1 animate-fadeIn">
           <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
-            Live Temperature Shift
+            Temperature shift for selected date
           </span>
           <div className="flex items-baseline gap-2">
             <span className={`text-3xl font-black font-mono ${deltaTemp > 0 ? 'text-red-700 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
@@ -607,6 +634,28 @@ export default function TravelRiskAnalyzer() {
           </div>
         </div>
       </div>
+        </>
+      ) : (
+        <aside className="glass-panel p-6 rounded-2xl" aria-live="polite">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+            Route heat comparison
+          </h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            {loadingWeather
+              ? 'Loading weather data for both locations and the selected date.'
+              : 'Weather data is unavailable for one or both locations. The route risk comparison is paused until data can be loaded.'}
+          </p>
+          {!loadingWeather && (
+            <button
+              type="button"
+              onClick={() => loadRouteWeather()}
+              className="btn-3d btn-3d-orange mt-4 px-4 py-2 text-sm font-semibold"
+            >
+              Try weather again
+            </button>
+          )}
+        </aside>
+      )}
     </div>
   );
 }

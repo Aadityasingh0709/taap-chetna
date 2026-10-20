@@ -185,23 +185,19 @@ async function enrichShaktiContext({ messages = [], locale = 'en', context = {},
 
   let verifiedContextBlock = '';
   let weatherData = null;
+  let weatherError = null;
   let toolsExecuted = [];
 
-  // Determine if this query requires real weather/location data
-  const needsLocationData = intent.isWeather || intent.isPandalOrEvening || intent.isHeatRisk || intent.isTravel;
+  // Determine if this query requires real weather/location data (conceptual comparisons do not need location)
+  const needsLocationData = !intent.isDifference && (intent.isWeather || intent.isPandalOrEvening || intent.isHeatRisk || intent.isTravel);
 
   if (needsLocationData) {
     if (!resolvedLocation) {
       // Location is missing - strict rule: Do NOT invent city! Instruct Shakti to ask.
       verifiedContextBlock = `
-=== TAAP CHETNA APPLICATION CONTEXT: LOCATION UNAVAILABLE ===
-- Citizen Query: "${query}"
-- Location Status: NOT DETECTED (No city was provided in the query, and no location is currently selected in the application or profile).
-- INSTRUCTION FOR SHAKTI:
-  1. Politely and clearly ask the citizen which city, town, or area they are inquiring about.
-  2. Do NOT silently substitute or guess an arbitrary city (such as Delhi or Kolkata).
-  3. Do NOT invent temperatures, rainfall, or weather conditions.
-=============================================================`;
+[Location Notice]
+• Location: Not detected.
+• Please ask the citizen which city or area they are inquiring about before providing weather data.`;
     } else {
       // Location is available - retrieve real data via existing verified weatherService
       try {
@@ -246,40 +242,21 @@ async function enrichShaktiContext({ messages = [], locale = 'en', context = {},
         }
 
         verifiedContextBlock = `
-=== VERIFIED TAAP CHETNA APPLICATION DATA (AUTHORITATIVE) ===
-- Resolved Location: ${resolvedLocation} (Resolution source: ${locResult.source})
-- Data Freshness: ${isLive ? 'Live Observation' : 'Calibrated Telemetry'} as of ${timestamp}
-- Telemetry Source: ${source}
-- Current Ambient Temperature: ${tempC}°C
-- Apparent ("Feels-Like") Temperature: ${apparentC}°C
-- Relative Humidity: ${humidity}%
-- Wind Speed: ${wind} km/h
-- Sky / Weather Condition: ${condition}
-- Current Rain / Precipitation: ${precip} mm (${precip > 0 ? 'Rain active' : 'No rain currently falling'})
-- Today's Maximum Rain Probability: ${rainProbMax}
-- Environmental Heat Index: ${heatIndex}°C (${riskLevel} Risk Tier)
-- Wet-Bulb Sweating Limit: ${wetBulb}°C${eveningSlotInfo}
-
-INSTRUCTION FOR SHAKTI:
-1. Answer the citizen's actual question directly using ONLY the verified values above.
-2. For "How is the weather today?": Summarize current temperature (${tempC}°C, feels like ${apparentC}°C), humidity (${humidity}%), wind, and condition (${condition}) for ${resolvedLocation}.
-3. For "What is the current temperature in my area?": State clearly that in ${resolvedLocation}, the current temperature is ${tempC}°C (apparent ${apparentC}°C).
-4. For "Will it rain today?": State clearly that current rain is ${precip} mm and today's maximum rain probability is ${rainProbMax} for ${resolvedLocation}.
-5. For pandal hopping / evening outings: Use the 6:00 PM evening forecast (${eveningSlotInfo ? `~${weatherData.temperature}°C` : 'evening forecast'}) to contextualize practical precautions (hydrate with ORS/water, wear light breathable cotton, pace walking, take breaks, recognize heat symptoms). Never claim 100% safety.
-6. For heat risk: Explain the environmental heat index (${heatIndex}°C, ${riskLevel}) and wet-bulb limit (${wetBulb}°C).
-7. Do NOT invent different numbers or contradict the verified data above.
-=============================================================`;
+[Verified Live Telemetry for ${resolvedLocation}]
+• Temperature: ${tempC}°C (Feels like: ${apparentC}°C)
+• Relative Humidity: ${humidity}%
+• Wind Speed: ${wind} km/h
+• Sky Condition: ${condition}
+• Rain: ${precip} mm (Today's max probability: ${rainProbMax})
+• Heat Index: ${heatIndex}°C (${riskLevel} Risk Tier)
+• Wet-Bulb Limit: ${wetBulb}°C${eveningSlotInfo}`;
       } catch (weatherErr) {
         console.error('[ShaktiContext] Weather service failure:', weatherErr.message);
+        weatherError = weatherErr.message;
         verifiedContextBlock = `
-=== TAAP CHETNA APPLICATION CONTEXT: SERVICE TEMPORARILY UNAVAILABLE ===
-- Location: ${resolvedLocation}
-- Service Status: Live weather lookup for ${resolvedLocation} could not be completed at this moment (${weatherErr.message}).
-- INSTRUCTION FOR SHAKTI:
-  1. Clearly state that live weather lookup is temporarily unavailable for ${resolvedLocation}.
-  2. Provide sensible general heat-health safety guidance (hydration, shaded pauses, avoiding peak direct sun).
-  3. Do NOT invent a fake temperature or claim live telemetry was obtained.
-========================================================================`;
+[Service Notice for ${resolvedLocation}]
+• Live weather lookup is temporarily unavailable (${weatherErr.message}).
+• State clearly that live lookup is unavailable and give general hydration/heat guidance.`;
       }
     }
   }
@@ -287,11 +264,9 @@ INSTRUCTION FOR SHAKTI:
   // Handle conceptual difference question: weather forecast vs heat-risk assessment
   if (intent.isDifference) {
     verifiedContextBlock += `
-=== TAAP CHETNA DOMAIN KNOWLEDGE: WEATHER VS HEAT-RISK ===
-- Weather Forecast: Predicts external atmospheric physical parameters (ambient temperature, humidity %, rainfall mm, wind speed, cloud cover).
-- Heat-Risk Assessment: Evaluates the physiological strain on human biology. Combines temperature and humidity into Heat Index (perceived thermal load) and Wet-Bulb Temperature (sweating evaporative limit), further compounded by biological vulnerability factors (age, outdoor exertion, hydration buffer, pre-existing cardiovascular/renal conditions, and housing thermal envelope).
-- INSTRUCTION FOR SHAKTI: Explain this fundamental difference clearly and concisely with bullet points.
-==========================================================`;
+[Domain Reference: Weather vs Heat-Risk]
+• Weather Forecast: Predicts external atmospheric parameters (ambient temperature, humidity %, rain, wind).
+• Heat-Risk Assessment: Evaluates physiological strain on human biology. Combines temperature and humidity into Heat Index (thermal load) and Wet-Bulb Temperature (sweating evaporation limit).`;
   }
 
   // Construct enriched conversation
@@ -309,6 +284,7 @@ INSTRUCTION FOR SHAKTI:
     enrichedMessages,
     resolvedLocation,
     weatherData,
+    weatherError,
     toolsExecuted,
     intent,
   };

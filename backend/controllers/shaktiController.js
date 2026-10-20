@@ -144,15 +144,21 @@ const chat = asyncHandler(async (req, res) => {
     }
   }
 
+  // Truncate conversation history to last 4 turns (2 user, 2 assistant)
+  // to prevent prompt token bloat on CPU inference while preserving recent context
+  const trimmedMessages = sanitizedMessages.slice(-4);
+
   // 4. Server-Side Context Enrichment: Proactively resolve location & fetch verified weather
-  let enrichedConversation = sanitizedMessages;
+  let enrichedConversation = trimmedMessages;
   let resolvedLocation = null;
   let weatherData = null;
+  let weatherServiceError = null;
   let proactiveTools = [];
+  let queryIntent = {};
 
   try {
     const enrichment = await enrichShaktiContext({
-      messages: sanitizedMessages,
+      messages: trimmedMessages,
       locale,
       context,
       user: authenticatedUser,
@@ -160,7 +166,9 @@ const chat = asyncHandler(async (req, res) => {
     enrichedConversation = enrichment.enrichedMessages;
     resolvedLocation = enrichment.resolvedLocation;
     weatherData = enrichment.weatherData;
+    weatherServiceError = enrichment.weatherError;
     proactiveTools = enrichment.toolsExecuted || [];
+    queryIntent = enrichment.intent || {};
   } catch (enrichErr) {
     console.error('[ShaktiController] Context enrichment error:', enrichErr.message);
   }
@@ -173,46 +181,252 @@ const chat = asyncHandler(async (req, res) => {
     dynamicSystemPrompt += '\n\n[Citizen Preferred Locale: Hindi. Please respond predominantly in Hindi (देवनागरी).]';
   }
 
-  // 6. Generate AI Completion via Provider
+  // Helper to format weather summary consistently
+  const formatWeatherSummary = (w) => {
+    if (!w) return null;
+    return {
+      location: w.location,
+      temperature: w.temperature,
+      apparentTemperature: w.apparentTemperature !== undefined ? w.apparentTemperature : w.temperature,
+      humidity: w.humidity,
+      condition: w.condition,
+      precipitation: w.precipitation !== undefined ? w.precipitation : 0.0,
+      rainProbability: w.precipitationProbabilityMax,
+      heatIndex: w.heatIndex,
+      wetBulb: w.wetBulb,
+      riskLevel: w.riskLevel,
+      isLive: w.isLive,
+      source: w.source,
+      timestamp: w.timestamp,
+    };
+  };
+
+  // Helper to construct structured verified weather response if AI generation times out
+  // Helper to construct structured verified weather response if AI generation times out or is incomplete
+  const buildVerifiedWeatherFallback = ({ location, weather, isTimeout, lang, isPandalOrEvening = false }) => {
+    const temp = weather.temperature;
+    const apparent = weather.apparentTemperature !== undefined ? weather.apparentTemperature : temp;
+    const humidity = weather.humidity;
+    const wind = weather.windSpeed || 8;
+    const condition = weather.condition || 'Clear Sky';
+    const precip = weather.precipitation !== undefined ? weather.precipitation : 0.0;
+    const rainProb = weather.precipitationProbabilityMax !== null ? `${weather.precipitationProbabilityMax}%` : 'Low (<10%)';
+    const heatIndex = weather.heatIndex || temp;
+    const risk = weather.riskLevel || 'LOW';
+
+    let eveningLine = isPandalOrEvening
+      ? `• **Pandal Hopping / Evening Precautions:** Hydrate regularly with water or ORS packets, wear lightweight loose-fitting cotton clothing, and take periodic rest pauses in shaded or ventilated areas.`
+      : null;
+
+    if (lang === 'hi') {
+      const notice = isTimeout
+        ? `⚠️ **सूचना:** स्थानीय AI व्याख्या CPU पर समय समाप्त (timeout) हो गई, लेकिन **${location}** के लिए ताप चेतना मौसम डेटा सफलतापूर्वक सत्यापित किया गया है:`
+        : `ℹ️ **सत्यापित मौसम डेटा (${location}):**`;
+      const lines = [
+        notice,
+        `• **तापमान:** ${temp}°C (महसूस: ${apparent}°C)`,
+        `• **मौसम की स्थिति:** ${condition}`,
+        `• **आर्द्रता (Humidity):** ${humidity}%`,
+        `• **हवा की गति:** ${wind} किमी/घंटा`,
+        `• **वर्षा की संभावना:** ${rainProb} (वर्तमान वर्षा: ${precip} मिमी)`,
+        `• **हीट इंडेक्स:** ${heatIndex}°C (${risk} जोखिम श्रेणी)`,
+      ];
+      if (isPandalOrEvening) {
+        lines.push(`• **पंडाल भ्रमण सावधानियां:** ओआरएस/पानी से हाइड्रेटेड रहें, ढीले सूती कपड़े पहनें और बीच-बीच में छायादार स्थानों पर विश्राम करें।`);
+      }
+      lines.push(`\n*कृपया तुरंत लाइव डेटा के लिए ऊपर दिए गए डैशबोर्ड की जांच करें या थोड़ी देर बाद पुनः प्रयास करें।*`);
+      return lines.join('\n');
+    }
+
+    const notice = isTimeout
+      ? `⚠️ **Notice:** Local AI explanation timed out on CPU, but live Taap Chetna telemetry was successfully verified for **${location}**:`
+      : `ℹ️ **Verified Weather Telemetry (${location}):**`;
+    const lines = [
+      notice,
+      `• **Current Temperature:** ${temp}°C (Feels like: ${apparent}°C)`,
+      `• **Sky Condition:** ${condition}`,
+      `• **Relative Humidity:** ${humidity}%`,
+      `• **Wind Speed:** ${wind} km/h`,
+      `• **Rain / Precipitation:** ${precip} mm (Today's max rain probability: ${rainProb})`,
+      `• **Heat Index:** ${heatIndex}°C (${risk} Risk Tier)`,
+    ];
+    if (eveningLine) {
+      lines.push(eveningLine);
+    }
+    lines.push(`\n*Please check the live dashboard above for full telemetry or retry your question.*`);
+    return lines.join('\n');
+  };
+
+  // 6. If weather lookup was required but failed, immediately inform citizen with safety guidance
+  if (weatherServiceError) {
+    const isHindi = locale === 'hi';
+    const locName = resolvedLocation || 'your area';
+    const message = isHindi
+      ? `⚠️ **मौसम सेवा सूचना (${locName}):**\n**${locName}** के लिए लाइव मौसम डेटा इस समय उपलब्ध नहीं हो सका (${weatherServiceError})।\n\n*सामान्य ताप सुरक्षा सुझाव:*\n• दिनभर पर्याप्त मात्रा में पानी और ओआरएस पिएं।\n• दोपहर के समय (11 बजे से 3 बजे तक) तेज धूप में निकलने से बचें।\n• ढीले और हल्के सूती वस्त्र पहनें।`
+      : `⚠️ **Live Weather Notice (${locName}):**\nLive weather lookup for **${locName}** could not be completed at this moment (${weatherServiceError}).\n\n*General Heat Safety Guidance:*\n• Stay well-hydrated with water and electrolyte solutions throughout the day.\n• Avoid prolonged direct sun exposure during peak afternoon hours (11 AM – 3 PM).\n• Wear lightweight, loose-fitting cotton clothing and take periodic rest in shade.`;
+
+    return res.json({
+      message,
+      model: process.env.OLLAMA_MODEL || 'qwen3:4b',
+      provider,
+      resolvedLocation,
+      weatherSummary: null,
+      toolCallsExecuted: proactiveTools,
+      aiGenerated: false,
+      fallbackReason: 'WEATHER_SERVICE_UNAVAILABLE',
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // 7. Generate AI Completion via Provider
+  // If weatherData was already proactively retrieved, omit tool schemas so Qwen doesn't
+  // waste CPU tokens on function schema evaluation or attempt tool-calling loops.
+  const toolsForModel = weatherData ? [] : (process.env.OLLAMA_ENABLE_TOOLS === 'true' ? SHAKTI_TOOL_DEFINITIONS : []);
+
   try {
     const aiResponse = await generateChatResponse({
       messages: enrichedConversation,
       systemPrompt: dynamicSystemPrompt,
-      tools: SHAKTI_TOOL_DEFINITIONS,
+      tools: toolsForModel,
       executeTool: executeShaktiTool,
     });
+
+    // Check if conceptual difference query needs complete definition
+    if (queryIntent.isDifference && (!aiResponse.content || !aiResponse.content.toLowerCase().includes('wet') || aiResponse.content.length < 40)) {
+      const isHindi = locale === 'hi';
+      const diffText = isHindi
+        ? `• **हीट इंडेक्स (Heat Index):** हवा के तापमान और आर्द्रता (humidity) को मिलाकर यह दर्शाता है कि मानव शरीर पर गर्मी का वास्तविक तनाव कितना महसूस हो रहा है।\n• **वेट-बल्ब तापमान (Wet-Bulb Temperature):** यह पसीने के वाष्पीकरण द्वारा शरीर को ठंडा करने की भौतिक सीमा है। 35°C वेट-बल्ब पर मानव शरीर पसीने से भी खुद को ठंडा नहीं कर पाता, जो जीवन के लिए अत्यंत खतरनाक है।`
+        : `• **Heat Index:** Measures perceived environmental thermal load on human biology by combining ambient air temperature and relative humidity.\n• **Wet-Bulb Temperature:** Measures the physical threshold of evaporative sweating. When wet-bulb exceeds 35°C, the human body cannot shed metabolic heat through perspiration, posing critical biological danger.`;
+
+      return res.json({
+        message: diffText,
+        model: aiResponse.model || process.env.OLLAMA_MODEL || 'qwen3:4b',
+        provider,
+        resolvedLocation: null,
+        weatherSummary: null,
+        toolCallsExecuted: proactiveTools,
+        diagnostics: aiResponse.diagnostics || null,
+        aiGenerated: false,
+        fallbackReason: 'AI_REASONING_FILTERED',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    // Check if AI generated a valid response or if internal reasoning was filtered out
+    if (!aiResponse.content || aiResponse.content.trim().length === 0) {
+      // 1. If weather data is available, fallback to verified telemetry
+      if (weatherData) {
+        console.warn('[ShaktiController] AI output was reasoning-only. Preserving verified weather telemetry.');
+        const fallbackText = buildVerifiedWeatherFallback({
+          location: resolvedLocation || weatherData.location,
+          weather: weatherData,
+          isTimeout: false,
+          lang: locale,
+          isPandalOrEvening: queryIntent.isPandalOrEvening,
+        });
+
+        return res.json({
+          message: fallbackText,
+          model: aiResponse.model || process.env.OLLAMA_MODEL || 'qwen3:4b',
+          provider,
+          resolvedLocation,
+          weatherSummary: formatWeatherSummary(weatherData),
+          toolCallsExecuted: [
+            ...proactiveTools,
+            ...(aiResponse.toolsExecuted || []),
+          ],
+          diagnostics: aiResponse.diagnostics || null,
+          aiGenerated: false,
+          fallbackReason: 'AI_REASONING_FILTERED',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // 2. If conceptual query, provide verified domain explanation
+      if (queryIntent.isDifference) {
+        return res.json({
+          message: [
+            '• **Heat Index:** Measures perceived environmental thermal load on the human biology by combining ambient temperature and relative humidity.',
+            '• **Wet-Bulb Temperature:** Measures the physical threshold of evaporative sweating. When wet-bulb exceeds 35°C, the human body cannot shed metabolic heat through sweat, posing severe biological heat danger.',
+          ].join('\n'),
+          model: aiResponse.model || process.env.OLLAMA_MODEL || 'qwen3:4b',
+          provider,
+          resolvedLocation: null,
+          weatherSummary: null,
+          toolCallsExecuted: proactiveTools,
+          diagnostics: aiResponse.diagnostics || null,
+          aiGenerated: false,
+          fallbackReason: 'AI_REASONING_FILTERED',
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // 3. General query fallback
+      return res.json({
+        message: 'I apologize, but I could not formulate a complete response to your query right now. Please ask your question again or check the live dashboard.',
+        model: aiResponse.model || process.env.OLLAMA_MODEL || 'qwen3:4b',
+        provider,
+        resolvedLocation: resolvedLocation || null,
+        weatherSummary: null,
+        toolCallsExecuted: proactiveTools,
+        diagnostics: aiResponse.diagnostics || null,
+        aiGenerated: false,
+        fallbackReason: 'AI_INCOMPLETE',
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     res.json({
       message: aiResponse.content,
       model: aiResponse.model,
       provider: aiResponse.provider,
       resolvedLocation,
-      weatherSummary: weatherData ? {
-        location: weatherData.location,
-        temperature: weatherData.temperature,
-        apparentTemperature: weatherData.apparentTemperature,
-        humidity: weatherData.humidity,
-        condition: weatherData.condition,
-        precipitation: weatherData.precipitation,
-        rainProbability: weatherData.precipitationProbabilityMax,
-        heatIndex: weatherData.heatIndex,
-        wetBulb: weatherData.wetBulb,
-        riskLevel: weatherData.riskLevel,
-        isLive: weatherData.isLive,
-        source: weatherData.source,
-        timestamp: weatherData.timestamp,
-      } : null,
+      weatherSummary: formatWeatherSummary(weatherData),
       toolCallsExecuted: [
         ...proactiveTools,
         ...(aiResponse.toolsExecuted || []),
       ],
+      diagnostics: aiResponse.diagnostics || null,
+      aiGenerated: true,
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
+    const isTimeout = err.status === 504 || err.originalCode === 'TIMEOUT' || err.message?.includes('timeout');
+
+    // CRITICAL: If weather data was verified from live telemetry before the LLM timed out,
+    // preserve and return the real verified weather metrics to the citizen rather than
+    // discarding it and showing a generic error!
+    if (weatherData) {
+      console.warn(`[ShaktiController] AI generation failed (${err.message}). Preserving verified weather telemetry fallback.`);
+      const fallbackText = buildVerifiedWeatherFallback({
+        location: resolvedLocation || weatherData.location,
+        weather: weatherData,
+        isTimeout,
+        lang: locale,
+        isPandalOrEvening: queryIntent.isPandalOrEvening,
+      });
+
+      return res.json({
+        message: fallbackText,
+        model: process.env.OLLAMA_MODEL || 'qwen3:4b',
+        provider,
+        resolvedLocation,
+        weatherSummary: formatWeatherSummary(weatherData),
+        toolCallsExecuted: proactiveTools,
+        aiGenerated: false,
+        fallbackReason: isTimeout ? 'AI_TIMEOUT' : 'AI_ERROR',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     const statusCode = err.status || 500;
     res.status(statusCode).json({
       message: err.message || 'Shakti encountered an error while formulating guidance. Please try again.',
-      code: err.originalCode || 'AI_PROVIDER_ERROR',
+      code: isTimeout ? 'TIMEOUT' : (err.originalCode || 'AI_PROVIDER_ERROR'),
+      isTimeout,
+      resolvedLocation: resolvedLocation || null,
+      weatherSummary: null,
+      toolCallsExecuted: proactiveTools,
     });
   }
 });

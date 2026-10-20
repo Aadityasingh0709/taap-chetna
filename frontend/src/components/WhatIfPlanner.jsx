@@ -1,24 +1,18 @@
 // frontend/src/components/WhatIfPlanner.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   CalendarClock, 
   Sun, 
   Clock, 
   MapPin, 
   CheckCircle2, 
-  AlertTriangle, 
   Droplets, 
-  Flame, 
   Zap,
   Activity,
-  ArrowRight,
   Radio,
-  Search,
   RefreshCw,
   ShieldAlert,
   ShieldCheck,
-  Heart,
-  Thermometer,
   Sliders
 } from 'lucide-react';
 import { getCurrentWeather } from '../services/api';
@@ -96,32 +90,48 @@ export default function WhatIfPlanner() {
     d.setDate(d.getDate() + 1);
     return d.toISOString().split('T')[0];
   };
-  const [scheduledDate, setScheduledDate] = useState(tomorrowStr());
+  const [scheduledDate, setScheduledDate] = useState(tomorrowStr);
   const [activityStartHour, setActivityStartHour] = useState(8); // 0 to 23
   const [selectedBestSlot, setSelectedBestSlot] = useState('morning');
 
-  // Real-time live temperature base
-  const [liveBaseWeather, setLiveBaseWeather] = useState({ temp: 33, humidity: 60, isLive: false, location: '' });
-  const [loadingWeather, setLoadingWeather] = useState(false);
+  const [liveBaseWeather, setLiveBaseWeather] = useState(null);
+  const [loadingWeather, setLoadingWeather] = useState(true);
+  const [weatherError, setWeatherError] = useState('');
+  const weatherRequestRef = useRef(0);
 
-  // Fetch real-time weather from Open-Meteo (with target date for future forecasts)
   const fetchCityWeather = async (cityName = selectedCity, coords = selectedCoords, date = scheduledDate) => {
-    if (!cityName) return;
+    const requestId = ++weatherRequestRef.current;
+    if (!cityName) {
+      setLiveBaseWeather(null);
+      setWeatherError('Select a location to load forecast-based scenarios.');
+      setLoadingWeather(false);
+      return;
+    }
     setLoadingWeather(true);
+    setLiveBaseWeather(null);
+    setWeatherError('');
     try {
       const res = await getCurrentWeather(cityName, coords, date);
-      if (res.data) {
+      const temperature = Number(res.data?.temperature);
+      const humidity = Number(res.data?.humidity);
+      if (!Number.isFinite(temperature) || !Number.isFinite(humidity) || humidity < 0 || humidity > 100) {
+        throw new Error('Weather data is incomplete for the selected location and date.');
+      }
+      if (requestId === weatherRequestRef.current) {
         setLiveBaseWeather({
-          temp: res.data.temperature !== undefined ? res.data.temperature : 33,
-          humidity: res.data.humidity !== undefined ? res.data.humidity : 55,
-          isLive: res.data.isLive !== false,
+          temp: temperature,
+          humidity,
+          isLive: res.data.isLive === true,
           location: res.data.location || cityName,
         });
       }
-    } catch {
-      // Keep baseline
+    } catch (error) {
+      console.warn('Could not load What-If forecast:', error.message);
+      if (requestId === weatherRequestRef.current) {
+        setWeatherError(error.message || 'Forecast data is unavailable. Try refreshing or choose another date or location.');
+      }
     } finally {
-      setLoadingWeather(false);
+      if (requestId === weatherRequestRef.current) setLoadingWeather(false);
     }
   };
 
@@ -130,25 +140,26 @@ export default function WhatIfPlanner() {
   }, [selectedCity, selectedCoords, scheduledDate]);
 
   const activeCity = selectedCity || 'Nagpur, Maharashtra';
-  const baseT = liveBaseWeather.temp;
-  const baseH = liveBaseWeather.humidity;
+  const baseT = liveBaseWeather?.temp;
+  const baseH = liveBaseWeather?.humidity;
+  const hasForecast = liveBaseWeather !== null;
 
   // Dynamically calculate 4 diurnal time windows with realistic daily curves
-  const morningTemp = Math.round((baseT - 5.5) * 10) / 10;
-  const morningH = Math.min(92, Math.round(baseH + 14));
-  const morningHI = computeHeatIndex(morningTemp, morningH);
+  const morningTemp = hasForecast ? Math.round((baseT - 5.5) * 10) / 10 : null;
+  const morningH = hasForecast ? Math.min(92, Math.round(baseH + 14)) : null;
+  const morningHI = hasForecast ? computeHeatIndex(morningTemp, morningH) : null;
 
-  const lateMorningTemp = Math.round((baseT - 0.5) * 10) / 10;
-  const lateMorningH = Math.max(25, Math.round(baseH - 4));
-  const lateMorningHI = computeHeatIndex(lateMorningTemp, lateMorningH);
+  const lateMorningTemp = hasForecast ? Math.round((baseT - 0.5) * 10) / 10 : null;
+  const lateMorningH = hasForecast ? Math.max(25, Math.round(baseH - 4)) : null;
+  const lateMorningHI = hasForecast ? computeHeatIndex(lateMorningTemp, lateMorningH) : null;
 
-  const afternoonTemp = Math.round((baseT + 4.5) * 10) / 10;
-  const afternoonH = Math.max(18, Math.round(baseH - 14));
-  const afternoonHI = computeHeatIndex(afternoonTemp, afternoonH);
+  const afternoonTemp = hasForecast ? Math.round((baseT + 4.5) * 10) / 10 : null;
+  const afternoonH = hasForecast ? Math.max(18, Math.round(baseH - 14)) : null;
+  const afternoonHI = hasForecast ? computeHeatIndex(afternoonTemp, afternoonH) : null;
 
-  const eveningTemp = Math.round((baseT - 1.2) * 10) / 10;
-  const eveningH = Math.min(85, Math.round(baseH + 5));
-  const eveningHI = computeHeatIndex(eveningTemp, eveningH);
+  const eveningTemp = hasForecast ? Math.round((baseT - 1.2) * 10) / 10 : null;
+  const eveningH = hasForecast ? Math.min(85, Math.round(baseH + 5)) : null;
+  const eveningHI = hasForecast ? computeHeatIndex(eveningTemp, eveningH) : null;
 
   const slots = [
     {
@@ -231,7 +242,7 @@ export default function WhatIfPlanner() {
 
   // Detect whether user's specified time falls into dangerous midday peak hours
   const isPeakHour = activityStartHour >= 12 && activityStartHour < 16;
-  const tempDiffSaving = Math.round((afternoonTemp - morningTemp) * 10) / 10;
+  const tempDiffSaving = hasForecast ? Math.round((afternoonTemp - morningTemp) * 10) / 10 : null;
   const waterDiffSaving = ((selectedActivity.waterLossPerHour * 1.5) - (selectedActivity.waterLossPerHour * 0.55)).toFixed(1);
 
   // Format hour for display
@@ -242,7 +253,7 @@ export default function WhatIfPlanner() {
   };
 
   return (
-    <div className="space-y-8 animate-fadeIn">
+    <div className="planner-page space-y-8 animate-fadeIn">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-300 dark:border-slate-800 pb-5">
         <div className="flex items-center gap-3">
@@ -250,17 +261,17 @@ export default function WhatIfPlanner() {
             <CalendarClock className="w-6 h-6" />
           </span>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 What-If Outdoor Activity Time Planner
               </h1>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
-                <Radio className="w-3 h-3 text-emerald-600 animate-pulse" />
-                Live Forecast Sync
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 flex items-center gap-1">
+                <Radio className={`w-3 h-3 ${loadingWeather ? 'animate-pulse text-orange-500' : hasForecast ? 'text-emerald-500' : 'text-slate-500'}`} />
+                {loadingWeather ? 'Loading forecast' : hasForecast ? (liveBaseWeather.isLive ? 'Current weather loaded' : 'Forecast loaded') : 'Forecast unavailable'}
               </span>
             </div>
             <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
-              Simulates physiological heat strain across diurnal time windows for any Indian village or city using date-specific forecasts.
+              Forecast-based scenarios use a date-specific weather baseline with modeled time-of-day adjustments; results are estimates, not hourly observations.
             </p>
           </div>
         </div>
@@ -276,8 +287,8 @@ export default function WhatIfPlanner() {
       </div>
 
       {/* Activity, Location & Time Configuration Bar */}
-      <div className="glass-panel card-3d p-6 rounded-2xl space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="planner-config glass-panel card-3d p-6 rounded-2xl space-y-5">
+        <div className="planner-input-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Location with Village/City OpenStreetMap search + quick list */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
@@ -407,6 +418,7 @@ export default function WhatIfPlanner() {
               key={preset.hour}
               type="button"
               onClick={() => setActivityStartHour(preset.hour)}
+              aria-pressed={activityStartHour === preset.hour}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
                 activityStartHour === preset.hour
                   ? 'bg-orange-600 text-white shadow-sm'
@@ -466,8 +478,7 @@ export default function WhatIfPlanner() {
                   </span>
                 </div>
                 <p className="text-xs text-red-900 dark:text-red-200 font-medium mt-0.5">
-                  12:00 PM – 04:00 PM has maximum solar angle, UV index &gt; 11, and asphalt surface temperatures exceeding 55°C.
-                  If stepping out cannot be avoided, strictly observe these 10 survival protocols:
+                  Midday heat can increase strain during outdoor work. If you cannot reschedule, use these precautions and take frequent breaks in shade.
                 </p>
               </div>
             </div>
@@ -508,10 +519,10 @@ export default function WhatIfPlanner() {
       {/* Comparison Grid: 4 Diurnal Multi-Slot Analysis */}
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 flex-wrap">
             <span>Comparative Diurnal Multi-Slot Analysis ({activeCity.split(',')[0]} • {scheduledDate})</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-300 dark:border-emerald-800">
-              4 Windows Evaluated
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700">
+              Modeled time windows
             </span>
           </h2>
           <span className="text-xs text-stone-600 dark:text-stone-400 font-medium">
@@ -519,7 +530,23 @@ export default function WhatIfPlanner() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {loadingWeather || weatherError ? (
+          <div role="status" aria-live="polite" className="glass-panel p-5 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+              {loadingWeather ? 'Loading weather for the selected location and date. Scenario estimates will appear when forecast data is available.' : weatherError}
+            </p>
+            {!loadingWeather && (
+              <button
+                type="button"
+                onClick={() => fetchCityWeather(selectedCity, selectedCoords, scheduledDate)}
+                className="mt-3 btn-3d btn-3d-surface px-3 py-2 text-xs font-bold"
+              >
+                Retry forecast
+              </button>
+            )}
+          </div>
+        ) : (
+        <div className="planner-slots grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {slots.map((slot) => {
             const isUserSlot = activityStartHour >= slot.startHour && activityStartHour < slot.endHour;
 
@@ -598,10 +625,12 @@ export default function WhatIfPlanner() {
 
                 <div className="mt-5">
                   <button
+                    type="button"
                     onClick={() => {
                       setSelectedBestSlot(slot.id);
                       setActivityStartHour(slot.startHour + 1);
                     }}
+                    aria-pressed={selectedBestSlot === slot.id}
                     className={`w-full py-2.5 rounded-xl text-xs font-black cursor-pointer ${
                       selectedBestSlot === slot.id
                         ? 'btn-3d btn-3d-emerald text-white'
@@ -623,9 +652,11 @@ export default function WhatIfPlanner() {
             );
           })}
         </div>
+        )}
       </div>
 
       {/* Decision Summary Box with 3D Depth */}
+      {hasForecast && !weatherError && (
       <div className="glass-panel card-3d p-6 rounded-2xl border-emerald-400/40 dark:border-emerald-500/30 bg-emerald-50/70 dark:bg-emerald-950/20 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3.5">
           <div className="p-3 rounded-xl bg-emerald-600 text-white shrink-0 shadow-md">
@@ -633,21 +664,26 @@ export default function WhatIfPlanner() {
           </div>
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-              Optimization Verdict for {scheduledDate}: Shift Schedule to 06:00 AM — 08:30 AM
+              Suggested lower-heat window for {scheduledDate}: 06:00 AM — 08:30 AM
             </h3>
             <p className="text-xs text-slate-700 dark:text-slate-200 font-medium mt-0.5">
-              By shifting from Peak Afternoon ({afternoonTemp}°C) to Early Morning ({morningTemp}°C), ambient temperature drops by <strong className="text-emerald-700 dark:text-emerald-400">{tempDiffSaving}°C</strong>, saving over <strong className="text-emerald-700 dark:text-emerald-400">{waterDiffSaving} Litres</strong> of dehydration during {selectedActivity.label}.
+              Modeled scenario comparison, not a measured forecast for each hour. Shifting from the afternoon estimate ({afternoonTemp}°C) to morning ({morningTemp}°C) reduces estimated air temperature by <strong className="text-emerald-700 dark:text-emerald-400">{tempDiffSaving}°C</strong>. Estimated sweat loss is lower by about <strong className="text-emerald-700 dark:text-emerald-400">{waterDiffSaving} L/hour</strong> for {selectedActivity.label}.
             </p>
           </div>
         </div>
 
         <button
-          onClick={() => alert(`Optimal Slot 06:00 AM — 08:30 AM on ${scheduledDate} confirmed for "${selectedActivity.label}" in ${activeCity.split(',')[0]}. Sync reminder activated.`)}
-          className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold whitespace-nowrap shadow-md cursor-pointer active:translate-y-1 transition-all"
+          type="button"
+          onClick={() => {
+            setSelectedBestSlot('morning');
+            setActivityStartHour(6);
+          }}
+          className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold whitespace-nowrap shadow-md cursor-pointer transition-colors"
         >
-          Confirm & Sync Reminder
+          Use morning window
         </button>
       </div>
+      )}
     </div>
   );
 }

@@ -6,110 +6,75 @@ import {
   ShieldCheck, 
   XCircle, 
   CheckCircle2, 
-  Server, 
-  Database, 
-  Activity, 
-  Lock,
   Building,
-  Mail,
-  UserPlus
 } from 'lucide-react';
 import { getAdminRequests, approveAdminRequest, rejectAdminRequest, getAdminAuthorities } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 
 export default function AdminPortal() {
-  const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [authorities, setAuthorities] = useState([]);
   const [actionNotice, setActionNotice] = useState(null);
+  const [actionNoticeType, setActionNoticeType] = useState('success');
+  const [loadError, setLoadError] = useState(null);
+  const [loadingData, setLoadingData] = useState(true);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoadingData(true);
+      setLoadError(null);
       try {
         const [reqRes, authRes] = await Promise.all([
           getAdminRequests(),
           getAdminAuthorities(),
         ]);
-        if (reqRes.data) setRequests(reqRes.data);
-        if (authRes.data) setAuthorities(authRes.data);
-      } catch {
-        // Fallback demo data
-        setRequests([
-          {
-            _id: 'req1',
-            name: 'Sunil Verma',
-            designation: 'Disaster Management Specialist',
-            officialId: 'DM-KMC-9812',
-            municipality: 'Kolkata Municipal Corporation',
-            ward: 'Ward 24',
-            status: 'PENDING',
-            createdAt: new Date().toISOString(),
-          },
-          {
-            _id: 'req2',
-            name: 'Pooja Iyer',
-            designation: 'Public Health Executive',
-            officialId: 'PH-KMC-4411',
-            municipality: 'Kolkata Municipal Corporation',
-            ward: 'Ward 18',
-            status: 'PENDING',
-            createdAt: new Date().toISOString(),
-          },
-        ]);
-
-        setAuthorities([
-          {
-            _id: 'auth1',
-            name: 'Dr. Anita Banerjee',
-            email: 'officer@tapchetna.gov.in',
-            role: 'MUNICIPAL_OFFICER',
-            municipality: 'Kolkata Municipal Corporation',
-            ward: 'Ward 17',
-          },
-          {
-            _id: 'auth2',
-            name: 'K. S. Narayanan',
-            email: 'ks.narayanan@authority.tapchetna.gov.in',
-            role: 'MUNICIPAL_OFFICER',
-            municipality: 'Kolkata Municipal Corporation',
-            ward: 'Ward 23',
-          },
-        ]);
+        setRequests(Array.isArray(reqRes.data) ? reqRes.data : []);
+        setAuthorities(Array.isArray(authRes.data) ? authRes.data : []);
+      } catch (err) {
+        console.error('Could not load administrator data:', err.message);
+        setRequests([]);
+        setAuthorities([]);
+        setLoadError('Administrator data could not be loaded. Check the connection and try again.');
+      } finally {
+        setLoadingData(false);
       }
     };
     fetchData();
-  }, []);
+  }, [loadAttempt]);
 
   const handleApprove = async (id, name) => {
     try {
       await approveAdminRequest(id);
-    } catch {
-      // handled
+      setRequests((current) => current.filter((request) => request._id !== id));
+      try {
+        const response = await getAdminAuthorities();
+        setAuthorities(Array.isArray(response.data) ? response.data : []);
+        setActionNotice(`Approved official account request for ${name}.`);
+        setActionNoticeType('success');
+      } catch (err) {
+        console.error('Approval succeeded, but the officer directory could not be refreshed:', err.message);
+        setActionNotice(`Approved ${name}'s request, but the officer directory could not be refreshed.`);
+        setActionNoticeType('error');
+      }
+    } catch (err) {
+      console.error(`Could not approve ${name}'s request:`, err.message);
+      setActionNotice(`Could not approve ${name}'s request. Please try again.`);
+      setActionNoticeType('error');
     }
-    setRequests(requests.filter((r) => r._id !== id));
-    setAuthorities([
-      ...authorities,
-      {
-        _id: 'new-' + id,
-        name,
-        email: `${id}@authority.tapchetna.gov.in`,
-        role: 'MUNICIPAL_OFFICER',
-        municipality: 'Kolkata Municipal Corporation',
-        ward: 'Ward Assigned',
-      },
-    ]);
-    setActionNotice(`Approved official account credentials for ${name}`);
     setTimeout(() => setActionNotice(null), 3000);
   };
 
   const handleReject = async (id, name) => {
     try {
       await rejectAdminRequest(id);
-    } catch {
-      // handled
+      setRequests((current) => current.filter((request) => request._id !== id));
+      setActionNotice(`Rejected application for ${name}.`);
+      setActionNoticeType('success');
+    } catch (err) {
+      console.error(`Could not reject ${name}'s request:`, err.message);
+      setActionNotice(`Could not reject ${name}'s request. Please try again.`);
+      setActionNoticeType('error');
     }
-    setRequests(requests.filter((r) => r._id !== id));
-    setActionNotice(`Rejected application for ${name}`);
     setTimeout(() => setActionNotice(null), 3000);
   };
 
@@ -124,52 +89,54 @@ export default function AdminPortal() {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-white tracking-tight">
-                System Administration & Governance Portal
+                Administrator Console
               </h1>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/15 text-red-700 dark:text-red-300 border border-red-400/30">
-                ROOT PRIVILEGES
+                SYSTEM ADMIN
               </span>
             </div>
             <p className="text-sm text-stone-500 dark:text-slate-400">
-              Manage municipal authority accounts, verify official registration credentials, and monitor platform health.
+              Review municipal officer applications and manage verified accounts.
             </p>
           </div>
         </div>
       </div>
 
+      {loadError && (
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-rose-300 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+          <span>{loadError}</span>
+          <button
+            type="button"
+            onClick={() => setLoadAttempt((attempt) => attempt + 1)}
+            className="btn-3d btn-3d-surface px-3 py-2 text-sm font-semibold"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+
       {actionNotice && (
-        <div className="p-3.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-400 dark:border-emerald-500/70 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <div role={actionNoticeType === 'error' ? 'alert' : 'status'} className={`p-3.5 rounded-xl border text-xs font-bold flex items-center gap-2 ${
+          actionNoticeType === 'error'
+            ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200'
+            : 'bg-emerald-100 dark:bg-emerald-950/80 border-emerald-400 dark:border-emerald-500/70 text-emerald-800 dark:text-emerald-300'
+        }`}>
+          {actionNoticeType === 'error'
+            ? <XCircle className="w-4 h-4 shrink-0" />
+            : <CheckCircle2 className="w-4 h-4 shrink-0" />}
           <span>{actionNotice}</span>
         </div>
       )}
 
-      {/* System Telemetry Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="glass-panel card-3d p-4 rounded-2xl stagger-1 animate-fadeIn">
-          <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
-            <span>Core API Gateway</span>
-            <Server className="w-4 h-4 text-emerald-500" />
-          </div>
-          <p className="text-xl font-bold text-stone-900 dark:text-white mt-1 font-mono">ONLINE</p>
-          <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">Port 5000 • 28ms Latency</p>
-        </div>
-
-        <div className="glass-panel card-3d p-4 rounded-2xl stagger-2 animate-fadeIn">
-          <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
-            <span>MongoDB Database</span>
-            <Database className="w-4 h-4 text-cyan-500" />
-          </div>
-          <p className="text-xl font-bold text-stone-900 dark:text-white mt-1 font-mono">CONNECTED</p>
-          <p className="text-[11px] text-cyan-600 dark:text-cyan-400 mt-0.5">localhost:27017/tapchetna</p>
-        </div>
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="glass-panel card-3d p-4 rounded-2xl stagger-3 animate-fadeIn">
           <div className="flex justify-between text-xs text-stone-500 dark:text-slate-400 font-medium">
             <span>Pending Approvals</span>
             <UserCheck className="w-4 h-4 text-amber-500" />
           </div>
-          <p className="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1 font-mono">{requests.length} Requests</p>
+          <p className="text-xl font-bold text-amber-600 dark:text-amber-400 mt-1 font-mono">
+            {loadingData || loadError ? '—' : `${requests.length} Requests`}
+          </p>
           <p className="text-[11px] text-stone-400 dark:text-slate-400 mt-0.5">Verification required</p>
         </div>
 
@@ -178,7 +145,9 @@ export default function AdminPortal() {
             <span>Active Officers</span>
             <ShieldCheck className="w-4 h-4 text-purple-500" />
           </div>
-          <p className="text-xl font-bold text-stone-900 dark:text-white mt-1 font-mono">{authorities.length} Verified</p>
+          <p className="text-xl font-bold text-stone-900 dark:text-white mt-1 font-mono">
+            {loadingData || loadError ? '—' : `${authorities.length} Verified`}
+          </p>
           <p className="text-[11px] text-stone-400 dark:text-slate-400 mt-0.5">Assigned to wards</p>
         </div>
       </div>
@@ -190,11 +159,17 @@ export default function AdminPortal() {
             <UserCheck className="w-5 h-5 text-amber-500" />
             Authority Registration Requests (Pending Security Vetting)
           </h2>
-          <span className="text-xs font-mono text-stone-400 dark:text-slate-400">{requests.length} in queue</span>
+          <span className="text-xs font-mono text-stone-400 dark:text-slate-400">
+            {loadingData || loadError ? '—' : `${requests.length} in queue`}
+          </span>
         </div>
 
-        {requests.length === 0 ? (
-          <p className="text-xs text-stone-400 dark:text-slate-400 italic py-4">No pending authority requests in queue.</p>
+        {loadingData ? (
+          <p role="status" className="py-4 text-sm text-stone-500 dark:text-slate-400">Loading authority requests…</p>
+        ) : loadError ? (
+          <p className="py-4 text-sm text-stone-500 dark:text-slate-400">Request data is unavailable until the connection is restored.</p>
+        ) : requests.length === 0 ? (
+          <p className="py-4 text-sm text-stone-500 dark:text-slate-400">No pending authority requests.</p>
         ) : (
           <div className="space-y-3">
             {requests.map((req) => (
@@ -244,7 +219,9 @@ export default function AdminPortal() {
             <Building className="w-5 h-5 text-cyan-500" />
             Active Municipal Officers Directory
           </h2>
-          <span className="text-xs font-mono text-stone-400 dark:text-slate-400">{authorities.length} Accounts</span>
+          <span className="text-xs font-mono text-stone-400 dark:text-slate-400">
+            {loadingData || loadError ? '—' : `${authorities.length} Accounts`}
+          </span>
         </div>
 
         <div className="overflow-x-auto">
@@ -259,6 +236,20 @@ export default function AdminPortal() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-200/60 dark:divide-slate-800/60">
+              {!loadingData && !loadError && authorities.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="py-6 text-center text-sm text-stone-500 dark:text-slate-400">
+                    No active municipal officer accounts.
+                  </td>
+                </tr>
+              )}
+              {loadingData && (
+                <tr>
+                  <td colSpan="5" role="status" className="py-6 text-center text-sm text-stone-500 dark:text-slate-400">
+                    Loading officer directory…
+                  </td>
+                </tr>
+              )}
               {authorities.map((auth) => (
                 <tr key={auth._id} className="hover:bg-stone-50 dark:hover:bg-slate-900/40">
                   <td className="p-3 font-semibold text-stone-900 dark:text-white">{auth.name}</td>

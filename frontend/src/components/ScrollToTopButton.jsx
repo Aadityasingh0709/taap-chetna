@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowUp, ChevronsUp } from 'lucide-react';
+import { ChevronsUp } from 'lucide-react';
 
 /**
  * ScrollToTopButton
@@ -17,10 +17,10 @@ export default function ScrollToTopButton() {
       rafRef.current = requestAnimationFrame(() => {
         const scrollY = window.scrollY;
         const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-        setVisible(scrollY > 240);
-        if (totalHeight > 0) {
-          setScrollPercent(Math.round((scrollY / totalHeight) * 100));
-        }
+        const shouldShow = scrollY > 240;
+        const percent = totalHeight > 0 ? Math.round((scrollY / totalHeight) * 100) : 0;
+        setVisible((current) => current === shouldShow ? current : shouldShow);
+        setScrollPercent((current) => current === percent ? current : percent);
       });
     };
 
@@ -32,77 +32,50 @@ export default function ScrollToTopButton() {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
   if (!visible) return null;
 
   return (
     <div
-      className="fixed bottom-24 right-7 sm:bottom-26 sm:right-8 z-40"
-      style={{ animation: 'scaleUp 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards' }}
+      className="scroll-top-widget fixed z-40"
     >
       {/* SVG arc progress ring */}
-      <div className="relative">
+      <button
+        type="button"
+        onClick={scrollToTop}
+        aria-label={`Back to top. Page scroll progress ${scrollPercent}%`}
+        title={`Back to top · ${scrollPercent}% scrolled`}
+        className="scroll-top-button group relative flex h-12 w-12 flex-col items-center justify-center rounded-full"
+      >
         <svg
-          className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none"
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 h-full w-full -rotate-90"
           viewBox="0 0 56 56"
         >
           <circle
             cx="28" cy="28" r="24"
             fill="none"
-            stroke="rgba(249,115,22,0.15)"
+            stroke="rgba(255,255,255,0.28)"
             strokeWidth="3"
           />
           <circle
             cx="28" cy="28" r="24"
             fill="none"
-            stroke="#f97316"
+            stroke="currentColor"
             strokeWidth="3"
             strokeLinecap="round"
             strokeDasharray={`${2 * Math.PI * 24}`}
             strokeDashoffset={`${2 * Math.PI * 24 * (1 - scrollPercent / 100)}`}
-            style={{ transition: 'stroke-dashoffset 0.3s ease' }}
           />
         </svg>
-
-        <button
-          onClick={scrollToTop}
-          aria-label={`Scroll to top (${scrollPercent}%)`}
-          title={`Back to top — ${scrollPercent}% scrolled`}
-          className="group relative flex flex-col items-center justify-center w-14 h-14 rounded-full cursor-pointer"
-          style={{
-            background: 'linear-gradient(135deg, #ff9a50 0%, #f97316 40%, #ea580c 100%)',
-            border: '2px solid rgba(255,255,255,0.25)',
-            boxShadow: '0 6px 0 #7c2d12, 0 12px 28px -6px rgba(234,88,12,0.55), inset 0 1px 0 rgba(255,255,255,0.25)',
-            transition: 'transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.12s cubic-bezier(0.34,1.56,0.64,1)',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 9px 0 #7c2d12, 0 18px 32px -6px rgba(234,88,12,0.65), inset 0 1px 0 rgba(255,255,255,0.3)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 6px 0 #7c2d12, 0 12px 28px -6px rgba(234,88,12,0.55), inset 0 1px 0 rgba(255,255,255,0.25)';
-          }}
-          onMouseDown={e => {
-            e.currentTarget.style.transform = 'translateY(4px) scale(0.97)';
-            e.currentTarget.style.boxShadow = '0 2px 0 #7c2d12, 0 4px 8px rgba(0,0,0,0.3)';
-          }}
-          onMouseUp={e => {
-            e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 9px 0 #7c2d12, 0 18px 32px -6px rgba(234,88,12,0.65)';
-          }}
-        >
-          {/* Animated arrow */}
-          <ChevronsUp
-            className="w-5 h-5 text-white stroke-[2.5] group-hover:-translate-y-0.5 transition-transform duration-200"
-          />
-          <span className="text-[9px] font-black text-orange-100 tracking-widest leading-none -mt-0.5 font-mono">
-            {scrollPercent}%
-          </span>
-        </button>
-      </div>
+        <ChevronsUp aria-hidden="true" className="h-5 w-5 text-white stroke-[2.5]" />
+        <span aria-hidden="true" className="font-mono text-[9px] font-bold leading-none text-orange-100">
+          {scrollPercent}%
+        </span>
+      </button>
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function ShaktiChatPanel() {
       role="dialog"
       aria-modal="true"
       aria-label="Shakti Citizen Heat Assistant"
-      className="fixed inset-x-0 bottom-0 top-14 sm:top-auto sm:inset-auto sm:bottom-6 sm:right-6 w-full sm:w-[440px] sm:h-[650px] sm:max-h-[88vh] z-50 flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden bg-white dark:bg-slate-900 border border-stone-300/80 dark:border-slate-850 shadow-2xl animate-fadeIn"
+      className="fixed inset-x-0 bottom-0 top-[5.5rem] sm:top-auto sm:inset-auto sm:bottom-6 sm:right-6 w-full sm:w-[440px] sm:h-[650px] sm:max-h-[88vh] z-50 flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden bg-white dark:bg-slate-900 border border-stone-300/80 dark:border-slate-850 shadow-2xl animate-fadeIn"
       style={{
         boxShadow: '0 20px 60px -15px rgba(0, 0, 0, 0.3), 0 0 1px rgba(0,0,0,0.2)',
       }}
@@ -67,7 +67,9 @@ export default function ShaktiChatPanel() {
                 Shakti <span className="text-orange-500 font-sans text-xs font-semibold">(शक्ति)</span>
               </span>
               <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400/25">
-                {providerInfo?.provider === 'ollama' ? 'Local Ollama AI' : 'GroqCloud AI'}
+                {providerInfo?.provider === 'ollama'
+                  ? `Local Ollama · ${providerInfo.model || 'qwen3:4b'}`
+                  : `GroqCloud · ${providerInfo?.model || 'AI'}`}
               </span>
             </div>
             <p className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">

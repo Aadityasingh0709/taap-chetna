@@ -150,9 +150,10 @@ export const ShaktiProvider = ({ children }) => {
     try {
       const clientContext = getActiveClientContext();
 
-      // Format recent conversation context for the backend
+      // Format recent conversation context: keep last 4 turns (2 user, 2 assistant)
+      // to avoid bloated prompts and slow token evaluation on CPU
       const historyToSend = [...messages, userMsg]
-        .slice(-8)
+        .slice(-4)
         .map((m) => ({
           role: m.sender === 'user' ? 'user' : 'assistant',
           content: m.text,
@@ -171,21 +172,36 @@ export const ShaktiProvider = ({ children }) => {
         weatherSummary: data.weatherSummary,
         toolCalls: data.toolCallsExecuted || [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        isAi: true,
+        isAi: data.aiGenerated !== false,
       };
 
       setMessages((prev) => [...prev, shaktiMsg]);
     } catch (err) {
       console.error('[ShaktiContext] Chat error:', err);
+      const resData = err.response?.data;
       const errorMsg =
-        err.response?.data?.message ||
+        resData?.message ||
         err.message ||
         'Shakti AI service is currently unavailable. Please verify backend configuration.';
+      const isTimeout = resData?.isTimeout || err.code === 'ECONNABORTED' || err.message?.includes('timeout');
+
+      // Preserve verified weather data and location if returned in the error payload
+      const weatherSummary = resData?.weatherSummary || null;
+      const toolCalls = resData?.toolCallsExecuted || [];
+      const resolvedLocation = resData?.resolvedLocation || null;
+
+      let displayText = `⚠️ **Service Notice:** ${errorMsg}`;
+      if (isTimeout) {
+        displayText += '\n\n*Action:* Your local CPU may be under load. Please retry your question or consult the live dashboard.';
+      }
 
       const fallbackMsg = {
         id: `shakti_${Date.now()}_err`,
         sender: 'shakti',
-        text: `⚠️ **Service Notice:** ${errorMsg}\n\n*General Heat Safety Tip:* Drink adequate water with electrolyte salts (ORS) and avoid unshaded outdoor exertion between 12:00 PM and 3:30 PM.`,
+        text: displayText,
+        resolvedLocation,
+        weatherSummary,
+        toolCalls,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isError: true,
       };

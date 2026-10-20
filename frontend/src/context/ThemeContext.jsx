@@ -4,9 +4,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Default to ambient light theme
+  // The product opens in its midnight heat-intelligence theme unless a preference is saved.
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('tapchetna_theme') || 'light';
+    return localStorage.getItem('tapchetna_theme') || 'dark';
   });
 
   useEffect(() => {

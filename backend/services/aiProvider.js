@@ -82,7 +82,86 @@ async function generateChatResponse(options) {
 
 /**
  * Local Ollama chat completion using native POST /api/chat.
+ *
+ * CRITICAL: Qwen3 4B has a built-in "thinking" mode where it generates internal
+ * chain-of-thought reasoning inside a <think> block before producing the actual
+ * user-facing answer. Without intervention:
+ *   - All generated tokens go to message.thinking, leaving message.content empty
+ *   - The num_predict budget is exhausted on thinking, never reaching the answer
+ *   - Previous fallback code tried to extract answers from thinking using fragile
+ *     regex patterns, which leaked raw reasoning to users when the patterns failed
+ *
+ * Fix: Set think:false in the Ollama payload to disable thinking mode entirely.
+ * This forces all generated tokens into message.content as the direct answer.
  */
+/**
+ * Strips internal chain-of-thought deliberation, rule-evaluations, and think tags.
+ * Returns only the clean citizen-facing answer, or empty string if only reasoning was generated.
+ */
+function cleanAssistantContent(raw) {
+  if (!raw || typeof raw !== 'string') return '';
+
+  // 1. Defensively strip tagged think blocks
+  let text = raw
+    .replace(/<think>[\s\S]*?<\/think>/gi, '')
+    .replace(/^[\s\S]*?<\/think>/gi, '')
+    .replace(/<think>[\s\S]*$/gi, '')
+    .trim();
+
+  // 2. Look for explicit transitions from thought to final draft / answer
+  const transitionMatch = text.match(/(?:(?:Draft|Let's write|We write|Let's craft|Here is the (?:response|answer)|Final answer|We output):\s*)([\s\S]+)$/i);
+  if (transitionMatch && transitionMatch[1] && transitionMatch[1].trim().length > 10) {
+    text = transitionMatch[1].trim();
+  }
+
+  // 3. Strip trailing thought artifacts
+  text = text
+    .replace(/\n*\s*(?:Word count|My draft has|Word limit|Target length)[\s\S]*$/i, '')
+    .trim();
+
+  // 4. Filter lines: remove internal planning bullets and stop when trailing reasoning starts
+  const lines = text.split('\n');
+  const validLines = [];
+  let reachedActualAnswer = false;
+
+  const planningPatterns = /(?:(?:First|Second|Third|One|Two)\s+bullet|One for |One key difference|Then, provide|We must|The user's question|Also, note|Since the user|However, note|Let's extract|so we don't have to|implies it\?|service notice says|checks requirements|checks rules|Key points to hit|Do NOT invent|Answer directly in \d|No preamble|Start directly with|so we stick to|The query is just|Important:|Do not include any thinking)/i;
+  const trailingReasoningStart = /^(?:We must|The user's question|Also, note|Since the user|However, note|Let's extract|Wait,|Hmm,|Okay,|\d+\.\s+(?:Since|We note|Also|We output|We must|For evening)|Important:)/i;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+
+    if (reachedActualAnswer && trailingReasoningStart.test(trimmed)) {
+      break;
+    }
+
+    if (planningPatterns.test(trimmed)) {
+      continue;
+    }
+
+    const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('*');
+    if (isBullet) {
+      // Must contain actual content/data/advice, not deliberation
+      const isActualContent = /(?:°C|temperature|feels like|humidity|sky|condition|rain|precipitation|wind|heat index|wet-bulb|risk|hydrate|water|ors|cotton|rest|breaks|precaution|available|emergency|108|102)/i.test(trimmed);
+      if (isActualContent) {
+        reachedActualAnswer = true;
+        validLines.push(trimmed);
+      }
+    } else if (/^(?:In |Current |Today|Live weather|Please |Heat Index |Wet-Bulb |⚠️|ℹ️)/i.test(trimmed)) {
+      reachedActualAnswer = true;
+      validLines.push(trimmed);
+    } else if (reachedActualAnswer) {
+      validLines.push(trimmed);
+    }
+  }
+
+  if (validLines.length === 0) {
+    return '';
+  }
+
+  return validLines.join('\n').trim();
+}
+
 async function generateOllamaResponse({
   messages = [],
   systemPrompt,
@@ -93,7 +172,12 @@ async function generateOllamaResponse({
   const baseUrl = (process.env.OLLAMA_BASE_URL || DEFAULT_OLLAMA_BASE_URL).replace(/\/+$/, '');
   const model = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
   const numCtx = parseInt(process.env.OLLAMA_NUM_CTX, 10) || 4096;
-  const numPredict = parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 500;
+  // Configured for Intel i3 CPU inference: 180-250 tokens prevents long generation hangs
+  const numPredict = parseInt(process.env.OLLAMA_NUM_PREDICT, 10) || 250;
+  // Configurable request timeout: defaults to 90 seconds
+  const timeoutMs = parseInt(process.env.OLLAMA_TIMEOUT_MS, 10) || 90000;
+  // Keep model in memory for 10 minutes to eliminate 15-30s cold-start model load time
+  const keepAlive = process.env.OLLAMA_KEEP_ALIVE || '10m';
 
   // Build the message stream starting with the system prompt
   const conversation = [
@@ -106,17 +190,21 @@ async function generateOllamaResponse({
 
   while (iterations < maxIterations) {
     iterations += 1;
+    const reqStartTime = Date.now();
 
     try {
-      // Important: do not include the "think" field in the request.
+      // Disable Qwen3's thinking mode so all generated tokens go to message.content.
+      // Set keep_alive to 10 minutes to keep model loaded on CPU across citizen queries.
       const payload = {
         model,
         messages: conversation,
         stream: false,
+        think: false,
+        keep_alive: keepAlive,
         options: {
           num_ctx: numCtx,
           num_predict: numPredict,
-          temperature: 0.2,
+          temperature: 0.1,
         },
       };
 
@@ -125,9 +213,20 @@ async function generateOllamaResponse({
       }
 
       const response = await axios.post(`${baseUrl}/api/chat`, payload, {
-        timeout: 180000, // 180s timeout for CPU inference
+        timeout: timeoutMs,
         headers: { 'Content-Type': 'application/json' },
       });
+
+      const elapsedMs = Date.now() - reqStartTime;
+      const rData = response.data || {};
+      const loadDurationMs = rData.load_duration ? Math.round(rData.load_duration / 1e6) : null;
+      const promptTokens = rData.prompt_eval_count || null;
+      const outputTokens = rData.eval_count || null;
+      const evalDurationMs = rData.eval_duration ? Math.round(rData.eval_duration / 1e6) : null;
+      const tokensPerSec = (outputTokens && evalDurationMs) ? parseFloat(((outputTokens / evalDurationMs) * 1000).toFixed(1)) : null;
+
+      // Safe timing telemetry: no citizen messages or secrets logged
+      console.log(`[AIProvider Ollama] Completed in ${(elapsedMs / 1000).toFixed(1)}s (load: ${loadDurationMs !== null ? (loadDurationMs / 1000).toFixed(1) + 's' : 'warm'}, prompt: ${promptTokens || '?'} tok, eval: ${outputTokens || '?'} tok @ ${tokensPerSec || '?'} tok/s)`);
 
       const assistantMessage = response.data && response.data.message;
       if (!assistantMessage) {
@@ -167,65 +266,51 @@ async function generateOllamaResponse({
         continue;
       }
 
-      // Clean message content: strip any lingering think blocks
-      let cleanContent = (assistantMessage.content || '')
-        .replace(/<think>[\s\S]*?<\/think>/gi, '')
-        .trim();
-
-      // If content was empty, check if reasoning concluded in thinking
-      if (!cleanContent && assistantMessage.thinking) {
-        const thinkingClean = assistantMessage.thinking
-          .replace(/<think>[\s\S]*?<\/think>/gi, '')
-          .trim();
-        // Look for drafted final answer in quotes or after "response:" / "draft:"
-        const draftMatch = thinkingClean.match(/(?:response|draft|final response|answer):\s*["'“]([\s\S]*?)["'”]/i) ||
-                           thinkingClean.match(/["'“](Today in [^"'”]+|In [A-Z][a-zA-Z\s]+, [^"'”]+)["'”]/i);
-        if (draftMatch && draftMatch[1]) {
-          cleanContent = draftMatch[1].trim();
-        } else {
-          // Take the last paragraph of thinking as concluding answer
-          const paragraphs = thinkingClean.split('\n\n').map(p => p.trim()).filter(Boolean);
-          const lastPara = paragraphs[paragraphs.length - 1];
-          if (lastPara && lastPara.length > 20 && !lastPara.toLowerCase().startsWith('let')) {
-            cleanContent = lastPara;
-          } else if (thinkingClean.length > 30) {
-            cleanContent = thinkingClean;
-          }
-        }
-      }
-
-      // Safe handling if model returned completely empty response
-      if (!cleanContent) {
-        cleanContent = 'I apologize, but I could not formulate a complete response to your query. Please ask your question again or check the live dashboard.';
-      }
+      // Clean message content: strip thinking tags and internal reasoning
+      const cleanContent = cleanAssistantContent(assistantMessage.content || '');
 
       return {
-        success: true,
+        success: Boolean(cleanContent),
         content: cleanContent,
         model: response.data.model || model,
         provider: 'ollama',
         toolsExecuted,
+        diagnostics: {
+          durationMs: elapsedMs,
+          loadDurationMs,
+          promptTokens,
+          outputTokens,
+          evalDurationMs,
+          tokensPerSec,
+        },
       };
     } catch (err) {
-      console.error('[AIProvider Ollama Error]:', err.message || err);
+      const elapsedMs = Date.now() - reqStartTime;
+      const isTimeout = err.code === 'ECONNABORTED' || err.message?.includes('timeout');
+      const isConnRefused = err.code === 'ECONNREFUSED' || err.message?.includes('ECONNREFUSED');
+      const isNotFound = err.response?.status === 404 || err.message?.includes('404') || err.message?.includes('not found');
+
+      console.error(`[AIProvider Ollama Failure] Type: ${err.code || (isTimeout ? 'TIMEOUT' : 'ERROR')} | Duration: ${(elapsedMs / 1000).toFixed(1)}s | Model: ${model}`);
 
       let statusCode = 502;
       let userFriendlyMessage = 'Local AI service encountered an error. Please try again.';
 
-      if (err.code === 'ECONNREFUSED' || err.message?.includes('ECONNREFUSED')) {
+      if (isConnRefused) {
         statusCode = 503;
         userFriendlyMessage = `Local Ollama service is unreachable at ${baseUrl}. Please ensure Ollama is running locally with 'ollama serve'.`;
-      } else if (err.response?.status === 404 || err.message?.includes('404') || err.message?.includes('not found')) {
+      } else if (isNotFound) {
         statusCode = 503;
         userFriendlyMessage = `Model "${model}" was not found in local Ollama. Please run 'ollama pull ${model}' in your terminal.`;
-      } else if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+      } else if (isTimeout) {
         statusCode = 504;
         userFriendlyMessage = 'Local AI generation timed out. Your CPU may be under heavy load. Please retry with a shorter prompt.';
       }
 
       const normalizedErr = new Error(userFriendlyMessage);
       normalizedErr.status = statusCode;
-      normalizedErr.originalCode = err.code || err.response?.status || 'OLLAMA_ERROR';
+      normalizedErr.originalCode = isTimeout ? 'TIMEOUT' : (err.code || err.response?.status || 'OLLAMA_ERROR');
+      normalizedErr.durationMs = elapsedMs;
+      normalizedErr.timeoutMs = timeoutMs;
       throw normalizedErr;
     }
   }
@@ -315,9 +400,11 @@ async function generateGroqResponse({
         continue;
       }
 
+      const cleanContent = cleanAssistantContent(assistantMessage.content || '');
+
       return {
-        success: true,
-        content: assistantMessage.content || '',
+        success: Boolean(cleanContent),
+        content: cleanContent,
         model: response.model || model,
         provider: 'groq',
         toolsExecuted,

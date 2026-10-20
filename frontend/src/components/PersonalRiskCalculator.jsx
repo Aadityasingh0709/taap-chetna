@@ -13,11 +13,8 @@ import {
   Thermometer, 
   Activity, 
   AlertTriangle, 
-  MapPin,
   Radio,
-  Search,
   RefreshCw,
-  Info
 } from 'lucide-react';
 import { getCurrentWeather, getCitizenProfile, updateCitizenProfile } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -35,12 +32,12 @@ export default function PersonalRiskCalculator() {
 
   // Weather state (Live via Open-Meteo)
   const [weather, setWeather] = useState({
-    temp: 32,
-    humidity: 74,
-    apparentTemperature: 36,
-    condition: 'Live Satellite Telemetry',
+    temp: null,
+    humidity: null,
+    apparentTemperature: null,
+    condition: 'Waiting for weather data',
     isLive: false,
-    source: 'Connecting to Open-Meteo Live Sensors...',
+    source: 'Waiting for weather data',
   });
   const [loadingWeather, setLoadingWeather] = useState(false);
 
@@ -120,25 +117,55 @@ export default function PersonalRiskCalculator() {
   const fetchLiveWeather = async (cityName, coords = selectedCoords) => {
     if (!cityName) return;
     setLoadingWeather(true);
+    setWeather({
+      temp: null,
+      humidity: null,
+      apparentTemperature: null,
+      condition: 'Loading weather data',
+      isLive: false,
+      source: 'Loading weather data',
+    });
     try {
       const res = await getCurrentWeather(cityName, coords);
-      if (res.data) {
+      const temperatureValue = res.data?.temperature;
+      const humidityValue = res.data?.humidity;
+      const temperature = Number(res.data?.temperature);
+      const humidity = Number(res.data?.humidity);
+      if (temperatureValue !== null && temperatureValue !== undefined
+        && humidityValue !== null && humidityValue !== undefined
+        && Number.isFinite(temperature) && Number.isFinite(humidity)) {
         setWeather({
-          temp: res.data.temperature !== undefined ? res.data.temperature : 32,
-          humidity: res.data.humidity !== undefined ? res.data.humidity : 70,
-          apparentTemperature: res.data.apparentTemperature !== undefined ? res.data.apparentTemperature : res.data.temperature,
-          condition: res.data.condition || 'Clear & Sunny',
+          temp: temperature,
+          humidity,
+          apparentTemperature: res.data.apparentTemperature !== null
+            && res.data.apparentTemperature !== undefined
+            && Number.isFinite(Number(res.data.apparentTemperature))
+            ? Number(res.data.apparentTemperature)
+            : temperature,
+          condition: res.data.condition || 'Current conditions',
           isLive: res.data.isLive !== false,
-          source: res.data.source || 'Open-Meteo Satellite Station',
+          source: res.data.source || 'Open-Meteo',
+        });
+      } else {
+        setWeather({
+          temp: null,
+          humidity: null,
+          apparentTemperature: null,
+          condition: 'Weather data unavailable',
+          isLive: false,
+          source: 'Weather data unavailable',
         });
       }
-    } catch {
-      // Fallback
-      setWeather((prev) => ({
-        ...prev,
+    } catch (err) {
+      console.warn('Could not load weather data:', err.message);
+      setWeather({
+        temp: null,
+        humidity: null,
+        apparentTemperature: null,
+        condition: 'Weather data unavailable',
         isLive: false,
-        source: 'Calibrated Local Microclimate',
-      }));
+        source: 'Weather data unavailable',
+      });
     } finally {
       setLoadingWeather(false);
     }
@@ -176,8 +203,9 @@ export default function PersonalRiskCalculator() {
     return Math.round(tw * 10) / 10;
   };
 
-  const heatIndex = computeHeatIndex(weather.temp, weather.humidity);
-  const wetBulb = computeWetBulb(weather.temp, weather.humidity);
+  const hasWeatherData = Number.isFinite(weather.temp) && Number.isFinite(weather.humidity);
+  const heatIndex = hasWeatherData ? computeHeatIndex(weather.temp, weather.humidity) : null;
+  const wetBulb = hasWeatherData ? computeWetBulb(weather.temp, weather.humidity) : null;
 
   // RESTRUCTURED & REALISTIC INDIAN PHYSIOLOGICAL VULNERABILITY FORMULA
   // Calibrated so healthy adults in typical Indian conditions land in comfortable/moderate tiers
@@ -234,7 +262,7 @@ export default function PersonalRiskCalculator() {
     return Math.min(100, Math.max(5, Math.round(score)));
   };
 
-  const vulnScore = calculateVulnerability();
+  const vulnScore = hasWeatherData ? calculateVulnerability() : null;
 
   const getRiskDetails = (score) => {
     if (score >= 75) {
@@ -285,7 +313,7 @@ export default function PersonalRiskCalculator() {
     };
   };
 
-  const risk = getRiskDetails(vulnScore);
+  const risk = vulnScore === null ? null : getRiskDetails(vulnScore);
 
   const getTailoredDirectives = () => {
     const list = [];
@@ -508,7 +536,7 @@ export default function PersonalRiskCalculator() {
     return list;
   };
 
-  const tailoredDirectives = getTailoredDirectives();
+  const tailoredDirectives = hasWeatherData ? getTailoredDirectives() : [];
 
   const handleSaveProfile = async () => {
     setSavingProfile(true);
@@ -569,9 +597,15 @@ export default function PersonalRiskCalculator() {
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                 Personal Heat Vulnerability Intelligence
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                <Radio className="w-3 h-3 animate-pulse text-emerald-600" />
-                Live Satellite Sync
+              <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700">
+                <Radio className="w-3 h-3 text-slate-500" />
+                {loadingWeather
+                  ? 'Loading weather'
+                  : !hasWeatherData
+                    ? 'Weather unavailable'
+                    : weather.isLive
+                      ? 'Current weather available'
+                      : 'Weather estimate'}
               </span>
             </div>
             <p className="text-xs text-slate-700 dark:text-slate-300 font-medium mt-0.5">
@@ -626,7 +660,7 @@ export default function PersonalRiskCalculator() {
               onClick={() => fetchLiveWeather(selectedCity, selectedCoords)}
               disabled={loadingWeather}
               className="btn-3d btn-3d-surface p-2 text-slate-600 hover:text-orange-600 dark:text-slate-300 cursor-pointer"
-              title="Refresh Live Satellite Weather"
+              title="Refresh weather data"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loadingWeather ? 'animate-spin text-orange-600' : ''}`} />
             </button>
@@ -641,7 +675,7 @@ export default function PersonalRiskCalculator() {
             <span>Ambient Air Temp</span>
             <Flame className="w-4 h-4 text-orange-600" />
           </div>
-          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1.5 font-mono">{weather.temp}°C</p>
+          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1.5 font-mono">{weather.temp ?? '—'}{weather.temp !== null ? '°C' : ''}</p>
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-semibold">{weather.condition}</p>
         </div>
 
@@ -650,7 +684,7 @@ export default function PersonalRiskCalculator() {
             <span>Relative Humidity</span>
             <Droplets className="w-4 h-4 text-cyan-600" />
           </div>
-          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1.5 font-mono">{weather.humidity}%</p>
+          <p className="text-3xl font-black text-slate-900 dark:text-white mt-1.5 font-mono">{weather.humidity ?? '—'}{weather.humidity !== null ? '%' : ''}</p>
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-medium">Air Moisture Saturation</p>
         </div>
 
@@ -659,7 +693,7 @@ export default function PersonalRiskCalculator() {
             <span>Perceived Heat Index</span>
             <Sun className="w-4 h-4 text-amber-600" />
           </div>
-          <p className="text-3xl font-black text-amber-700 dark:text-amber-400 mt-1.5 font-mono">{heatIndex}°C</p>
+          <p className="text-3xl font-black text-amber-700 dark:text-amber-400 mt-1.5 font-mono">{heatIndex ?? '—'}{heatIndex !== null ? '°C' : ''}</p>
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-medium">"Feels Like" Thermal Load</p>
         </div>
 
@@ -668,16 +702,16 @@ export default function PersonalRiskCalculator() {
             <span>Wet-Bulb (WBGT)</span>
             <AlertOctagon className="w-4 h-4 text-rose-600" />
           </div>
-          <p className="text-3xl font-black text-rose-700 dark:text-rose-400 mt-1.5 font-mono">{wetBulb}°C</p>
+          <p className="text-3xl font-black text-rose-700 dark:text-rose-400 mt-1.5 font-mono">{wetBulb ?? '—'}{wetBulb !== null ? '°C' : ''}</p>
           <p className="text-[11px] text-slate-700 dark:text-slate-300 mt-1 font-medium">
-            {wetBulb >= 29 ? '⚠️ Critical Sweat Limit' : 'Safe Evaporative Window'}
+            {wetBulb === null ? 'Awaiting weather data' : wetBulb >= 29 ? 'Critical sweat limit' : 'Evaporative conditions'}
           </p>
         </div>
       </div>
 
       <div className="text-[11px] text-slate-600 dark:text-slate-400 flex items-center justify-between px-1">
         <span>📍 Weather Grounded For: <strong className="text-slate-900 dark:text-white">{selectedCity}</strong></span>
-        <span className="font-semibold text-emerald-700 dark:text-emerald-400">● {weather.source}</span>
+        <span className="font-semibold text-slate-600 dark:text-slate-400">{weather.source}</span>
       </div>
 
       {/* Shakti Citizen Heat-Health AI Assistant Card */}
@@ -860,7 +894,7 @@ export default function PersonalRiskCalculator() {
         </div>
 
         {/* Right Column: Tailored Health Plan & Risk Score */}
-        <div className="lg:col-span-5 space-y-5">
+        {risk ? <div className="lg:col-span-5 space-y-5">
           {/* Main Risk Score Card with 3D Depth */}
           <div className={`p-6 rounded-2xl border ${risk.bg} backdrop-blur-xl relative card-3d shadow-md`}>
             <div className="flex items-center justify-between">
@@ -969,7 +1003,27 @@ export default function PersonalRiskCalculator() {
               </div>
             </div>
           </div>
-        </div>
+        </div> : (
+          <aside className="lg:col-span-5 glass-panel p-6 rounded-2xl" aria-live="polite">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+              Personal heat-risk assessment
+            </h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              {loadingWeather
+                ? 'Loading weather for the selected location. Risk guidance will appear when weather data is available.'
+                : 'Weather data is unavailable for this location, so a heat-risk score cannot be calculated yet.'}
+            </p>
+            {!loadingWeather && (
+              <button
+                type="button"
+                onClick={() => fetchLiveWeather(selectedCity, selectedCoords)}
+                className="btn-3d btn-3d-orange mt-4 px-4 py-2 text-sm font-semibold"
+              >
+                Try weather again
+              </button>
+            )}
+          </aside>
+        )}
       </div>
     </div>
   );

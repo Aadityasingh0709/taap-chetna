@@ -1,5 +1,5 @@
 // client/src/components/PlaceSearchInput.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useId } from 'react';
 import { MapPin, Search, Loader2, X, Compass, Navigation, CheckCircle2 } from 'lucide-react';
 import { searchPlacesOSM, reverseGeocodeCoords } from '../services/api';
 import { POPULAR_INDIAN_PLACES } from '../data/indianPlaces';
@@ -25,10 +25,16 @@ export default function PlaceSearchInput({
   const [suggestions, setSuggestions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState('');
   const [detectingGPS, setDetectingGPS] = useState(false);
   const [isGpsActive, setIsGpsActive] = useState(false);
   const [gpsError, setGpsError] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const wrapperRef = useRef(null);
+  const inputRef = useRef(null);
+  const optionRefs = useRef([]);
+  const listboxId = `place-suggestions-${useId().replace(/:/g, '')}`;
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
 
   useEffect(() => {
     setSearchTerm(value || '');
@@ -55,6 +61,8 @@ export default function PlaceSearchInput({
           setSearchTerm(resolvedName);
           setIsGpsActive(true);
           setIsOpen(false);
+          setIsFocused(false);
+          inputRef.current?.blur();
 
           if (onChange) onChange(resolvedName);
           if (onSelectCoords) {
@@ -70,6 +78,8 @@ export default function PlaceSearchInput({
           setSearchTerm(fallback);
           setIsGpsActive(true);
           setIsOpen(false);
+          setIsFocused(false);
+          inputRef.current?.blur();
           if (onChange) onChange(fallback);
           if (onSelectCoords) {
             onSelectCoords({
@@ -94,8 +104,11 @@ export default function PlaceSearchInput({
 
   // Hybrid Search: Instant local places + debounced OpenStreetMap Nominatim
   useEffect(() => {
+    if (!isFocused) return;
+
     if (!searchTerm || searchTerm.trim().length < 2) {
       setSuggestions([]);
+      setActiveSuggestionIndex(-1);
       return;
     }
 
@@ -115,45 +128,65 @@ export default function PlaceSearchInput({
       }));
 
     setSuggestions(localMatches);
+    setActiveSuggestionIndex(-1);
     if (localMatches.length > 0) setIsOpen(true);
 
     // 2. Debounced nationwide OpenStreetMap live search
+    let cancelled = false;
     const timer = setTimeout(async () => {
       setLoading(true);
+      setSearchError('');
       try {
         const res = await searchPlacesOSM(searchTerm);
-        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        if (!cancelled && res.data && Array.isArray(res.data) && res.data.length > 0) {
           // Merge local + OSM results
           const osmItems = res.data;
           setSuggestions([...localMatches, ...osmItems]);
+          setActiveSuggestionIndex(-1);
           setIsOpen(true);
         }
       } catch (err) {
-        console.warn('OSM search error:', err.message);
+        if (!cancelled) {
+          console.warn('OSM search error:', err.message);
+          setSearchError('Live place search is unavailable. Showing local matches when available.');
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }, 300);
 
-    return () => clearTimeout(timer);
-  }, [searchTerm, value]);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [isFocused, isGpsActive, searchTerm, value]);
 
-  // Click outside to close suggestion dropdown
   useEffect(() => {
-    function handleClickOutside(event) {
+    if (activeSuggestionIndex < 0) return;
+    optionRefs.current[activeSuggestionIndex]?.scrollIntoView({ block: 'nearest' });
+  }, [activeSuggestionIndex]);
+
+  // Close suggestions on outside pointer interactions, including touch.
+  useEffect(() => {
+    function handlePointerDown(event) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
         setIsOpen(false);
+        setIsFocused(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handlePointerDown, true);
+    return () => document.removeEventListener('pointerdown', handlePointerDown, true);
   }, []);
 
   const handleSelect = (place) => {
     const locName = place.displayName || place.name;
     setSearchTerm(locName);
     setIsGpsActive(false);
+    setSearchError('');
     setIsOpen(false);
+    setIsFocused(false);
+    setActiveSuggestionIndex(-1);
+    inputRef.current?.blur();
     if (onChange) onChange(locName);
     if (onSelectCoords) {
       onSelectCoords({
@@ -168,13 +201,15 @@ export default function PlaceSearchInput({
   const handleClear = () => {
     setSearchTerm('');
     setIsGpsActive(false);
+    setSearchError('');
     setSuggestions([]);
+    setActiveSuggestionIndex(-1);
     if (onChange) onChange('');
     if (onSelectCoords) onSelectCoords(null);
   };
 
   return (
-    <div ref={wrapperRef} className={`relative ${className}`}>
+    <div ref={wrapperRef} className={`relative ${isOpen && suggestions.length > 0 ? 'z-40' : ''} ${className}`}>
       {showLabel && (
         <div className="flex items-center justify-between mb-1.5">
           <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
@@ -196,16 +231,49 @@ export default function PlaceSearchInput({
 
       <div className="relative flex items-center">
         <input
+          ref={inputRef}
           type="text"
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setIsGpsActive(false);
+            setSearchError('');
           }}
           onFocus={() => {
+            setIsFocused(true);
             if (suggestions.length > 0) setIsOpen(true);
           }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setIsOpen(false);
+              setIsFocused(false);
+              setActiveSuggestionIndex(-1);
+              inputRef.current?.blur();
+              return;
+            }
+            if (suggestions.length === 0) return;
+            if (event.key === 'ArrowDown') {
+              event.preventDefault();
+              setIsOpen(true);
+              setActiveSuggestionIndex((current) => (current + 1) % suggestions.length);
+            } else if (event.key === 'ArrowUp') {
+              event.preventDefault();
+              setIsOpen(true);
+              setActiveSuggestionIndex((current) => (current <= 0 ? suggestions.length - 1 : current - 1));
+            } else if (event.key === 'Enter' && isOpen && activeSuggestionIndex >= 0) {
+              event.preventDefault();
+              handleSelect(suggestions[activeSuggestionIndex]);
+            }
+          }}
           placeholder={placeholder}
+          aria-label={label}
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-autocomplete="list"
+          aria-expanded={isOpen && suggestions.length > 0}
+          aria-controls={listboxId}
+          aria-activedescendant={activeSuggestionIndex >= 0 ? `${listboxId}-option-${activeSuggestionIndex}` : undefined}
+          autoComplete="off"
           className="w-full bg-white dark:bg-slate-950 border border-stone-300 dark:border-slate-700 rounded-xl pl-9 pr-24 py-2.5 text-xs text-slate-900 dark:text-white font-semibold focus:outline-none focus:border-orange-500 shadow-sm"
         />
 
@@ -260,10 +328,12 @@ export default function PlaceSearchInput({
 
       {/* Suggestion Dropdown */}
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-50 left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-72 overflow-y-auto">
+        <div className="place-suggestions mt-2 bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-700 rounded-xl shadow-xl">
           <div className="p-2 text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider bg-stone-100 dark:bg-slate-950/80 border-b border-stone-200 dark:border-slate-800 flex items-center justify-between">
             <span>Matching Indian Places ({suggestions.length})</span>
-            <span className="text-emerald-700 dark:text-emerald-400 font-mono">OpenStreetMap + Database</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-mono">
+              {searchError ? 'Local results only' : 'OpenStreetMap + Database'}
+            </span>
           </div>
 
           {/* Quick GPS option at top of dropdown */}
@@ -278,13 +348,17 @@ export default function PlaceSearchInput({
             </button>
           )}
 
-          <div className="divide-y divide-stone-100 dark:divide-slate-800">
+          <div id={listboxId} role="listbox" aria-label="Matching locations" className="divide-y divide-stone-100 dark:divide-slate-800">
             {suggestions.map((item, idx) => (
               <button
                 key={item.id || idx}
+                ref={(node) => { optionRefs.current[idx] = node; }}
                 type="button"
+                id={`${listboxId}-option-${idx}`}
+                role="option"
+                aria-selected={idx === activeSuggestionIndex}
                 onClick={() => handleSelect(item)}
-                className="w-full text-left px-3.5 py-2.5 hover:bg-orange-50 dark:hover:bg-slate-800 flex items-start gap-2.5 transition-colors cursor-pointer"
+                className={`w-full text-left px-3.5 py-2.5 hover:bg-orange-50 dark:hover:bg-slate-800 flex items-start gap-2.5 transition-colors cursor-pointer ${idx === activeSuggestionIndex ? 'bg-orange-50 dark:bg-slate-800' : ''}`}
               >
                 <Compass className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
@@ -308,6 +382,11 @@ export default function PlaceSearchInput({
             ))}
           </div>
         </div>
+      )}
+      {searchError && (
+        <p role="status" className="mt-1.5 text-xs text-amber-800 dark:text-amber-300">
+          {searchError}
+        </p>
       )}
     </div>
   );

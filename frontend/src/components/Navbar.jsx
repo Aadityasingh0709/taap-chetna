@@ -1,5 +1,5 @@
 // client/src/components/Navbar.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import {
   Flame,
@@ -12,10 +12,8 @@ import {
   LogIn,
   Menu,
   X,
-  AlertTriangle,
   Sun,
   Moon,
-  Radio,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -26,15 +24,7 @@ export default function Navbar({ onOpenAuth }) {
   const { isDark, toggleTheme } = useTheme();
   const { openShakti } = useShakti();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
-
-  // Elevate navbar on scroll
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -46,17 +36,17 @@ export default function Navbar({ onOpenAuth }) {
     switch (r) {
       case 'SYSTEM_ADMIN':
         return {
-          label: '🛡 Admin',
+          label: 'Admin',
           cls: 'bg-red-500/15 text-red-600 dark:text-red-400 border-red-300/50 dark:border-red-800/50',
         };
       case 'MUNICIPAL_OFFICER':
         return {
-          label: '🏛 Officer',
+          label: 'Officer',
           cls: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-300/50 dark:border-amber-800/50',
         };
       case 'CITIZEN':
         return {
-          label: '👤 Citizen',
+          label: 'Citizen',
           cls: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-300/50 dark:border-emerald-800/50',
         };
       default:
@@ -69,64 +59,25 @@ export default function Navbar({ onOpenAuth }) {
 
   const badge = getRoleBadge(role);
 
-  // Active nav link factory
-  const makeNavCls = (color) => ({ isActive }) =>
-    `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
-      isActive
-        ? `bg-${color}-500/10 text-${color}-600 dark:text-${color}-400 border border-${color}-400/35 shadow-[0_2px_0_var(--tw-shadow-color)] translate-y-px`
-        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-0.5'
-    }`;
-
-  const navActiveStyle = (color, borderColor) => ({ isActive }) =>
-    `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 flex items-center gap-1.5 cursor-pointer select-none ${
-      isActive
-        ? `text-${color}-600 dark:text-${color}-400 bg-gradient-to-b from-${color}-500/10 to-${color}-600/5 border border-${color}-400/30 border-b-2 border-b-${color}-500 shadow-[0_2.5px_0_${borderColor}] translate-y-px`
-        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:-translate-y-0.5'
-    }`;
-
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl shadow-[0_2px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_20px_-4px_rgba(0,0,0,0.4)]'
-          : 'border-b border-slate-200/60 dark:border-slate-800/60 bg-white/90 dark:bg-slate-950/85 backdrop-blur-xl'
-      }`}
-    >
-      {/* ── Live Alert Banner ─────────────────────────── */}
-      <div
-        className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 px-4 py-1.5 text-center text-[11px] font-bold tracking-wide text-white flex items-center justify-center gap-2 shadow-sm"
-        style={{ letterSpacing: '0.04em' }}
-      >
-        <span className="relative flex h-1.5 w-1.5">
-          <span className="badge-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
-        </span>
-        <AlertTriangle className="w-3.5 h-3.5" />
-        <span>TAAP CHETNA&nbsp;•&nbsp;NATIONAL HEAT-HEALTH INTELLIGENCE &amp; ACCLIMATIZATION PLATFORM</span>
-      </div>
-
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-15 py-3">
+        <div className="flex min-h-16 items-center justify-between gap-3 py-3">
 
           {/* ── Brand Logo ──────────────────────────────── */}
           <Link to="/" className="flex items-center gap-3 group" onClick={() => setMobileMenuOpen(false)}>
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 group-hover:rotate-3 transition-all duration-300"
+              className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{
-                background: 'linear-gradient(135deg, #fbbf24 0%, #f97316 50%, #ef4444 100%)',
-                boxShadow: '0 4px 12px rgba(249,115,22,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+                background: '#c6531b',
               }}
             >
               <Flame className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-lg font-black tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                <span className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white" style={{ fontFamily: "'Manrope', sans-serif" }}>
                   TAAP <span className="text-orange-500">CHETNA</span>
-                </span>
-                <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/12 text-emerald-700 dark:text-emerald-400 border border-emerald-400/25">
-                  <Radio className="w-2.5 h-2.5 animate-pulse text-emerald-500" />
-                  LIVE
                 </span>
               </div>
               <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium leading-tight">
@@ -136,7 +87,7 @@ export default function Navbar({ onOpenAuth }) {
           </Link>
 
           {/* ── Desktop Navigation ──────────────────────── */}
-          <nav className="hidden lg:flex items-center gap-1.5">
+          <nav aria-label="Main navigation" className="hidden xl:flex items-center gap-1.5">
             {(role === 'CITIZEN' || role === 'GUEST') && (
               <>
                 <NavLink
@@ -234,8 +185,10 @@ export default function Navbar({ onOpenAuth }) {
 
             {/* Theme Toggle */}
             <button
+              type="button"
               onClick={toggleTheme}
               className="btn-3d btn-3d-surface p-2.5 rounded-xl cursor-pointer"
+              aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {isDark
@@ -280,9 +233,11 @@ export default function Navbar({ onOpenAuth }) {
 
             {/* Mobile menu trigger */}
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden btn-3d btn-3d-surface p-2.5 rounded-xl cursor-pointer"
+              className="xl:hidden btn-3d btn-3d-surface p-2.5 rounded-xl cursor-pointer"
               aria-label="Toggle mobile menu"
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen
                 ? <X className="w-4 h-4 text-slate-700 dark:text-slate-200" />
@@ -296,7 +251,7 @@ export default function Navbar({ onOpenAuth }) {
       {/* ── Mobile Menu ─────────────────────────────────── */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden border-t border-slate-200 dark:border-slate-800/80 bg-white/98 dark:bg-slate-950/98 backdrop-blur-2xl px-5 pt-4 pb-6 space-y-1.5"
+          className="xl:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-5 pt-4 pb-6 space-y-1.5"
           style={{ animation: 'fadeIn 0.2s cubic-bezier(0.16,1,0.3,1) forwards' }}
         >
           {(role === 'CITIZEN' || role === 'GUEST') && (

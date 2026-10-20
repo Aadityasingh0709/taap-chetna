@@ -288,10 +288,12 @@ export default function ShaktiMessage({ message, onSelectPrompt }) {
             <div className="flex items-center gap-1 text-[10px] text-slate-700 dark:text-slate-300 font-medium">
               <Info className="w-2.5 h-2.5 text-slate-600 dark:text-slate-400" />
               <span>
-                {message.toolCalls && message.toolCalls.length > 0
+                {message.toolCalls && message.toolCalls.length > 0 && message.weatherSummary
                   ? `Grounded via ${message.toolCalls.map((t) => (t.tool || '').replace(/_/g, ' ')).join(', ')}`
+                  : message.toolCalls && message.toolCalls.length > 0 && !message.weatherSummary
+                  ? 'Data retrieval attempted'
                   : message.isAi
-                  ? 'Grounded AI Intelligence'
+                  ? 'AI Intelligence'
                   : 'Heat Safety Guidance'}
               </span>
             </div>

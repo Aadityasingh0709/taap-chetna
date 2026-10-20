@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Mic, Sparkles } from 'lucide-react';
 
-export default function ShaktiMessageComposer({ onSend, onMicClick, disabled }) {
+export default function ShaktiMessageComposer({ onSend, onMicClick, disabled, providerInfo }) {
   const [input, setInput] = useState('');
   const textareaRef = useRef(null);
 
@@ -34,6 +34,9 @@ export default function ShaktiMessageComposer({ onSend, onMicClick, disabled }) 
   };
 
   const isSendDisabled = !input.trim() || disabled;
+  const providerLabel = providerInfo?.provider === 'ollama'
+    ? `Ollama · ${providerInfo.model || 'qwen3:4b'}`
+    : `GroqCloud · ${providerInfo?.model || 'AI'}`;
 
   return (
     <div className="p-3 border-t border-stone-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md">
@@ -82,9 +85,9 @@ export default function ShaktiMessageComposer({ onSend, onMicClick, disabled }) 
       {/* Helper caption */}
       <div className="flex items-center justify-between text-[10px] text-slate-700 dark:text-slate-300 px-1 pt-2">
         <span className="sm:hidden">Conversational AI Mode</span>
-        <span className="inline-flex items-center gap-1 font-semibold text-emerald-700 dark:text-emerald-400">
+        <span className="inline-flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300">
           <Sparkles className="w-2.5 h-2.5" />
-          GroqCloud AI Active
+          {providerInfo?.configured ? providerLabel : 'AI provider unavailable'}
         </span>
       </div>
     </div>

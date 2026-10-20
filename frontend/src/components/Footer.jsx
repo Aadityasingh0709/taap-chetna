@@ -1,6 +1,6 @@
 // client/src/components/Footer.jsx
 import React from 'react';
-import { Flame, PhoneCall, Zap, ShieldCheck, Heart } from 'lucide-react';
+import { Flame, PhoneCall, ShieldCheck, Heart } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -48,7 +48,7 @@ export default function Footer() {
               Understand the Heat. Know Your Risk. Act in Time.
             </p>
             <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">
-              National Heat-Health Disaster Preparedness &amp; Surveillance Initiative, powered by real-time Open-Meteo satellite telemetry.
+              Heat and health decision support for citizens, travelers, and municipal teams.
             </p>
             {/* Powered by badges */}
             <div className="flex flex-wrap gap-1.5 pt-1">

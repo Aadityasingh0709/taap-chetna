@@ -27,7 +27,14 @@ export default function ShaktiTextChat() {
     isThinking,
     sendMessage,
     setActiveMode,
+    providerInfo,
   } = useShakti();
+  const modelLabel = providerInfo?.provider === 'ollama'
+    ? `Local Ollama · ${providerInfo.model || 'qwen3:4b'}`
+    : `GroqCloud · ${providerInfo?.model || 'configured model'}`;
+  const providerStatus = providerInfo?.configured
+    ? `Configured model: ${modelLabel}`
+    : 'AI provider is not configured';
 
   const scrollBottomRef = useRef(null);
 
@@ -109,9 +116,9 @@ export default function ShaktiTextChat() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 mt-5 text-[10px] text-slate-700 dark:text-slate-300 bg-stone-200/50 dark:bg-slate-900/60 px-3 py-1.5 rounded-full border border-stone-300/50 dark:border-slate-800">
+            <div role="status" className="flex items-center gap-1.5 mt-5 text-xs text-slate-700 dark:text-slate-300 bg-stone-200/50 dark:bg-slate-900/60 px-3 py-1.5 rounded-full border border-stone-300/50 dark:border-slate-800">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>Offline Local Demonstration • AI connection scheduled for Phase 2</span>
+              <span>{providerStatus}</span>
             </div>
           </div>
         ) : (
@@ -159,6 +166,7 @@ export default function ShaktiTextChat() {
         onSend={sendMessage}
         onMicClick={() => setActiveMode('voice')}
         disabled={isThinking}
+        providerInfo={providerInfo}
       />
     </div>
   );
